@@ -54,7 +54,8 @@ This package builds a TensorFlow :code:`Dataset` subclass, :code:`PipeModeDatase
 
 To construct a :code:`PipeModeDataset` that reads TFRecord encoded records from a "training" channel, do the following:
 
-.. code-block:: python
+.. code:: python
+
   from sagemaker_tensorflow import PipeModeDataset
   ds = PipeModeDataset(channel="training", record_format='TFRecord')
 
@@ -64,7 +65,8 @@ A :python:`PipeModeDataset` can read records encoded using either :code:`TFRecor
 
 :python:`PipeModeDataset`s are regular TensorFlow :python:`Dataset`s and as such can be used in TensorFlow input processing pipelines and in TensorFlow Estimator :code:`input_fn` definitions. All :python:`Dataset` operations are supported on :python:`PipeModeDataset`. The following code snippet shows how to create a batching and parsing :python:`Dataset` that reads data from a SageMaker Pipe Mode channel:
 
-.. code-block:: python
+.. code:: python
+
     features = {
         'data': tf.FixedLenFeature([], tf.string),
         'labels': tf.FixedLenFeature([], tf.int64),
