@@ -66,7 +66,7 @@ A :python:`PipeModeDataset` is created for a SageMaker PipeMode channel. Each ch
 
 A :python:`PipeModeDataset` can read records encoded using either :code:`TFRecord` or :code:`RecordIO` encoding. The :code:`record_format` kwarg can be set to either :code:`RecordIO` or `TFRecord` to differentiate between the two encodings. :code:`RecordIO` is the default.
 
-:python:`PipeModeDataset`s are regular TensorFlow :python:`Dataset`s and as such can be used in TensorFlow input processing pipelines and in TensorFlow Estimator :code:`input_fn` definitions. All :python:`Dataset` operations are supported on :python:`PipeModeDataset`. The following code snippet shows how to create a batching and parsing :python:`Dataset` that reads data from a SageMaker Pipe Mode channel:
+A :python:`PipeModeDataset` is a regular TensorFlow :python:`Dataset` and as such can be used in TensorFlow input processing pipelines, and in TensorFlow Estimator :code:`input_fn` definitions. All :python:`Dataset` operations are supported on :python:`PipeModeDataset`. The following code snippet shows how to create a batching and parsing :python:`Dataset` that reads data from a SageMaker Pipe Mode channel:
 
 .. code:: python
 
