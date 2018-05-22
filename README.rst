@@ -57,6 +57,7 @@ To construct a :code:`PipeModeDataset` that reads TFRecord encoded records from 
 .. code:: python
 
   from sagemaker_tensorflow import PipeModeDataset
+  
   ds = PipeModeDataset(channel="training", record_format='TFRecord')
 
 A :python:`PipeModeDataset` is created for a SageMaker PipeMode channel. Each channel corresponds to a single S3 dataset, configured when the training job is created. You can create multiple :python:`PipeModeDataset` instances over different channels to read from multiple S3 datasets in the same training program.
