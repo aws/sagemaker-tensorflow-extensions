@@ -82,7 +82,7 @@ A :python:`PipeModeDataset` can read records encoded using either :code:`TFRecor
 	    }, parsed['labels'])
 
 	ds = PipeModeDataset(channel='training', record_format='TFRecord')
-	num_epochs=20
+	num_epochs = 20
 	ds = ds.repeat(num_epochs)
 	ds = ds.prefetch(10)
 	ds = ds.map(parse, num_parallel_calls=10)
