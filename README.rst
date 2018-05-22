@@ -25,7 +25,7 @@ in this directory. To install in a SageMaker docker image, you can use the follo
         cd sagemaker-tensorflow-extensions && \
         pip install . && \
         cd .. && \
-        rm -r sagemaker-tensorflow-extensions
+        rm -rf sagemaker-tensorflow-extensions
 
 Release branching is used to track different versions of TensorFlow. To build for a specific release of TensorFlow, checkout the release branch prior to running a pip install. For example, to build for TensorFlow 1.7, you can run the following command in your Dockerfile:
 
@@ -36,7 +36,7 @@ Release branching is used to track different versions of TensorFlow. To build fo
         git checkout 1.7 && \
         pip install . && \
         cd .. && \
-        rm -r sagemaker-tensorflow-extensions
+        rm -rf sagemaker-tensorflow-extensions
 
 Requirements
 ~~~~~~~~~~~~
