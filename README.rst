@@ -70,23 +70,23 @@ A :python:`PipeModeDataset` can read records encoded using either :code:`TFRecor
 
 .. code:: python
 
-    features = {
-        'data': tf.FixedLenFeature([], tf.string),
-        'labels': tf.FixedLenFeature([], tf.int64),
-    }
+	features = {
+	    'data': tf.FixedLenFeature([], tf.string),
+	    'labels': tf.FixedLenFeature([], tf.int64),
+	}
 
-    def parse(record):
-        parsed = tf.parse_single_example(record, features)
-        return ({
-            'data': tf.decode_raw(parsed['data'], tf.float64)
-        }, parsed['labels'])
+	def parse(record):
+	    parsed = tf.parse_single_example(record, features)
+	    return ({
+	        'data': tf.decode_raw(parsed['data'], tf.float64)
+	    }, parsed['labels'])
 
-   ds = PipeModeDataset(channel='training', record_format='TFRecord')
-   num_epochs=20
-   ds = ds.repeat(num_epochs)
-   ds = ds.prefetch(10)
-   ds = ds.map(parse, num_parallel_calls=10)
-   ds = ds.batch(64)
+	ds = PipeModeDataset(channel='training', record_format='TFRecord')
+	num_epochs=20
+	ds = ds.repeat(num_epochs)
+	ds = ds.prefetch(10)
+	ds = ds.map(parse, num_parallel_calls=10)
+	ds = ds.batch(64)
 
 
 License
