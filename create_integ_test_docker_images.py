@@ -30,16 +30,16 @@ if __name__ == '__main__':
         else:
             raise
 
-    repository = '{}/sagemaker_tensorflow_integ_test:{}-{}'.format(registry, TF_VERSION, args.device)
+    tag = '{}/sagemaker_tensorflow_integ_test:{}-{}'.format(registry, TF_VERSION, args.device)[8:]
 
     client.images.build(
         path='.',
         dockerfile='test/integ/Dockerfile',
-        tag=repository[8:],
+        tag=tag,
         buildargs={'sagemaker_tensorflow': sdist_path,
                    'device': args.device,
                    'tensorflow_version': TF_VERSION,
                    'script': 'test/integ/scripts/estimator_script.py'})
 
-    client.images.push(repository[8:], auth_config={'username': username, 'password': password})
-    print repository[8:]
+    client.images.push(tag, auth_config={'username': username, 'password': password})
+    print(tag)

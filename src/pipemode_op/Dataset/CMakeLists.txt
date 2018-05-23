@@ -19,8 +19,12 @@ file(GLOB_RECURSE sources ./src/*.cpp ./src/*.hpp)
 
 add_library(PipeModeOp SHARED ${sources})
 
-execute_process(COMMAND "python" "-c" "import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_lib() + '/')" OUTPUT_VARIABLE TF_LIB_DIR)
-execute_process(COMMAND "python" "-c" "import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_include() + '/')" OUTPUT_VARIABLE TF_INCLUDE_DIR)
+execute_process(COMMAND "python" "-c"
+	"import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_lib() + '/')"
+	OUTPUT_VARIABLE TF_LIB_DIR)
+execute_process(COMMAND "python" "-c"
+	"import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_include() + '/')"
+	OUTPUT_VARIABLE TF_INCLUDE_DIR)
 
 find_library(TF_LIB 
 	NAMES tensorflow_framework

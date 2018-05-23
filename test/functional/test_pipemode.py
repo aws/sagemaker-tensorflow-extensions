@@ -39,6 +39,8 @@ def tfrecords_file():
     for i in range(100):
         writer.write("hello world")
     writer.close()
+    yield
+    os.remove('test.tfrecords')
 
 
 @pytest.fixture(autouse=True, scope='session')
@@ -51,6 +53,8 @@ def csv_file():
                     csv_file.write(',')
                 else:
                     csv_file.write('\n')
+    yield
+    os.remove('test.csv')
 
 
 @pytest.fixture

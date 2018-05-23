@@ -13,7 +13,9 @@
 
 file(GLOB_RECURSE sources ./*.cpp ./*.hpp)
 
-execute_process(COMMAND "python" "-c" "import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_lib() + '/')" OUTPUT_VARIABLE TF_LIB_DIR)
+execute_process(COMMAND "python" "-c"
+	"import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_lib() + '/')"
+	OUTPUT_VARIABLE TF_LIB_DIR)
 
 find_library(TF_LIB 
 	NAMES tensorflow_framework

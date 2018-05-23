@@ -39,7 +39,7 @@ class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
         """A CMake Build Extension, for invoking CMake building of TensorFlow C++ plugins.
            Requires CMake to be installed."""
-        Extension.__init__(self, name, sources=list(find_files(sourcedir)))
+        super(CMakeExtension, self).__init__(self, name, sources=list(find_files(sourcedir)))
         self.sourcedir = os.path.abspath(sourcedir)
 
 
@@ -95,8 +95,7 @@ setup(
     long_description=read('README.rst'),
     url='https://github.com/aws/sagemaker-tensorflow',
     license='Apache License 2.0',
-    author='Owen Thomas',
-    author_email='owen@xpldr.com',
+    author='Amazon Web Services',
     maintainer='Amazon Web Services',
     classifiers=[
         "Development Status :: 5 - Production/Stable",
