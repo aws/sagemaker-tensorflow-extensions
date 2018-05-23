@@ -5,7 +5,7 @@ SageMaker TensorFlow
 .. role:: python(code)
    :language: python
 
-SageMaker specific extensions to TensorFlow. This package includes the :python:`PipeModeDataset` class, that adapts SageMaker Pipe Mode channels to TensorFlow Datasets.
+SageMaker specific extensions to TensorFlow. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow DataSets.
 
 Install
 ~~~~~~~
@@ -52,7 +52,7 @@ SageMaker Pipe Mode is enabled when a SageMaker Training Job is created. Multipl
 
 Using the PipeModeDataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-This package builds a TensorFlow :code:`Dataset` subclass, :code:`PipeModeDataset`, stored in a module named :code:`sagemaker_tensorflow`. 
+The :code:`PipeModeDataset` is a TensorFlow :code:`Dataset` for reading SageMaker Pipe Mode channels. After installing the sagemaker tensorflow extensions package, the :code:`PipeModeDataset` can be imported from a moduled named :code:`sagemaker_tensorflow`.
 
 To construct a :code:`PipeModeDataset` that reads TFRecord encoded records from a "training" channel, do the following:
 
@@ -62,7 +62,7 @@ To construct a :code:`PipeModeDataset` that reads TFRecord encoded records from 
   
   ds = PipeModeDataset(channel='training', record_format='TFRecord')
 
-A :python:`PipeModeDataset` is created for a SageMaker PipeMode channel. Each channel corresponds to a single S3 dataset, configured when the training job is created. You can create multiple :python:`PipeModeDataset` instances over different channels to read from multiple S3 datasets in the same training program.
+A :python:`PipeModeDataset` should be created for a SageMaker PipeMode channel. Each channel corresponds to a single S3 dataset, configured when the training job is created. You can create multiple :python:`PipeModeDataset` instances over different channels to read from multiple S3 datasets in the same training program.
 
 A :python:`PipeModeDataset` can read TFRecord, RecordIO, or text line records, by using the :code:`record_format` constructor argument.  The :code:`record_format` kwarg can be set to either :code:`RecordIO`, :code:`TFRecord`, or :code:`TextLine` to differentiate between the three encodings. :code:`RecordIO` is the default.
 
