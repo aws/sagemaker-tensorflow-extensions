@@ -64,7 +64,7 @@ To construct a :code:`PipeModeDataset` that reads TFRecord encoded records from 
 
 A :python:`PipeModeDataset` is created for a SageMaker PipeMode channel. Each channel corresponds to a single S3 dataset, configured when the training job is created. You can create multiple :python:`PipeModeDataset` instances over different channels to read from multiple S3 datasets in the same training program.
 
-A :python:`PipeModeDataset` can read records encoded using either :code:`TFRecord` or :code:`RecordIO` encoding. The :code:`record_format` kwarg can be set to either :code:`RecordIO` or `TFRecord` to differentiate between the two encodings. :code:`RecordIO` is the default.
+A :python:`PipeModeDataset` can read TFRecord, RecordIO, or text line records, by using the :code:`record_format` constructor argument.  The :code:`record_format` kwarg can be set to either :code:`RecordIO`, :code:`TFRecord`, or :code:`TextLine` to differentiate between the three encodings. :code:`RecordIO` is the default.
 
 A :python:`PipeModeDataset` is a regular TensorFlow :python:`Dataset` and as such can be used in TensorFlow input processing pipelines, and in TensorFlow Estimator :code:`input_fn` definitions. All :python:`Dataset` operations are supported on :python:`PipeModeDataset`. The following code snippet shows how to create a batching and parsing :python:`Dataset` that reads data from a SageMaker Pipe Mode channel:
 
@@ -87,7 +87,6 @@ A :python:`PipeModeDataset` is a regular TensorFlow :python:`Dataset` and as suc
 	ds = ds.prefetch(10)
 	ds = ds.map(parse, num_parallel_calls=10)
 	ds = ds.batch(64)
-
 
 License
 -------
