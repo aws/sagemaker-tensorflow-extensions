@@ -93,8 +93,25 @@ class RecordReader {
 
        param [out] data The byte array to write into.
        param [in] nbytes The number of bytes to read.
+
+       return the number of bytes read
      */
     std::size_t Read(void* data, std::size_t nbytes);
+
+    /**
+       Read a line characters from the underlying file, storing the result
+       in data. Existing characters in data are removed and the line data is written
+       into data starting at index 0.
+
+       This method self-calls FillBuffer as necessary to fill the read-ahead buffer before
+       moving the read bytes into data.
+
+       param [in] data The string to read the line into.
+       param [in] delim The record breaking delimiter
+
+       return true if a line of data was read, false otherwise.
+      */
+    bool ReadLine(std::string* data, const char delim);
 
     /**
        Wait for the file this RecordReader is reading to be created.

@@ -41,6 +41,18 @@ def tfrecords_file():
     writer.close()
 
 
+@pytest.fixture(autouse=True, scope='session')
+def csv_file():
+    with open('test.csv', 'w') as csv_file:
+        for i in range(100):
+            for j in range(100):
+                csv_file.write(str(j))
+                if j < 99:
+                    csv_file.write(',')
+                else:
+                    csv_file.write('\n')
+
+
 @pytest.fixture
 def model_dir():
     model_dir = tempfile.mkdtemp()
@@ -141,3 +153,30 @@ def test_tf_record():
         next = it.get_next()
         for i in range(100):
             assert sess.run(next) == 'hello world'
+
+
+FIELD_DEFAULTS = [[0] for i in range(100)]
+COLUMNS = [str(i) for i in range(100)]
+
+
+def test_csv():
+    channel_dir = tempfile.mkdtemp()
+    state_dir = tempfile.mkdtemp()
+    epochs = 1
+    channel_name = 'testchannel'
+    create_fifos(epochs, channel_dir, channel_name, input_file='test.csv')
+
+    def parse(line):
+        fields = tf.decode_csv(line, FIELD_DEFAULTS)
+        features = dict(zip(COLUMNS, fields))
+        return features
+
+    ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, record_format='TextLine')
+    ds = ds.map(parse)
+    with tf.Session() as sess:
+        it = ds.make_one_shot_iterator()
+        next = it.get_next()
+        for i in range(100):
+            d = sess.run(next)
+            print d
+            assert d == {str(i): i for i in range(100)}

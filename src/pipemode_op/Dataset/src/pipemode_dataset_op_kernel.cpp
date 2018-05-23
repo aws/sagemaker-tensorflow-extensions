@@ -27,11 +27,13 @@
 
 #include "PipeStateManager.hpp"
 #include "RecordIOReader.hpp"
+#include "TextLineRecordReader.hpp"
 #include "TFRecordReader.hpp"
 
 using sagemaker::tensorflow::PipeStateManager;
 using sagemaker::tensorflow::RecordIOReader;
 using sagemaker::tensorflow::RecordReader;
+using sagemaker::tensorflow::TextLineRecordReader;
 using sagemaker::tensorflow::TFRecordReader;
 
 using tensorflow::DatasetBase;
@@ -91,7 +93,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                                                         &channel_directory));
         OP_REQUIRES_OK(ctx, ParseScalarArgument<std::string>(ctx, "channel",
                                                         &channel));
-        OP_REQUIRES(ctx, record_format == "RecordIO" || record_format == "TFRecord",
+        OP_REQUIRES(ctx, record_format == "RecordIO" || record_format == "TFRecord" || record_format == "TextLine",
             tensorflow::errors::InvalidArgument("Invalid record format: " + record_format));
         *output = new Dataset(ctx, record_format, state_directory, channel_directory, channel);
     }
@@ -150,8 +152,10 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                     std::string pipe_path = BuildPipeName(channel_directory, channel, pipe_index);
                     if (record_format == "RecordIO") {
                         record_reader_ = std::unique_ptr<RecordReader>(new RecordIOReader(pipe_path));
-                    } else {  // required to be TFRecord
+                    } else if (record_format == "TFRecord") {
                         record_reader_ = std::unique_ptr<RecordReader>(new TFRecordReader(pipe_path));
+                    } else {  // required to be TextLine
+                        record_reader_ = std::unique_ptr<RecordReader>(new TextLineRecordReader(pipe_path));
                     }
                 }
 

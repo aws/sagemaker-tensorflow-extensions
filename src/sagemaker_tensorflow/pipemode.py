@@ -32,10 +32,10 @@ class PipeModeDataset(dataset_ops.Dataset):
     def __init__(self, channel, record_format='RecordIO',
                  state_dir='/opt/ml/pipe_state', pipe_dir='/opt/ml/input/data'):
         """A Dataset for reading from a SageMaker PipeMode channel. Supports records encoded using
-        either RecordIO or TFRecord encoding.
+        either RecordIO, TFRecord, or new line text encoding.
 
         Args:
-            record_format: The record format to use. One of 'RecordIO' or 'TFRecord'
+            record_format: The record format to use. One of 'RecordIO', 'TFRecord', or 'TextLine'
             channel: The name of the SageMaker channel.
             pipe_dir: The directory to read SageMaker Channels from.
             state_dir: The directory where pipe index state is persisted.

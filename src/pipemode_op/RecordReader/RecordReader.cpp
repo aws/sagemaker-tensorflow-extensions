@@ -99,3 +99,40 @@ std::size_t RecordReader::Read(void* dest, std::size_t nbytes) {
     return bytes_read;
 }
 
+bool RecordReader::ReadLine(std::string* data, const char delim) {
+    if (fd_ == UNSET_FILE_DESCRIPTOR) {
+        WaitForFile();
+        fd_ = open(file_path_.c_str(), O_RDONLY);
+        if (-1 == fd_) {
+            throw std::system_error(errno, std::system_category());
+        }
+    }
+    data->resize(0);
+    static const std::size_t STEP_SIZE = 1024;
+    while (true) {
+        if (!volume_) {
+            FillBuffer();
+        }
+        if (!volume_) {
+            if (data->size() == 0) {
+                return false;
+            } else {
+                data->shrink_to_fit();
+                return true;
+            }
+        }
+        while (volume_) {
+            data->reserve(data->size() + STEP_SIZE);
+            for (int i = 0; i < STEP_SIZE && volume_; ++i) {
+                const char next_char = buffer_[offset_++];
+                --volume_;
+                if (next_char == delim) {
+                    data->shrink_to_fit();
+                    return true;
+                } else {
+                    data->push_back(next_char);
+                }
+            }
+        }
+    }
+}
