@@ -182,5 +182,4 @@ def test_csv():
         next = it.get_next()
         for i in range(100):
             d = sess.run(next)
-            print d
             assert d == {str(i): i for i in range(100)}

@@ -13,9 +13,7 @@
 
 file(GLOB_RECURSE sources ./*.cpp ./*.hpp)
 
-execute_process(COMMAND "python" "-c"
-	"import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_lib() + '/')"
-	OUTPUT_VARIABLE TF_LIB_DIR)
+execute_process(COMMAND "python" "-c" "import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_lib() + '/')" OUTPUT_VARIABLE TF_LIB_DIR)
 
 find_library(TF_LIB 
 	NAMES tensorflow_framework
@@ -28,5 +26,6 @@ target_compile_options(testRecordReader PRIVATE "-g")
 target_include_directories(testRecordReader PRIVATE "../../include")
 
 target_link_libraries(testRecordReader RecordReader libgtest libgmock ${TF_LIB})
+target_link_libraries(testRecordReader -L/ -l:${TF_LIB_DIR}python/_pywrap_tensorflow_internal.so)
 
 add_test(NAME testRecordReader COMMAND testRecordReader)

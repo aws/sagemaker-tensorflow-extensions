@@ -66,7 +66,8 @@ def input_fn():
         ds = ds.prefetch(config.prefetch_size)
     ds = ds.map(parse, num_parallel_calls=config.parallel_transform_calls)
     ds = ds.batch(config.batch_size)
-    return ds
+    it = ds.make_one_shot_iterator()
+    return it.get_next()
 
 
 # Perform Estimator training

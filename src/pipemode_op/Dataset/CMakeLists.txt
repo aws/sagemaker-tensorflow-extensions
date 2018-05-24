@@ -19,7 +19,7 @@ file(GLOB_RECURSE sources ./src/*.cpp ./src/*.hpp)
 
 add_library(PipeModeOp SHARED ${sources})
 
-execute_process(COMMAND "python" "-c"
+execute_process(COMMAND "python" "-c" 
 	"import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_lib() + '/')"
 	OUTPUT_VARIABLE TF_LIB_DIR)
 execute_process(COMMAND "python" "-c"
@@ -34,6 +34,7 @@ find_library(TF_LIB
 target_compile_options(PipeModeOp PRIVATE "-D_GLIBCXX_USE_CXX11_ABI=0")
 
 target_link_libraries(PipeModeOp ${TF_LIB})
+target_link_libraries(PipeModeOp -L/ -l:${TF_LIB_DIR}python/_pywrap_tensorflow_internal.so)
 
 target_link_libraries(PipeModeOp RecordReader)
 target_link_libraries(PipeModeOp PipeStateManager)

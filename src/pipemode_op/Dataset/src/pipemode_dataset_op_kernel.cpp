@@ -23,7 +23,7 @@
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_def_builder.h"
 #include "tensorflow/core/framework/shape_inference.h"
-#include "tensorflow/core/framework/dataset.h"
+#include "tensorflow/core/kernels/dataset.h"
 
 #include "PipeStateManager.hpp"
 #include "RecordIOReader.hpp"
@@ -45,8 +45,6 @@ using tensorflow::DT_STRING;
 using tensorflow::GraphDatasetBase;
 using tensorflow::IteratorBase;
 using tensorflow::IteratorContext;
-using tensorflow::IteratorStateReader;
-using tensorflow::IteratorStateWriter;
 using tensorflow::mutex;
 using tensorflow::mutex_lock;
 using tensorflow::Node;
@@ -152,9 +150,9 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                     std::string pipe_path = BuildPipeName(channel_directory, channel, pipe_index);
                     if (record_format == "RecordIO") {
                         record_reader_ = std::unique_ptr<RecordReader>(new RecordIOReader(pipe_path));
-                    } else if (record_format == "TFRecord") {
+                    } else if (record_format == "TFRecord") {  
                         record_reader_ = std::unique_ptr<RecordReader>(new TFRecordReader(pipe_path));
-                    } else {  // required to be TextLine
+                    } else {
                         record_reader_ = std::unique_ptr<RecordReader>(new TextLineRecordReader(pipe_path));
                     }
                 }
