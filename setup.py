@@ -39,7 +39,7 @@ class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
         """A CMake Build Extension, for invoking CMake building of TensorFlow C++ plugins.
            Requires CMake to be installed."""
-        super(CMakeExtension, self).__init__(self, name, sources=list(find_files(sourcedir)))
+        Extension.__init__(self, name, sources=list(find_files(sourcedir)))
         self.sourcedir = os.path.abspath(sourcedir)
 
 
