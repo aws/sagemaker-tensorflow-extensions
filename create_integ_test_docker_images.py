@@ -6,7 +6,7 @@ import boto3
 import botocore
 import os
 
-TF_VERSION = "1.8.0"
+TF_VERSION = "1.7.0"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

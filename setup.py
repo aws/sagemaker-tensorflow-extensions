@@ -84,7 +84,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='sagemaker_tensorflow',
-    version='1.8.0.1.0.0',
+    version='1.7.0.1.0.0',
     description='Amazon Sagemaker specific TensorFlow extensions.',
 
     packages=find_packages(where='src', exclude=('test',)),
@@ -105,7 +105,7 @@ setup(
         "Programming Language :: Python",
         'Programming Language :: Python :: 2.7',
     ],
-    install_requires=['cmake', 'tensorflow==1.8'],
+    install_requires=['cmake', 'tensorflow==1.7'],
     extras_require={
         'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock',
                  'sagemaker', 'docker']
