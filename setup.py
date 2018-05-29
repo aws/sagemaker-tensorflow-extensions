@@ -115,7 +115,7 @@ setup(
         "Programming Language :: Python",
         'Programming Language :: Python :: 2.7',
     ],
-    setup_requires=['cmake'],
+    setup_requires=['cmake', 'tensorflow==1.8'],
     install_requires=['tensorflow==1.8'],
     extras_require={
         'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock',
