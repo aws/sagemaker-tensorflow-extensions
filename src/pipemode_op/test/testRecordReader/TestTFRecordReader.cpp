@@ -31,13 +31,13 @@ void TFRecordReaderTest::SetUp() {}
 
 void TFRecordReaderTest::TearDown() {}
 
-std::unique_ptr<TFRecordReader> MakeTFRecordReader(std::string path, std::size_t buffer_size,
+std::unique_ptr<TFRecordReader> MakeTFRecordReader(std::string path,
     std::size_t read_size) {
-    return std::unique_ptr<TFRecordReader>(new TFRecordReader(path, buffer_size, read_size, std::chrono::seconds(1)));
+    return std::unique_ptr<TFRecordReader>(new TFRecordReader(path, read_size, std::chrono::seconds(1)));
 }
 
 std::unique_ptr<TFRecordReader> MakeTFRecordReader(std::string path) {
-    return MakeTFRecordReader(path, 1000, 100);
+    return MakeTFRecordReader(path, 100);
 }
 
 std::string ToTFRecord(const std::string& data) {
@@ -66,7 +66,7 @@ std::string ToTFRecord(const std::string& data) {
 TEST_F(TFRecordReaderTest, ReadRecord) {
     std::string encoded = ToTFRecord("hello");
     std::unique_ptr<TFRecordReader> reader = MakeTFRecordReader(
-        CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoded, 0), 16, 4);
+        CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoded, 0), 4);
     std::string record;
     reader->ReadRecord(&record);
     EXPECT_EQ("hello", record);
@@ -75,7 +75,7 @@ TEST_F(TFRecordReaderTest, ReadRecord) {
 
 TEST_F(TFRecordReaderTest, ReadRecordFails) {
     std::unique_ptr<TFRecordReader> reader = MakeTFRecordReader(
-        CreateChannel(CreateTemporaryDirectory(), "elizabeth", "not a record", 0), 16, 4);
+        CreateChannel(CreateTemporaryDirectory(), "elizabeth", "not a record", 0), 4);
     std::string record;
     EXPECT_THROW({
         reader->ReadRecord(&record);},
