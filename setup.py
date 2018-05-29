@@ -10,6 +10,8 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
+from __future__ import absolute_import
+
 import os
 import multiprocessing
 import sys
@@ -24,10 +26,12 @@ from setuptools.command.build_ext import build_ext
 
 
 def read(fname):
+    """Return the contents of fname."""
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
 def find_files(dir, extensions=(".cpp", ".cc", ".h", ".hpp", ".txt")):
+    """Find files matching extensions."""
     for root, directories, filenames in os.walk(dir):
         for filename in filenames:
             if filename.endswith(extensions):
@@ -35,17 +39,22 @@ def find_files(dir, extensions=(".cpp", ".cc", ".h", ".hpp", ".txt")):
 
 
 class CMakeExtension(Extension):
+    """A setuptools Extension for buildling CMake projects."""
 
     def __init__(self, name, sourcedir=''):
         """A CMake Build Extension, for invoking CMake building of TensorFlow C++ plugins.
-           Requires CMake to be installed."""
+
+        Requires CMake to be installed.
+        """
         Extension.__init__(self, name, sources=list(find_files(sourcedir)))
         self.sourcedir = os.path.abspath(sourcedir)
 
 
 class CMakeBuild(build_ext):
+    """A CMake build_ext."""
 
     def run(self):
+        """Build a CMake project."""
         try:
             subprocess.check_output(['cmake', '--version'])
         except OSError:
@@ -57,6 +66,7 @@ class CMakeBuild(build_ext):
             self.build_extension(ext)
 
     def build_extension(self, ext):
+        """Build a specific CMakeExtension."""
         extdir = os.path.abspath(
             os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + os.path.join(extdir, 'sagemaker_tensorflow'),

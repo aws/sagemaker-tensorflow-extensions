@@ -10,6 +10,8 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
+from __future__ import absolute_import
+
 import errno
 import os
 import tensorflow as tf
@@ -20,19 +22,22 @@ from tensorflow.python.framework import tensor_shape
 from tensorflow.python.framework import dtypes
 
 
-def load_plugin():
+def _load_plugin():
+
     tf_plugin_path = '/' + '/'.join(list(__file__.split('/'))[:-1] + ["libPipeModeOp.so"])
     return tf.load_op_library(tf_plugin_path)
 
 
 class PipeModeDataset(dataset_ops.Dataset):
+    """A SageMaker Pipe Mode TensorFlow Dataset."""
 
-    _tf_plugin = load_plugin()
+    _tf_plugin = _load_plugin()
 
     def __init__(self, channel, record_format='RecordIO',
                  state_dir='/opt/ml/pipe_state', pipe_dir='/opt/ml/input/data'):
-        """A Dataset for reading from a SageMaker PipeMode channel. Supports records encoded using
-        either RecordIO, TFRecord, or new line text encoding.
+        """Create a Dataset for reading from a SageMaker PipeMode channel.
+
+        Supports records encoded using either RecordIO, TFRecord, or new line text encoding.
 
         Args:
             record_format: The record format to use. One of 'RecordIO', 'TFRecord', or 'TextLine'
@@ -55,12 +60,15 @@ class PipeModeDataset(dataset_ops.Dataset):
 
     @property
     def output_classes(self):
+        """The return type of this Dataset."""
         return ops.Tensor
 
     @property
     def output_shapes(self):
+        """The shape of the output Tensor."""
         return tensor_shape.scalar()
 
     @property
     def output_types(self):
+        """The type of data stored in the output Tensor."""
         return dtypes.string
