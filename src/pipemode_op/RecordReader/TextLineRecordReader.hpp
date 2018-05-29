@@ -20,6 +20,8 @@
 namespace sagemaker {
 namespace tensorflow {
 
+#define DEFAULT_CAPACITY 1048576
+
 /**
    A RecordReader that reads delimited text records.
  */
@@ -57,10 +59,31 @@ class TextLineRecordReader : public RecordReader {
      */
     explicit TextLineRecordReader(const std::string& file_path) : TextLineRecordReader(file_path, '\n') {}
 
+    virtual ~TextLineRecordReader();
+
     bool ReadRecord(std::string* storage) override;
+
+ protected:
+    /**
+       Attempt to fill the read-ahead buffer. After this method returns, if the buffer
+       is not full, then the EOF has been reached.
+     */
+    void FillBuffer();
 
  private:
     const char delim_;
+
+    // The read-ahead buffer
+    char* buffer_;
+
+    // The maximum number of bytes that can be stored in the read-ahead buffer
+    std::size_t capacity_;
+
+    // The current number of bytes stored in the read-ahead buffer
+    std::size_t volume_;
+
+    // The location of the next byte to read from the read-ahead buffer
+    std::size_t offset_;
 };
 
 }  // namespace tensorflow

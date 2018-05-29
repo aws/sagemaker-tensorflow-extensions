@@ -49,11 +49,6 @@ class TestReader : RecordReader {
         void WrapWaitForFile() {
             WaitForFile();
         }
-
-        // make ReadLine public for testing
-        bool WrapReadLine(std::string* data, const char delim) {
-            return ReadLine(data, delim);
-        }
 };
 
 std::unique_ptr<TestReader> MakeReader(std::string channelDirectory) {
@@ -63,7 +58,7 @@ std::unique_ptr<TestReader> MakeReader(std::string channelDirectory) {
 
 std::unique_ptr<TestReader> MakeReader(std::string channelDirectory, std::chrono::seconds timeout) {
     return std::unique_ptr<TestReader>(new TestReader(
-        CreateChannel(channelDirectory, "elizabeth", "abc", 0), 100, 200, timeout));
+        CreateChannel(channelDirectory, "elizabeth", "abc", 0), 100, timeout));
 }
 
 TEST_F(RecordReaderTest, CanOpenFile) {
@@ -102,94 +97,8 @@ TEST_F(RecordReaderTest, WaitForFileFails) {
     std::string channelDirectory = CreateTemporaryDirectory();
     auto timeout = std::chrono::seconds(2);
     std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(
-        new TestReader(channelDirectory + "/missing.file", 100, 200, timeout));
+        new TestReader(channelDirectory + "/missing.file", 200, timeout));
     EXPECT_THROW({
         reader->WrapWaitForFile();},
         std::runtime_error);
 }
-
-TEST_F(RecordReaderTest, TestReadLine) {
-    std::string channelDirectory = CreateTemporaryDirectory();
-    std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(new TestReader(
-        CreateChannel(channelDirectory, "elizabeth", "abc\ndef", 0), 100, 200, std::chrono::seconds(2)));
-    std::string data;
-    bool result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string("abc"), data);
-    EXPECT_EQ(true, result);
-
-    result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string("def"), data);
-    EXPECT_EQ(true, result);
-    result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string(""), data);
-    EXPECT_FALSE(result);
-}
-
-TEST_F(RecordReaderTest, TestReadSingleLine) {
-    std::string channelDirectory = CreateTemporaryDirectory();
-    std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(new TestReader(
-        CreateChannel(channelDirectory, "elizabeth", "abc", 0), 100, 200, std::chrono::seconds(2)));
-    std::string data;
-    bool result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string("abc"), data);
-    EXPECT_EQ(true, result);
-    result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string(""), data);
-    EXPECT_FALSE(result);
-}
-
-TEST_F(RecordReaderTest, TestReadSingleLineTrailingNewLine) {
-    std::string channelDirectory = CreateTemporaryDirectory();
-    std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(new TestReader(
-        CreateChannel(channelDirectory, "elizabeth", "abc\n", 0), 100, 200, std::chrono::seconds(2)));
-    std::string data;
-    bool result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string("abc"), data);
-    EXPECT_EQ(true, result);
-    result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string(""), data);
-    EXPECT_FALSE(result);
-}
-
-TEST_F(RecordReaderTest, TestBlankLine) {
-    std::string channelDirectory = CreateTemporaryDirectory();
-    std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(new TestReader(
-        CreateChannel(channelDirectory, "elizabeth", "abc\n\ndef", 0), 100, 200, std::chrono::seconds(2)));
-    std::string data;
-    bool result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string("abc"), data);
-    EXPECT_EQ(true, result);
-    result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string(""), data);
-    EXPECT_EQ(true, result);
-    result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string("def"), data);
-    EXPECT_EQ(true, result);
-    result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string(""), data);
-    EXPECT_FALSE(result);
-}
-
-TEST_F(RecordReaderTest, TestOnlyNewLine) {
-    std::string channelDirectory = CreateTemporaryDirectory();
-    std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(new TestReader(
-        CreateChannel(channelDirectory, "elizabeth", "\n", 0), 100, 200, std::chrono::seconds(2)));
-    std::string data;
-    bool result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string(""), data);
-    EXPECT_EQ(true, result);
-    result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string(""), data);
-    EXPECT_FALSE(result);
-}
-
-TEST_F(RecordReaderTest, TestReadLineNoData) {
-    std::string channelDirectory = CreateTemporaryDirectory();
-    std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(new TestReader(
-        CreateChannel(channelDirectory, "elizabeth", "", 0), 100, 200, std::chrono::seconds(2)));
-    std::string data;
-    bool result = reader->WrapReadLine(&data, '\n');
-    EXPECT_EQ(std::string(""), data);
-    EXPECT_FALSE(result);
-}
-

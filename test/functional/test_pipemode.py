@@ -15,6 +15,7 @@ import os
 import pytest
 import shutil
 import subprocess
+import sys
 import tempfile
 import tensorflow as tf
 from .. import recordio_utils
@@ -175,11 +176,15 @@ def test_csv():
         features = dict(zip(COLUMNS, fields))
         return features
 
-    ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, record_format='TextLine')
-    ds = ds.map(parse)
     with tf.Session() as sess:
+        ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, record_format='TextLine')
+        ds = ds.map(parse)
+
         it = ds.make_one_shot_iterator()
         next = it.get_next()
         for i in range(100):
             d = sess.run(next)
+            sys.stdout.flush()
             assert d == {str(i): i for i in range(100)}
+        print "done"
+    print "out of session"

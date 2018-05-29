@@ -12,6 +12,8 @@
 // language governing permissions and limitations under the License.
 
 #include "TextLineRecordReader.hpp"
+#include <algorithm>
+#include <iostream>
 #include <string>
 
 using sagemaker::tensorflow::RecordReader;
@@ -19,8 +21,56 @@ using sagemaker::tensorflow::TextLineRecordReader;
 
 TextLineRecordReader::TextLineRecordReader(const std::string& file_path, const std::size_t buffer_capacity,
     const std::size_t read_size, const std::chrono::seconds file_creation_timeout, const char delim):
-    RecordReader(file_path, buffer_capacity, read_size, file_creation_timeout), delim_(delim) {}
+    RecordReader(file_path, read_size, file_creation_timeout),
+    capacity_(buffer_capacity),
+    volume_(0),
+    offset_(0),
+    delim_(delim) {
+        buffer_ = new char[capacity_];
+    }
 
-bool TextLineRecordReader::ReadRecord(std::string* storage) {
-    return ReadLine(storage, delim_);
+TextLineRecordReader::~TextLineRecordReader() {
+     delete [] buffer_;
+}
+
+void TextLineRecordReader::FillBuffer() {
+    while (volume_ < capacity_) {
+        size_t read_amount = Read(buffer_ + volume_, capacity_ - volume_);
+        if (!read_amount) {
+            break;
+        }
+        volume_ += read_amount;
+    }
+    offset_ = 0;
+}
+
+bool TextLineRecordReader::ReadRecord(std::string* data) {
+    data->resize(0);
+    static const std::size_t STEP_SIZE = 1024;
+    while (true) {
+        if (!volume_) {
+            FillBuffer();
+        }
+        if (!volume_) {
+            if (data->size() == 0) {
+                return false;
+            } else {
+                data->shrink_to_fit();
+                return true;
+            }
+        }
+        while (volume_) {
+            data->reserve(data->size() + STEP_SIZE);
+            for (int i = 0; i < STEP_SIZE && volume_; ++i) {
+                const char next_char = buffer_[offset_++];
+                --volume_;
+                if (next_char == delim_) {
+                    data->shrink_to_fit();
+                    return true;
+                } else {
+                    data->push_back(next_char);
+                }
+            }
+        }
+    }
 }

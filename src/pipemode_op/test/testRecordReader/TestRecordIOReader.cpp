@@ -61,15 +61,15 @@ std::string ToRecordIO(const std::string& data) {
     return encoding;
 }
 
-std::unique_ptr<RecordIOReader> MakeRecordIOReader(std::string path, std::size_t buffer_size,
+std::unique_ptr<RecordIOReader> MakeRecordIOReader(std::string path,
     std::size_t read_size) {
-    return std::unique_ptr<RecordIOReader>(new RecordIOReader(path, buffer_size, read_size, std::chrono::seconds(120)));
+    return std::unique_ptr<RecordIOReader>(new RecordIOReader(path, read_size, std::chrono::seconds(120)));
 }
 
 
 TEST_F(RecordIOReaderTest, InvalidMagicNumber) {
     std::unique_ptr<RecordIOReader> ptr = MakeRecordIOReader(CreateChannel(CreateTemporaryDirectory(),
-        "elizabeth", "not a magic number", 0), 16, 4);
+        "elizabeth", "not a magic number", 0), 4);
     std::string storage;
     EXPECT_THROW({
         ptr->ReadRecord(&storage);},
@@ -101,7 +101,7 @@ TEST_F(RecordIOReaderTest, InvalidHeader) {
 
     std::string channel_dir = CreateTemporaryDirectory();
     std::unique_ptr<RecordIOReader> ptr = MakeRecordIOReader(
-        CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoding, 0), 16, 4);
+        CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoding, 0), 4);
     std::string storage;
 
     EXPECT_THROW({
@@ -114,7 +114,7 @@ TEST_F(RecordIOReaderTest, TestReadSingleRecord) {
     std::string input = "Elizabeth Is 10 months Old";
     std::string encoded = ToRecordIO(input);
     std::unique_ptr<RecordIOReader> ptr = MakeRecordIOReader(
-        CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoded, 0), 16, 4);
+        CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoded, 0), 4);
     std::string storage;
     ptr->ReadRecord(&storage);
     EXPECT_EQ(input, storage);
@@ -129,7 +129,7 @@ TEST_F(RecordIOReaderTest, TestReadMultipleRecords) {
         multi_record += ToRecordIO(input + std::to_string(i));
     }
     std::unique_ptr<RecordIOReader> ptr = MakeRecordIOReader(
-        CreateChannel(CreateTemporaryDirectory(), "elizabeth", multi_record, 0), 16, 4);
+        CreateChannel(CreateTemporaryDirectory(), "elizabeth", multi_record, 0), 4);
     for (int i = 0; i < 2; i++) {
         std::string result;
         ptr->ReadRecord(&result);
@@ -148,7 +148,7 @@ TEST_F(RecordIOReaderTest, TestLargeRecords) {
         multi_record += ToRecordIO(input);
     }
     std::unique_ptr<RecordIOReader> ptr = MakeRecordIOReader(
-        CreateChannel(CreateTemporaryDirectory(), "elizabeth", multi_record, 0), 65536, 65536);
+        CreateChannel(CreateTemporaryDirectory(), "elizabeth", multi_record, 0), 65536);
 
     for (int i = 0; i < 2; i++) {
         std::string result;
@@ -168,7 +168,7 @@ TEST_F(RecordIOReaderTest, TestManyRecords) {
         multi_record += ToRecordIO(input);
     }
     std::unique_ptr<RecordIOReader> ptr = MakeRecordIOReader(
-        CreateChannel(CreateTemporaryDirectory(), "elizabeth", multi_record, 0), 65536, 65536);
+        CreateChannel(CreateTemporaryDirectory(), "elizabeth", multi_record, 0), 65536);
 
     for (int i = 0; i < 2000000; i++) {
         std::string result;
