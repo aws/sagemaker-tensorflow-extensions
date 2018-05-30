@@ -22,9 +22,31 @@ import bucket_helper
 import recordio_utils
 
 
-class _BenchmarkDataset(object):
+class BenchmarkDataset(object):
+    """A collection of synthetic multi-class vector training data stored in record io files.
+
+    Each dataset contains multiple records of labeled floating point vectors. Each vector
+    is sampled from a Gaussian distribution with a class specific mean. This means it should
+    be possible to build a classifier that performs better than random guessing using
+    datasets built wtih this class.
+
+    Datasets are generated locally and uploaded to s3 in a specific bucket with specific
+    prefix.
+    """
 
     def __init__(self, name, bucket, prefix, dimension, num_records, num_files, num_copies, num_classes):
+        """Create a BenchmarkDataset.
+
+        Args:
+            name (str): The name of the dataset
+            bucket (str): An S3 bucket to store the dataset in
+            prefix (str): An S3 prefix directory to store dataset objects in, within the bucket
+            dimension (int): The number of features in the dataset.
+            num_records (int): How many records to write in each dataset file.
+            num_files (int): How many distinct files of unique labeled records to create.
+            num_copies (int): How many times to duplicate each file when being uploaded to s3.
+            num_classes (int): How many classes to generate.
+        """
         self.name = name
         self.bucket_name = bucket
         self.prefix = prefix
@@ -34,7 +56,12 @@ class _BenchmarkDataset(object):
         self.num_copies = num_copies
         self.num_classes = num_classes
 
-    def generate(self, overwrite=False):
+    def build(self, overwrite=False):
+        """Build the dataset and upload to s3.
+
+        Args:
+            overwrite (bool): If true will overwrite the dataset if it exists already.
+        """
         if self._exists() and not overwrite:
             return
         self.root_dir = tempfile.mkdtemp()
@@ -44,6 +71,7 @@ class _BenchmarkDataset(object):
 
     @property
     def s3_uri(self):
+        """Return the S3 prefix of this dataset."""
         return "s3://{}/{}/{}".format(self.bucket_name, self.prefix.rstrip('/'), self.name)
 
     def _exists(self):
@@ -97,18 +125,16 @@ class _BenchmarkDataset(object):
         return self.name
 
 PREFIX = "sagemaker-tf-benchmarking"
-all_datasets = [
-    _BenchmarkDataset("1GB.1MBFiles",
-                      bucket=bucket_helper.bucket(),
-                      prefix=PREFIX,
-                      dimension=1024,
-                      num_records=128,
-                      num_files=50,
-                      num_copies=20,
-                      num_classes=2)
-]
 
-"""
+all_datasets = [
+    BenchmarkDataset("1GB.1MBFiles",
+                     bucket=bucket_helper.bucket(),
+                     prefix=PREFIX,
+                     dimension=1024,
+                     num_records=128,
+                     num_files=50,
+                     num_copies=20,
+                     num_classes=2),
     BenchmarkDataset("1TB.1MBFiles",
                      bucket=bucket_helper.bucket(),
                      prefix=PREFIX,
@@ -132,4 +158,4 @@ all_datasets = [
                      num_records=12800,
                      num_files=1,
                      num_copies=10000,
-                     num_classes=2)"""
+                     num_classes=2)]

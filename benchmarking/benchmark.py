@@ -28,6 +28,8 @@ Benchmarking is by way of several TensorFlow scripts that are built into Docker 
 The scripts and Dockerfile are stored in the folder 'docker/'.
 
 Benchmarking results are published to CloudWatch in the tf-pipemode-benchmark namespace.
+
+Requires a SageMakerRole IAM role to exist in the account the script is run in.
 """
 
 
@@ -157,7 +159,7 @@ if __name__ == '__main__':
     for benchmark_script in script.all_scripts:
         benchmark_script.build()
         for benchmark_dataset in dataset.all_datasets:
-            benchmark_dataset.generate()
+            benchmark_dataset.build()
             future = executor.submit(benchmark,
                                      role_arn,
                                      benchmark_dataset,

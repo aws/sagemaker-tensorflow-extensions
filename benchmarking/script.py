@@ -25,9 +25,20 @@ class BenchmarkScriptException(Exception):
         super(BenchmarkScriptException, self).__init__(message)
 
 
-class _BenchmarkScript(object):
+class BenchmarkScript(object):
+    """A script that performs benchmarking, built into a docker image."""
 
     def __init__(self, name, repository, script_name, tag, device):
+        """Create a benchmarking script.
+
+        Args:
+            name (str): The name of the benchmarking script
+            repository (str): The ECR repository to store the image in.
+            script_name (str): The name of the script file name within ./docker/ to.
+                build.
+            tag (str): A tag to apply to the image
+            device (str): cpu or gpu, indicating whether the script uses a gpu device or not.
+        """
         self.name = name
         self.script_name = script_name
         self.tag = tag
@@ -36,9 +47,11 @@ class _BenchmarkScript(object):
 
     @property
     def image(self):
+        """The URI of the image containing the script."""
         return self.repository + ":" + self.tag
 
     def build(self):
+        """Build the script into a docker image and upload to ECR."""
         sdist_name = None
         for file in os.listdir("../dist/"):
             if file.startswith("sagemaker_tensorflow") and file.endswith(".tar.gz"):
@@ -66,6 +79,6 @@ class _BenchmarkScript(object):
         subprocess.check_call(['docker', 'push', '{}:{}'.format(self.repository, self.tag)])
 
 all_scripts = [
-    _BenchmarkScript("InputOnly", repo_helper.repository(), "input_only_script.py", "input-only", "cpu"),
-    _BenchmarkScript("GpuLoad", repo_helper.repository(), "gpu_pipeline_script.py", "gpu-load", "gpu")
+    BenchmarkScript("InputOnly", repo_helper.repository(), "input_only_script.py", "input-only", "cpu"),
+    BenchmarkScript("GpuLoad", repo_helper.repository(), "gpu_pipeline_script.py", "gpu-load", "gpu")
 ]
