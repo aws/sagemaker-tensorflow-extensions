@@ -50,20 +50,25 @@ class BenchmarkScript(object):
         """The URI of the image containing the script."""
         return self.repository + ":" + self.tag
 
-    def build(self):
-        """Build the script into a docker image and upload to ECR."""
-        sdist_name = None
-        for file in os.listdir("../dist/"):
-            if file.startswith("sagemaker_tensorflow") and file.endswith(".tar.gz"):
-                sdist_name = file
-                break
+    def build(self, sdist_path):
+        """Build the script into a docker image and upload to ECR.
 
-        sdist_source = "../dist/{}".format(sdist_name)
-        sdist_dest = "docker/{}".format(sdist_name)
+        Args:
+              sdist_path (str): The path to a sagemaker_tensorflow sdist .tar.gz that will be benchmarked.
+        """
+        # Copy in the sdist into a docker build directory
+        docker_build_dir = ".docker-build-{}".format(self.name)
+        if os.path.exists(docker_build_dir):
+            shutil.rmtree(docker_build_dir)
 
-        if not os.path.exists(sdist_source):
-            raise BenchmarkScriptException("No sdist file found. Please run setup.py sdist prior to benchmarking.")
-        shutil.copyfile(sdist_source, sdist_dest)
+        # Copy everything in the docker package data into the docker build dir
+        docker_install_dir = '/' + '/'.join(list(__file__.split('/')[:-1]) + ['docker/'])
+        shutil.copytree(docker_install_dir, docker_build_dir)
+
+        # Copy sagemaker_tensorflow sdist
+        sdist_name = os.path.basename(sdist_path)
+        sdist_dest = "{}/{}".format(docker_build_dir, sdist_name)
+        shutil.copyfile(sdist_path, sdist_dest)
 
         tf_version = sdist_name.split("-")[1][:3]
 
@@ -74,9 +79,11 @@ class BenchmarkScript(object):
                                '--build-arg', 'device={}'.format(self.device),
                                '--build-arg', 'sagemaker_tensorflow={}'.format(sdist_name),
                                '--build-arg', 'tf_version={}'.format(tf_version),
-                               'docker'])
+                               docker_build_dir])
         subprocess.check_call("aws ecr get-login | bash", shell=True)
         subprocess.check_call(['docker', 'push', '{}:{}'.format(self.repository, self.tag)])
+
+        shutil.rmtree(docker_build_dir)
 
 all_scripts = [
     BenchmarkScript("InputOnly", repo_helper.repository(), "input_only_script.py", "input-only", "cpu"),
