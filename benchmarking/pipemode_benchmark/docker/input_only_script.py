@@ -75,7 +75,8 @@ def _input_fn():
     ds = ds.apply(map_and_batch(parse, batch_size=config.batch_size,
                                 num_parallel_batches=config.parallel_transform_calls))
 
-    return ds
+    it = ds.make_one_shot_iterator()
+    return it.get_next()
 
 
 with tf.Session() as sess:

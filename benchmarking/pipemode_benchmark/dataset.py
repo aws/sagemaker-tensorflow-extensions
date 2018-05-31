@@ -26,9 +26,7 @@ class BenchmarkDataset(object):
     """A collection of synthetic multi-class vector training data stored in record io files.
 
     Each dataset contains multiple records of labeled floating point vectors. Each vector
-    is sampled from a Gaussian distribution with a class specific mean. This means it should
-    be possible to build a classifier that performs better than random guessing using
-    datasets built wtih this class.
+    is sampled from a Gaussian distribution with a class specific mean.
 
     Datasets are generated locally and uploaded to s3 in a specific bucket with specific
     prefix.
