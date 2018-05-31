@@ -26,5 +26,4 @@ RUN sagemaker_tensorflow_local=$(basename $sagemaker_tensorflow) && \
 
 COPY $script script.py
 
-# entry.py comes from sagemaker-container-support
 ENTRYPOINT ["python", "script.py"]
