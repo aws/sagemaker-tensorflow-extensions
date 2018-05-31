@@ -9,6 +9,7 @@ import botocore
 import os
 
 TF_VERSION = "1.8.0"
+REGION = "us-west-2"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -16,7 +17,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     client = docker.from_env()
-    ecr_client = boto3.client('ecr')
+    ecr_client = boto3.client('ecr', region_name=REGION)
     token = ecr_client.get_authorization_token()
     username, password = base64.b64decode(token['authorizationData'][0]['authorizationToken']).decode().split(':')
     registry = token['authorizationData'][0]['proxyEndpoint']
