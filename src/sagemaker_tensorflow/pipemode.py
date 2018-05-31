@@ -23,7 +23,6 @@ from tensorflow.python.framework import dtypes
 
 
 def _load_plugin():
-
     tf_plugin_path = '/' + '/'.join(list(__file__.split('/'))[:-1] + ["libPipeModeOp.so"])
     return tf.load_op_library(tf_plugin_path)
 
