@@ -11,6 +11,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import argparse
 import concurrent.futures
 import datetime
 import time
@@ -28,6 +29,8 @@ Benchmarking is by way of several TensorFlow scripts that are built into Docker 
 The scripts and Dockerfile are stored in the folder 'docker/'.
 
 Benchmarking results are published to CloudWatch in the tf-pipemode-benchmark namespace.
+
+Requires a SageMakerRole IAM role to exist in the account the script is run in.
 """
 
 
@@ -125,8 +128,8 @@ def benchmark(role_arn, dataset, output_path, instance_type, script):
     return None
 
 
-def get_role_arn():
-    """Return the arn for the role SageMakerRole."""
+def get_role_arn(role_name):
+    """Return the arn for the role role_name."""
     iam = boto3.client('iam')
     retrieved_all_roles = False
     marker = None
@@ -138,46 +141,53 @@ def get_role_arn():
         marker = list_roles_response.get('Marker', None)
         retrieved_all_roles = (marker is None)
         for role in list_roles_response['Roles']:
-            if "SageMakerRole" in role['Arn']:
+            if role_name in role['Arn']:
                 return role['Arn']
     return None
 
-if __name__ == '__main__':
-    role = get_role_arn()
-    parallelism = 8  # how many training jobs to run in parallel
 
-    role_arn = get_role_arn()
+def main(args=None):
+    """Run benchmarking."""
+    parser = argparse.ArgumentParser(description='Benchmark SageMaker TensorFlow PipeMode')
+    parser.add_argument('--parallelism', type=int, default=8, help='How many training jobs to run concurrently')
+    parser.add_argument('sdist_path',
+                        help='The path of a sagemaker_tensorflow tar.gz source distribution to benchmark')
+    parser.add_argument('--role_name', default='SageMakerRole',
+                        help='The name of an IAM role to pass to SageMaker for running benchmarking training jobs')
+    parser.add_argument('--instance_type', default='ml.p3.16xlarge')
+    args = parser.parse_args()
+
+    role_arn = get_role_arn(role_name=args.role_name)
     bucket = bucket_helper.bucket()
 
     output_path = "s3://{}/pipemode/output/".format(bucket)
-    dataset_path = "s3://{}/pipemode/datasets".format(bucket)
 
-    executor = concurrent.futures.ProcessPoolExecutor(max_workers=parallelism)
+    executor = concurrent.futures.ProcessPoolExecutor(max_workers=args.parallelism)
     futures = []
     for benchmark_script in script.all_scripts:
-        benchmark_script.build()
+        benchmark_script.build(sdist_path=args.sdist_path)
         for benchmark_dataset in dataset.all_datasets:
-            benchmark_dataset.generate()
+            benchmark_dataset.build()
             future = executor.submit(benchmark,
                                      role_arn,
                                      benchmark_dataset,
                                      output_path,
-                                     'ml.p3.16xlarge',
+                                     args.instance_type,
                                      benchmark_script)
             futures.append(future)
             time.sleep(2)
 
     cwclient = boto3.client('cloudwatch')
     for future in concurrent.futures.as_completed(futures):
-        (training_job_name, dataset, instance_type, script, iteration_time) = future.result()
-        print training_job_name, dataset, instance_type, script, iteration_time
+        (training_job_name, benchmark_dataset, instance_type, benchmark_script, iteration_time) = future.result()
+        print training_job_name, benchmark_dataset, instance_type, benchmark_script, iteration_time
         cwclient.put_metric_data(
             Namespace='tf-pipemode-benchmark',
             MetricData=[{
-                'MetricName': 'IterationTime.{}.{}'.format(dataset.name, script.name),
+                'MetricName': 'IterationTime.{}.{}'.format(benchmark_dataset.name, benchmark_script.name),
                 'Dimensions': [
                     {
-                        'Dataset': dataset.name
+                        'Dataset': benchmark_dataset.name
                     }
                 ],
                 'Timestamp': datetime.datetime.now(),
