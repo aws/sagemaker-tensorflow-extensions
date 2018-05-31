@@ -39,8 +39,7 @@ if __name__ == '__main__':
         path='.',
         dockerfile='test/integ/Dockerfile',
         tag=tag,
-        buildargs={'from_image': FROM_IMAGE,
-                   'sagemaker_tensorflow': sdist_path,
+        buildargs={'sagemaker_tensorflow': sdist_path,
                    'device': args.device,
                    'tensorflow_version': TF_VERSION,
                    'script': 'test/integ/scripts/estimator_script.py'})
