@@ -16,6 +16,8 @@ import repo_helper
 import shutil
 import subprocess
 
+import region_helper
+
 
 class BenchmarkScriptException(Exception):
     """An error building a benchmarking docker image."""
@@ -80,7 +82,7 @@ class BenchmarkScript(object):
                                '--build-arg', 'sagemaker_tensorflow={}'.format(sdist_name),
                                '--build-arg', 'tf_version={}'.format(tf_version),
                                docker_build_dir])
-        subprocess.check_call("aws ecr get-login | bash", shell=True)
+        subprocess.check_call("aws --region {} ecr get-login | bash".format(region_helper.region), shell=True)
         subprocess.check_call(['docker', 'push', '{}:{}'.format(self.repository, self.tag)])
 
         shutil.rmtree(docker_build_dir)
