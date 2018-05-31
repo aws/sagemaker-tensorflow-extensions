@@ -19,6 +19,7 @@ import boto3
 
 import bucket_helper
 import dataset
+import region_helper
 import script
 
 """
@@ -42,13 +43,14 @@ class BenchmarkingException(Exception):
         super(BenchmarkingException, self).__init__(message)
 
 
-def benchmark(role_arn, dataset, output_path, instance_type, script):
+def benchmark(region, role_arn, dataset, output_path, instance_type, script):
     """Run a single benchmark task.
 
     Returns a description of the benchmark task, together with the time TensorFlow spent
     iterating over data via the PipeModeDataset.
 
     Args:
+        region: The AWS region to run the benchmark in
         role_arn: The ARN of a role to run the training task with.
         dataset: A BenchmarkDataset
         output_path: A place to dump models (not needed, but required by the API)
@@ -62,7 +64,7 @@ def benchmark(role_arn, dataset, output_path, instance_type, script):
         datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
     ])
 
-    client = boto3.client('sagemaker')
+    client = boto3.client('sagemaker', region_name=region_helper.region)
     client.create_training_job(TrainingJobName=training_job_name,
                                RoleArn=role_arn,
                                AlgorithmSpecification={
@@ -102,7 +104,7 @@ def benchmark(role_arn, dataset, output_path, instance_type, script):
             time.sleep(30)
 
     # Extract the iteration time from the logs and return this.
-    logs = boto3.client('logs')
+    logs = boto3.client('logs', region_name=region_helper.name)
     [log_stream] = logs.describe_log_streams(logGroupName="/aws/sagemaker/TrainingJobs",
                                              logStreamNamePrefix=training_job_name)['logStreams']
     log_stream_name = log_stream['logStreamName']
@@ -130,7 +132,7 @@ def benchmark(role_arn, dataset, output_path, instance_type, script):
 
 def get_role_arn(role_name):
     """Return the arn for the role role_name."""
-    iam = boto3.client('iam')
+    iam = boto3.client('iam', region_name=region_helper.region)
     retrieved_all_roles = False
     marker = None
     while not retrieved_all_roles:
@@ -177,7 +179,7 @@ def main(args=None):
             futures.append(future)
             time.sleep(2)
 
-    cwclient = boto3.client('cloudwatch')
+    cwclient = boto3.client('cloudwatch', region_name=region_helper.region)
     for future in concurrent.futures.as_completed(futures):
         (training_job_name, benchmark_dataset, instance_type, benchmark_script, iteration_time) = future.result()
         print training_job_name, benchmark_dataset, instance_type, benchmark_script, iteration_time

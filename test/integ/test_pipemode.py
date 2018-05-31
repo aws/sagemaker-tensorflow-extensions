@@ -9,6 +9,7 @@ import uuid
 import integ_test_resources
 
 DIMENSION = 5
+DEFAULT_REGION = 'us-west-2'
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -55,7 +56,7 @@ def single_record_test_data():
 
 @pytest.fixture
 def role_arn():
-    iam = boto3.client('iam')
+    iam = boto3.client('iam', region_name=DEFAULT_REGION)
     retrieved_all_roles = False
     marker = None
     while not retrieved_all_roles:
@@ -71,13 +72,17 @@ def role_arn():
     return None
 
 
-def run_test(role_arn, docker_image, test_data, instance_type, record_wrapper_type=None):
+@pytest.fixture
+def client():
+    return boto3.client('sagemaker', region_name=DEFAULT_REGION)
+
+
+def run_test(client, role_arn, docker_image, test_data, instance_type, record_wrapper_type=None):
     training_job_name = "-".join([
         "pipemode-it",
         datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
     ])
     output_path = integ_test_resources.make_output_path()
-    client = boto3.client('sagemaker')
     print "Using docker image", docker_image
     print "Using training data {}".format(test_data)
     print "Output will be written to {}".format(output_path)
@@ -117,9 +122,9 @@ def run_test(role_arn, docker_image, test_data, instance_type, record_wrapper_ty
     integ_test_resources.wait_for_job(training_job_name, client)
 
 
-def test_gpu_with_single_records(role_arn, gpu_docker_image, single_record_test_data):
-    run_test(role_arn, gpu_docker_image, single_record_test_data, 'ml.p3.2xlarge', 'RecordIO')
+def test_gpu_with_single_records(client, role_arn, gpu_docker_image, single_record_test_data):
+    run_test(client, role_arn, gpu_docker_image, single_record_test_data, 'ml.p3.2xlarge', 'RecordIO')
 
 
-def test_multi_records(role_arn, docker_image, multi_records_test_data):
-    run_test(role_arn, docker_image, multi_records_test_data, 'ml.m5.large')
+def test_multi_records(client, role_arn, docker_image, multi_records_test_data):
+    run_test(client, role_arn, docker_image, multi_records_test_data, 'ml.m5.large')
