@@ -74,7 +74,8 @@ class BenchmarkScript(object):
 
         tf_version = sdist_name.split("-")[1][:3]
 
-        subprocess.check_call("aws --region {} ecr get-login | bash".format(region_helper.region), shell=True)
+        subprocess.check_call("aws --region {} ecr get-login --no-include-email | bash".format(region_helper.region),
+                              shell=True)
         subprocess.check_call(['docker', 'build',
                                '-t', self.tag,
                                '-t', "{}:{}".format(self.repository, self.tag),
