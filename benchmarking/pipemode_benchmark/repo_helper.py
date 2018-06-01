@@ -25,9 +25,7 @@ def repository(region='us-west-2'):
         else:
             raise ex
     account = boto3.client('sts').get_caller_identity()['Account']
-    my_session = boto3.session.Session()
-    my_region = my_session.region_name
-    return '{}.dkr.ecr.{}.amazonaws.com/tf-pipemode'.format(account, my_region)
+    return '{}.dkr.ecr.{}.amazonaws.com/tf-pipemode'.format(account, region)
 
 if __name__ == '__main__':
     print repository()
