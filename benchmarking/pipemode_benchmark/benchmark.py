@@ -32,8 +32,6 @@ Benchmarking is by way of several TensorFlow scripts that are built into Docker 
 The scripts and Dockerfile are stored in the folder 'docker/'.
 
 Benchmarking results are published to CloudWatch in the tf-pipemode-benchmark namespace.
-
-Requires a SageMakerRole IAM role to exist in the account the script is run in.
 """
 
 
