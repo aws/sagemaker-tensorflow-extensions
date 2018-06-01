@@ -33,7 +33,8 @@ class PipeModeDataset(dataset_ops.Dataset):
     _tf_plugin = _load_plugin()
 
     def __init__(self, channel, record_format='RecordIO',
-                 state_dir='/opt/ml/pipe_state', pipe_dir='/opt/ml/input/data'):
+                 state_dir='/opt/ml/pipe_state', pipe_dir='/opt/ml/input/data',
+                 benchmark=False):
         """Create a Dataset for reading from a SageMaker PipeMode channel.
 
         Supports records encoded using either RecordIO, TFRecord, or new line text encoding.
@@ -43,6 +44,7 @@ class PipeModeDataset(dataset_ops.Dataset):
             channel: The name of the SageMaker channel.
             pipe_dir: The directory to read SageMaker Channels from.
             state_dir: The directory where pipe index state is persisted.
+            benchmark: If True, causes the Dataset to emit timing and throughput metrics to stdout.
         """
         try:
             os.makedirs(state_dir)
@@ -53,9 +55,11 @@ class PipeModeDataset(dataset_ops.Dataset):
         self.channel = channel
         self.pipe_dir = pipe_dir
         self.state_dir = state_dir
+        self.benchmark = benchmark
 
     def _as_variant_tensor(self):
-        return self._tf_plugin.pipe_mode_dataset(self.record_format, self.state_dir, self.channel, self.pipe_dir)
+        return self._tf_plugin.pipe_mode_dataset(self.benchmark, self.record_format, self.state_dir, self.channel,
+                                                 self.pipe_dir)
 
     @property
     def output_classes(self):

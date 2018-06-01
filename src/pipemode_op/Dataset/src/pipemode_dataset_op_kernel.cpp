@@ -85,6 +85,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         std::string state_directory;
         std::string channel_directory;
         std::string channel;
+        bool benchmark;
         OP_REQUIRES_OK(ctx, ParseScalarArgument<std::string>(ctx, "record_format",
                                                         &record_format));
         OP_REQUIRES_OK(ctx, ParseScalarArgument<std::string>(ctx, "state_directory",
@@ -95,25 +96,28 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                                                         &channel));
         OP_REQUIRES(ctx, record_format == "RecordIO" || record_format == "TFRecord" || record_format == "TextLine",
             tensorflow::errors::InvalidArgument("Invalid record format: " + record_format));
-        *output = new Dataset(ctx, record_format, state_directory, channel_directory, channel);
+        OP_REQUIRES_OK(ctx, ParseScalarArgument<bool>(ctx, "benchmark",
+                                                        &benchmark));
+        *output = new Dataset(ctx, record_format, state_directory, channel_directory, channel, benchmark);
     }
 
  private:
     class Dataset : public GraphDatasetBase {
      public:
         explicit Dataset(OpKernelContext* ctx, const std::string& record_format, const std::string& state_directory,
-            const std::string& channel_directory, const std::string& channel):
+            const std::string& channel_directory, const std::string& channel, bool benchmark):
             GraphDatasetBase(ctx),
             record_format_(record_format),
             channel_directory_(channel_directory),
             pipe_state_manager_(state_directory, channel),
-            channel_(channel) {}
+            channel_(channel),
+            benchmark_(benchmark) {}
 
         std::unique_ptr<IteratorBase> MakeIterator(const std::string& prefix) const override {
             auto new_prefix = prefix + "::PipeMode-" + channel_ + "-"
                 + std::to_string(pipe_state_manager_.GetPipeIndex());
             auto ptr = std::unique_ptr<IteratorBase>(
-                new Iterator({this, new_prefix}, record_format_, channel_directory_, channel_,
+                new Iterator({this, new_prefix}, record_format_, channel_directory_, channel_, benchmark_,
                     pipe_state_manager_.GetPipeIndex()));
             pipe_state_manager_.IncrementPipeIndex();
             return ptr;
@@ -143,12 +147,15 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         std::string channel_directory_;
         std::string channel_;
         PipeStateManager pipe_state_manager_;
+        bool benchmark_;
 
         class Iterator : public DatasetIterator<Dataset> {
          public:
             explicit Iterator(const Params& params, const std::string& record_format,
-                const std::string& channel_directory, const std::string& channel, const uint32_t pipe_index)
-                : DatasetIterator<Dataset>(params) {
+                const std::string& channel_directory, const std::string& channel, const bool benchmark,
+                const uint32_t pipe_index)
+                : DatasetIterator<Dataset>(params), read_time_(0), read_bytes_(0),
+                    benchmark_(benchmark) {
                     std::string pipe_path = BuildPipeName(channel_directory, channel, pipe_index);
                     if (record_format == "RecordIO") {
                         record_reader_ = std::unique_ptr<RecordReader>(new RecordIOReader(pipe_path));
@@ -167,21 +174,39 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                 std::string* storage = &result_tensor.scalar<std::string>()();
                 try {
                     mutex_lock l(mu_);
+                    auto start = std::chrono::high_resolution_clock::now();
                     if (record_reader_->ReadRecord(storage)) {
                         out_tensors->emplace_back(std::move(result_tensor));
                     } else {
                         *end_of_sequence = true;
                     }
+                    auto end = std::chrono::high_resolution_clock::now();
+                    read_time_ = read_time_ + std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+                    read_bytes_ += storage->size();
                 } catch(std::runtime_error& err) {
                     return Status(tensorflow::error::INTERNAL, err.what());
                 }
                 return Status::OK();
             }
+            ~Iterator() {
+                if (benchmark_) {
+                    int64_t read_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(read_time_).count();
+                    std::cout << "PipeModeDatasetOp::Dataset::Iterator read_time_ms: " << read_time_ms << std::endl;
+                    std::cout << "PipeModeDatasetOp::Dataset::Iterator read_bytes: " << read_bytes_  << std::endl;
+                    auto read_giga_bytes = read_bytes_ / std::pow(1024, 3);
+                    double read_seconds = read_time_ms / 1000.0;
+                    std::cout << "PipeModeDatasetOp::Dataset::Iterator read_GB/s: "
+                        << read_giga_bytes / read_seconds << std::endl;
+                }
+            }
 
          private:
+            bool benchmark_;
             mutex mu_;
             std::unique_ptr<RecordReader> record_reader_
                 GUARDED_BY(mu_);
+            std::chrono::nanoseconds read_time_;
+            std::uint64_t read_bytes_;
         };
     };
 };
@@ -189,6 +214,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
 REGISTER_KERNEL_BUILDER(Name("PipeModeDataset").Device(DEVICE_CPU),
                         PipeModeDatasetOp);
 REGISTER_OP("PipeModeDataset")
+    .Input("benchmark: bool")
     .Input("record_format: string")
     .Input("state_directory: string")
     .Input("channel: string")

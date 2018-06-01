@@ -17,6 +17,8 @@ import datetime
 import time
 import boto3
 
+from collections import namedtuple
+
 import bucket_helper
 import dataset
 import region_helper
@@ -35,12 +37,17 @@ Requires a SageMakerRole IAM role to exist in the account the script is run in.
 """
 
 
-class BenchmarkingException(Exception):
+class BenchmarkException(Exception):
     """An error running benchmarking."""
 
     def __init__(self, message):
         """Create a BenchmarkingException."""
-        super(BenchmarkingException, self).__init__(message)
+        super(BenchmarkException, self).__init__(message)
+
+
+BenchmarkResult = namedtuple(
+    'BenchmarkResult',
+    ['total_iteration_time', 'read_bytes', 'iterator_time', 'read_GB_sec', 'dataset', 'training_job_name', 'script'])
 
 
 def benchmark(region, role_arn, dataset, output_path, instance_type, script):
@@ -93,22 +100,23 @@ def benchmark(region, role_arn, dataset, output_path, instance_type, script):
                                    'InstanceCount': 1,
                                    'VolumeSizeInGB': 100
                                })
-    # Wait for training job to complete. return if fail.
+    # Wait for training job to complete.
     while True:
         status = client.describe_training_job(TrainingJobName=training_job_name)['TrainingJobStatus']
         if status == 'Failed':
-            raise BenchmarkingException("Failed job: " + training_job_name)
+            raise BenchmarkException("Failed job: " + training_job_name)
         if status == 'Completed':
             break
         else:
             time.sleep(30)
 
     # Extract the iteration time from the logs and return this.
-    logs = boto3.client('logs', region_name=region_helper.name)
+    logs = boto3.client('logs', region_name=region_helper.region)
     [log_stream] = logs.describe_log_streams(logGroupName="/aws/sagemaker/TrainingJobs",
                                              logStreamNamePrefix=training_job_name)['logStreams']
     log_stream_name = log_stream['logStreamName']
     next_token = None
+
     while True:
         if next_token:
             log_event_response = logs.get_log_events(
@@ -121,13 +129,22 @@ def benchmark(region, role_arn, dataset, output_path, instance_type, script):
                 logStreamName=log_stream_name)
         next_token = log_event_response['nextForwardToken']
         events = log_event_response['events']
+
         if not events:
             break
         for event in events:
             message = event['message']
             if 'iteration time' in message:
-                return (training_job_name, dataset, instance_type, script, float(message[15:].strip()))
-    return None
+                total_iteration_time = datetime.timedelta(seconds=float(message[15:].strip()))
+            if 'PipeModeDatasetOp::Dataset::Iterator read_time_ms' in message:
+                iterator_time = datetime.timedelta(milliseconds=float(message.strip().split()[2]))
+            if 'PipeModeDatasetOp::Dataset::Iterator read_bytes' in message:
+                read_bytes = long(message.strip().split()[2])
+            if 'PipeModeDatasetOp::Dataset::Iterator read_GB/s' in message:
+                read_gb_sec = float(message.strip().split()[2])
+
+    return BenchmarkResult(total_iteration_time, read_bytes, iterator_time,
+                           read_gb_sec, dataset.name, training_job_name, script.name)
 
 
 def get_role_arn(role_name):
@@ -171,6 +188,7 @@ def main(args=None):
         for benchmark_dataset in dataset.all_datasets:
             benchmark_dataset.build()
             future = executor.submit(benchmark,
+                                     region_helper.region,
                                      role_arn,
                                      benchmark_dataset,
                                      output_path,
@@ -181,19 +199,34 @@ def main(args=None):
 
     cwclient = boto3.client('cloudwatch', region_name=region_helper.region)
     for future in concurrent.futures.as_completed(futures):
-        (training_job_name, benchmark_dataset, instance_type, benchmark_script, iteration_time) = future.result()
-        print training_job_name, benchmark_dataset, instance_type, benchmark_script, iteration_time
-        cwclient.put_metric_data(
-            Namespace='tf-pipemode-benchmark',
-            MetricData=[{
-                'MetricName': 'IterationTime.{}.{}'.format(benchmark_dataset.name, benchmark_script.name),
+        benchmark_result = future.result()
+
+        def make_metric_data(name, unit, value, benchmark_result):
+            return {
+                'MetricName': "{}.{}.{}".format(name, benchmark_result.dataset, benchmark_result.script),
                 'Dimensions': [
                     {
-                        'Dataset': benchmark_dataset.name
-                    }
-                ],
+                        'Name': 'Dataset',
+                        'Value': benchmark_result.dataset
+                    },
+                    {
+                        'Name': 'Script',
+                        'Value': benchmark_result.script
+                    }],
                 'Timestamp': datetime.datetime.now(),
-                'Value': iteration_time,
-                'Unit': 'Seconds'
-            }]
+                'Value': value,
+                'Unit': unit
+            }
+        cwclient.put_metric_data(
+            Namespace='tf-pipemode-benchmark',
+            MetricData=[
+                make_metric_data('TotalIterationTime', 'Seconds',
+                                 benchmark_result.total_iteration_time.total_seconds(), benchmark_result),
+                make_metric_data('IteratorIterationTime', 'Seconds',
+                                 benchmark_result.iterator_time.total_seconds(), benchmark_result),
+                make_metric_data('ReadBytes', 'Bytes',
+                                 benchmark_result.read_bytes, benchmark_result),
+                make_metric_data('ReadGigabytesPerSecond', 'Gigabytes/Second',
+                                 benchmark_result.read_GB_sec, benchmark_result),
+            ]
         )
