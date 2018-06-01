@@ -11,10 +11,12 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import base64
+import boto3
+import docker
 import os
 import repo_helper
 import shutil
-import subprocess
 
 import region_helper
 
@@ -74,18 +76,21 @@ class BenchmarkScript(object):
 
         tf_version = sdist_name.split("-")[1][:3]
 
-        subprocess.check_call("aws --region {} ecr get-login --no-include-email | bash".format(region_helper.region),
-                              shell=True)
-        subprocess.check_call(['docker', 'build',
-                               '-t', self.tag,
-                               '-t', "{}:{}".format(self.repository, self.tag),
-                               '--build-arg', 'script={}'.format(self.script_name),
-                               '--build-arg', 'device={}'.format(self.device),
-                               '--build-arg', 'sagemaker_tensorflow={}'.format(sdist_name),
-                               '--build-arg', 'tf_version={}'.format(tf_version),
-                               docker_build_dir])
-        subprocess.check_call(['docker', 'push', '{}:{}'.format(self.repository, self.tag)])
+        client = docker.from_env()
+        ecr_client = boto3.client('ecr', region_name=region_helper.region)
+        token = ecr_client.get_authorization_token()
+        username, password = base64.b64decode(token['authorizationData'][0]['authorizationToken']).decode().split(':')
 
+        client.images.build(
+            path=docker_build_dir,
+            tag="{}:{}".format(self.repository, self.tag),
+            buildargs={'sagemaker_tensorflow': sdist_name,
+                       'device': self.device,
+                       'tf_version': tf_version,
+                       'script': self.script_name})
+
+        client.images.push("{}:{}".format(self.repository, self.tag),
+                           auth_config={'username': username, 'password': password})
         shutil.rmtree(docker_build_dir)
 
 all_scripts = [
