@@ -74,6 +74,7 @@ class BenchmarkScript(object):
 
         tf_version = sdist_name.split("-")[1][:3]
 
+        subprocess.check_call("aws --region {} ecr get-login | bash".format(region_helper.region), shell=True)
         subprocess.check_call(['docker', 'build',
                                '-t', self.tag,
                                '-t', "{}:{}".format(self.repository, self.tag),
@@ -82,7 +83,6 @@ class BenchmarkScript(object):
                                '--build-arg', 'sagemaker_tensorflow={}'.format(sdist_name),
                                '--build-arg', 'tf_version={}'.format(tf_version),
                                docker_build_dir])
-        subprocess.check_call("aws --region {} ecr get-login | bash".format(region_helper.region), shell=True)
         subprocess.check_call(['docker', 'push', '{}:{}'.format(self.repository, self.tag)])
 
         shutil.rmtree(docker_build_dir)
