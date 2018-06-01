@@ -15,10 +15,10 @@ import boto3
 from botocore.errorfactory import ClientError
 
 
-def repository():
+def repository(region='us-west-2'):
     """Return a repository to store benchmarking docker images in."""
     try:
-        boto3.client('ecr').create_repository(repositoryName='tf-pipemode')
+        boto3.client('ecr', region_name=region).create_repository(repositoryName='tf-pipemode')
     except ClientError as ex:
         if 'RepositoryAlreadyExistsException' in ex.message:
             pass

@@ -88,6 +88,8 @@ class BenchmarkScript(object):
         shutil.rmtree(docker_build_dir)
 
 all_scripts = [
-    BenchmarkScript("InputOnly", repo_helper.repository(), "input_only_script.py", "input-only", "cpu"),
-    BenchmarkScript("GpuLoad", repo_helper.repository(), "gpu_pipeline_script.py", "gpu-load", "gpu")
+    BenchmarkScript("InputOnly", repo_helper.repository(region=region_helper.region),
+                    "input_only_script.py", "input-only", "cpu"),
+    BenchmarkScript("GpuLoad", repo_helper.repository(region=region_helper.region),
+                    "gpu_pipeline_script.py", "gpu-load", "gpu")
 ]
