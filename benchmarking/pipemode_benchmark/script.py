@@ -29,6 +29,9 @@ class BenchmarkScriptException(Exception):
         super(BenchmarkScriptException, self).__init__(message)
 
 
+FROM_IMAGE = "520713654638.dkr.ecr.us-west-2.amazonaws.com/sagemaker-tensorflow:1.6.0-gpu-py2"
+
+
 class BenchmarkScript(object):
     """A script that performs benchmarking, built into a docker image."""
 
@@ -81,6 +84,7 @@ class BenchmarkScript(object):
         token = ecr_client.get_authorization_token()
         username, password = base64.b64decode(token['authorizationData'][0]['authorizationToken']).decode().split(':')
 
+        client.images.pull(FROM_IMAGE, auth_config={'username': username, 'password': password})
         client.images.build(
             path=docker_build_dir,
             tag="{}:{}".format(self.repository, self.tag),
