@@ -83,11 +83,12 @@ class BenchmarkScript(object):
         ecr_client = boto3.client('ecr', region_name=region_helper.region)
         token = ecr_client.get_authorization_token()
         username, password = base64.b64decode(token['authorizationData'][0]['authorizationToken']).decode().split(':')
-
+        tag = "{}:{}".format(self.repository, self.tag)
+        print "Building image {}".format(tag)
         client.images.pull(FROM_IMAGE, auth_config={'username': username, 'password': password})
         client.images.build(
             path=docker_build_dir,
-            tag="{}:{}".format(self.repository, self.tag),
+            tag=tag,
             buildargs={'sagemaker_tensorflow': sdist_name,
                        'device': self.device,
                        'tf_version': tf_version,
