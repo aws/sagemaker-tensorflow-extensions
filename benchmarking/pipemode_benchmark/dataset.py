@@ -123,9 +123,9 @@ class BenchmarkDataset(object):
         """Return the name of this dataset."""
         return self.name
 
-PREFIX = "sagemaker-tf-benchmarking"
+PREFIX = "sagemaker-tf-benchmarking/async-pipe-test"
 
-all_datasets = [
+all_datasets = {dataset.name: dataset for dataset in [
     BenchmarkDataset("1GB.100MBFiles",
                      bucket=bucket_helper.bucket(),
                      prefix=PREFIX,
@@ -142,19 +142,19 @@ all_datasets = [
                      num_files=50,
                      num_copies=20,
                      num_classes=2),
-    BenchmarkDataset("1TB.1MBFiles",
+    BenchmarkDataset("50GB.1MBFiles",
                      bucket=bucket_helper.bucket(),
                      prefix=PREFIX,
                      dimension=65536,
                      num_records=2,
                      num_files=50,
-                     num_copies=20000,
+                     num_copies=1000,
                      num_classes=2),
-    BenchmarkDataset("1TB.100MBFiles",
+    BenchmarkDataset("50GB.100MBFiles",
                      bucket=bucket_helper.bucket(),
                      prefix=PREFIX,
                      dimension=65536,
                      num_records=200,
                      num_files=1,
-                     num_copies=10000,
-                     num_classes=2)]
+                     num_copies=500,
+                     num_classes=2)]}
