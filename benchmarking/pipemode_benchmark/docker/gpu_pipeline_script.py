@@ -16,7 +16,7 @@ import multiprocessing
 import time
 import tensorflow as tf
 from tensorflow.contrib.data import map_and_batch
-from tf_container import PipeModeDataset
+from sagemaker_tensorflow import PipeModeDataset
 
 
 class _BenchmarkConfig(object):
@@ -70,7 +70,7 @@ def _input_fn():
     def parse(record):
         return tf.parse_single_example(record, features)
 
-    ds = PipeModeDataset(config.channel)
+    ds = PipeModeDataset(config.channel, benchmark=True)
     if config.epochs > 1:
         ds = ds.repeat(config.epochs)
     if config.prefetch_size > 0:
@@ -94,5 +94,4 @@ with tf.Session(config=tf.ConfigProto(
         except tf.errors.OutOfRangeError:
             break
 
-print "done"
 print "iteration time", time.time() - it_start

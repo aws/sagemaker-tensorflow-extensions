@@ -67,7 +67,7 @@ def _input_fn():
             'data': tf.decode_raw(parsed['data'], tf.float64)
         }, parsed['labels'])
 
-    ds = PipeModeDataset(config.channel)
+    ds = PipeModeDataset(config.channel, benchmark=True)
     if config.epochs > 1:
         ds = ds.repeat(config.epochs)
     if config.prefetch_size > 0:
@@ -86,5 +86,4 @@ with tf.Session() as sess:
             sess.run(next)
         except tf.errors.OutOfRangeError:
             break
-print "done"
 print "iteration time:", time.time() - it_start

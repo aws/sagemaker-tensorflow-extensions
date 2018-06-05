@@ -118,44 +118,43 @@ class BenchmarkDataset(object):
                 local_file = os.path.join(self.root_dir, '{}-{}.recordio'.format(self.name, str(file_index)))
                 futures.append(executor.submit(upload(local_file, uploaded_file_index)))
                 uploaded_file_index += 1
-        print
 
     def __str__(self):
         """Return the name of this dataset."""
         return self.name
 
-PREFIX = "sagemaker-tf-benchmarking"
+PREFIX = "sagemaker-tf-benchmarking/async-pipe-test"
 
-all_datasets = [
-    BenchmarkDataset("1GB.1MBFiles",
-                     bucket=bucket_helper.bucket(),
-                     prefix=PREFIX,
-                     dimension=1024,
-                     num_records=128,
-                     num_files=50,
-                     num_copies=20,
-                     num_classes=2),
-    BenchmarkDataset("1TB.1MBFiles",
-                     bucket=bucket_helper.bucket(),
-                     prefix=PREFIX,
-                     dimension=1024,
-                     num_records=128,
-                     num_files=50,
-                     num_copies=20000,
-                     num_classes=2),
+all_datasets = {dataset.name: dataset for dataset in [
     BenchmarkDataset("1GB.100MBFiles",
                      bucket=bucket_helper.bucket(),
                      prefix=PREFIX,
-                     dimension=1024,
-                     num_records=12800,
+                     dimension=65536,
+                     num_records=200,
                      num_files=1,
                      num_copies=10,
                      num_classes=2),
-    BenchmarkDataset("1TB.100MBFiles",
+    BenchmarkDataset("1GB.1MBFiles",
                      bucket=bucket_helper.bucket(),
                      prefix=PREFIX,
-                     dimension=1024,
-                     num_records=12800,
+                     dimension=65536,
+                     num_records=2,
+                     num_files=50,
+                     num_copies=20,
+                     num_classes=2),
+    BenchmarkDataset("50GB.1MBFiles",
+                     bucket=bucket_helper.bucket(),
+                     prefix=PREFIX,
+                     dimension=65536,
+                     num_records=2,
+                     num_files=50,
+                     num_copies=1000,
+                     num_classes=2),
+    BenchmarkDataset("50GB.100MBFiles",
+                     bucket=bucket_helper.bucket(),
+                     prefix=PREFIX,
+                     dimension=65536,
+                     num_records=200,
                      num_files=1,
-                     num_copies=10000,
-                     num_classes=2)]
+                     num_copies=500,
+                     num_classes=2)]}
