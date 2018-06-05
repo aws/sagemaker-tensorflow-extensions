@@ -186,5 +186,3 @@ def test_csv():
             d = sess.run(next)
             sys.stdout.flush()
             assert d == {str(i): i for i in range(100)}
-        print "done"
-    print "out of session"
