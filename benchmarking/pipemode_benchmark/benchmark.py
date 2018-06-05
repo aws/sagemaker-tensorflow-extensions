@@ -163,6 +163,17 @@ def get_role_arn(role_name):
                 return role['Arn']
     return None
 
+all_benchmarks = [
+    ("1GB.100MBFiles", "InputOnly", "ml.c5.18xlarge"),
+    ("1GB.1MBFiles", "InputOnly", "ml.c5.18xlarge"),
+    ("50GB.100MBFiles", "InputOnly", "ml.c5.18xlarge"),
+    ("50GB.1MBFiles", "InputOnly", "ml.c5.18xlarge"),
+    ("1GB.100MBFiles", "GpuLoad", "ml.p3.16xlarge"),
+    ("1GB.1MBFiles", "GpuLoad", "ml.p3.16xlarge"),
+    ("50GB.100MBFiles", "GpuLoad", "ml.p3.16xlarge"),
+    ("50GB.1MBFiles", "GpuLoad", "ml.p3.16xlarge")
+]
+
 
 def main(args=None):
     """Run benchmarking."""
@@ -172,7 +183,6 @@ def main(args=None):
                         help='The path of a sagemaker_tensorflow tar.gz source distribution to benchmark')
     parser.add_argument('--role_name', default='SageMakerRoleTest',
                         help='The name of an IAM role to pass to SageMaker for running benchmarking training jobs')
-    parser.add_argument('--instance_type', default='ml.p3.16xlarge')
     args = parser.parse_args()
 
     role_arn = get_role_arn(role_name=args.role_name)
@@ -182,19 +192,21 @@ def main(args=None):
 
     executor = concurrent.futures.ProcessPoolExecutor(max_workers=args.parallelism)
     futures = []
-    for benchmark_script in script.all_scripts:
+    for benchmark_script in script.all_scripts.values():
         benchmark_script.build(sdist_path=args.sdist_path)
-        for benchmark_dataset in dataset.all_datasets:
-            benchmark_dataset.build()
-            future = executor.submit(benchmark,
-                                     region_helper.region,
-                                     role_arn,
-                                     benchmark_dataset,
-                                     output_path,
-                                     args.instance_type,
-                                     benchmark_script)
-            futures.append(future)
-            time.sleep(2)
+    for benchmark_dataset in dataset.all_datasets.values():
+        benchmark_dataset.build()
+    for dataset_name, script_name, instance_type in all_benchmarks:
+        print "Submitting benchmark:", dataset_name, script_name, instance_type
+        future = executor.submit(benchmark,
+                                 region_helper.region,
+                                 role_arn,
+                                 dataset.all_datasets[dataset_name],
+                                 output_path,
+                                 instance_type,
+                                 script.all_scripts[script_name])
+        futures.append(future)
+        time.sleep(2)
 
     cwclient = boto3.client('cloudwatch', region_name=region_helper.region)
     for future in concurrent.futures.as_completed(futures):

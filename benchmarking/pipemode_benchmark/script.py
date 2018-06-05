@@ -100,9 +100,9 @@ class BenchmarkScript(object):
         print "Image pushed, cleaning up"
         shutil.rmtree(docker_build_dir)
 
-all_scripts = [
+all_scripts = {script.name: script for script in [
     BenchmarkScript("InputOnly", repo_helper.repository(region=region_helper.region),
                     "input_only_script.py", "input-only", "cpu"),
     BenchmarkScript("GpuLoad", repo_helper.repository(region=region_helper.region),
                     "gpu_pipeline_script.py", "gpu-load", "gpu")
-]
+]}
