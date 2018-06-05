@@ -199,6 +199,7 @@ def main(args=None):
     cwclient = boto3.client('cloudwatch', region_name=region_helper.region)
     for future in concurrent.futures.as_completed(futures):
         benchmark_result = future.result()
+        print benchmark_result
 
         def make_metric_data(name, unit, value, benchmark_result):
             return {
