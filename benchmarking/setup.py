@@ -9,4 +9,4 @@ setup(name="sagemaker_tensorflow_pipemode_benchmarking",
       },
       include_package_data=True,
       package_data={'pipemode_benchmark': ['docker/*']},
-      install_requires=['boto3', 'tensorflow'])
+      install_requires=['boto3', 'docker', 'tensorflow'])

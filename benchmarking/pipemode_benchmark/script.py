@@ -11,10 +11,12 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import base64
+import boto3
+import docker
 import os
 import repo_helper
 import shutil
-import subprocess
 
 import region_helper
 
@@ -25,6 +27,9 @@ class BenchmarkScriptException(Exception):
     def __init__(self, message):
         """Create a BenchmarkingScriptException."""
         super(BenchmarkScriptException, self).__init__(message)
+
+
+FROM_IMAGE = "520713654638.dkr.ecr.us-west-2.amazonaws.com/sagemaker-tensorflow:1.6.0-gpu-py2"
 
 
 class BenchmarkScript(object):
@@ -74,22 +79,30 @@ class BenchmarkScript(object):
 
         tf_version = sdist_name.split("-")[1][:3]
 
-        subprocess.check_call(['docker', 'build',
-                               '-t', self.tag,
-                               '-t', "{}:{}".format(self.repository, self.tag),
-                               '--build-arg', 'script={}'.format(self.script_name),
-                               '--build-arg', 'device={}'.format(self.device),
-                               '--build-arg', 'sagemaker_tensorflow={}'.format(sdist_name),
-                               '--build-arg', 'tf_version={}'.format(tf_version),
-                               docker_build_dir])
-        subprocess.check_call("aws --region {} ecr get-login | bash".format(region_helper.region), shell=True)
-        subprocess.check_call(['docker', 'push', '{}:{}'.format(self.repository, self.tag)])
-
+        client = docker.from_env()
+        ecr_client = boto3.client('ecr', region_name=region_helper.region)
+        token = ecr_client.get_authorization_token()
+        username, password = base64.b64decode(token['authorizationData'][0]['authorizationToken']).decode().split(':')
+        tag = "{}:{}".format(self.repository, self.tag)
+        print "Pulling base image {}".format(FROM_IMAGE)
+        client.images.pull(FROM_IMAGE, auth_config={'username': username, 'password': password})
+        print "Building image {}".format(tag)
+        client.images.build(
+            path=docker_build_dir,
+            tag=tag,
+            buildargs={'sagemaker_tensorflow': sdist_name,
+                       'device': self.device,
+                       'tf_version': tf_version,
+                       'script': self.script_name})
+        print "Push image"
+        client.images.push(tag,
+                           auth_config={'username': username, 'password': password})
+        print "Image pushed, cleaning up"
         shutil.rmtree(docker_build_dir)
 
-all_scripts = [
+all_scripts = {script.name: script for script in [
     BenchmarkScript("InputOnly", repo_helper.repository(region=region_helper.region),
                     "input_only_script.py", "input-only", "cpu"),
     BenchmarkScript("GpuLoad", repo_helper.repository(region=region_helper.region),
                     "gpu_pipeline_script.py", "gpu-load", "gpu")
-]
+]}
