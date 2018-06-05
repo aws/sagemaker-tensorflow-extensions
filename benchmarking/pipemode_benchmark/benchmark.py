@@ -98,6 +98,7 @@ def benchmark(region, role_arn, dataset, output_path, instance_type, script):
                                    'InstanceCount': 1,
                                    'VolumeSizeInGB': 100
                                })
+    print "Created benchmarking training job: {}".format(training_job_name)
     # Wait for training job to complete.
     while True:
         status = client.describe_training_job(TrainingJobName=training_job_name)['TrainingJobStatus']
@@ -169,7 +170,7 @@ def main(args=None):
     parser.add_argument('--parallelism', type=int, default=8, help='How many training jobs to run concurrently')
     parser.add_argument('sdist_path',
                         help='The path of a sagemaker_tensorflow tar.gz source distribution to benchmark')
-    parser.add_argument('--role_name', default='SageMakerRole',
+    parser.add_argument('--role_name', default='SageMakerRoleTest',
                         help='The name of an IAM role to pass to SageMaker for running benchmarking training jobs')
     parser.add_argument('--instance_type', default='ml.p3.16xlarge')
     args = parser.parse_args()
