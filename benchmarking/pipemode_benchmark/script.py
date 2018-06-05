@@ -84,8 +84,9 @@ class BenchmarkScript(object):
         token = ecr_client.get_authorization_token()
         username, password = base64.b64decode(token['authorizationData'][0]['authorizationToken']).decode().split(':')
         tag = "{}:{}".format(self.repository, self.tag)
-        print "Building image {}".format(tag)
+        print "Pulling base image {}".format(FROM_IMAGE)
         client.images.pull(FROM_IMAGE, auth_config={'username': username, 'password': password})
+        print "Building image {}".format(tag)
         client.images.build(
             path=docker_build_dir,
             tag=tag,
@@ -93,9 +94,10 @@ class BenchmarkScript(object):
                        'device': self.device,
                        'tf_version': tf_version,
                        'script': self.script_name})
-
-        client.images.push("{}:{}".format(self.repository, self.tag),
+        print "Push image"
+        client.images.push(tag,
                            auth_config={'username': username, 'password': password})
+        print "Image pushed, cleaning up"
         shutil.rmtree(docker_build_dir)
 
 all_scripts = [
