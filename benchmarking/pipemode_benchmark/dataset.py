@@ -123,7 +123,7 @@ class BenchmarkDataset(object):
         """Return the name of this dataset."""
         return self.name
 
-PREFIX = "sagemaker-tf-benchmarking"
+PREFIX = "sagemaker-tf-benchmarking/async-pipe-test"
 
 all_datasets = [
     BenchmarkDataset("1GB.100MBFiles",
