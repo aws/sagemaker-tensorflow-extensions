@@ -27,6 +27,12 @@ def _load_plugin():
     return tf.load_op_library(tf_plugin_path)
 
 
+class PipeModeDatasetException(Exception):
+    """An error using a PipeModeDataset."""
+
+    pass
+
+
 class PipeModeDataset(dataset_ops.Dataset):
     """A SageMaker Pipe Mode TensorFlow Dataset."""
 
@@ -56,10 +62,16 @@ class PipeModeDataset(dataset_ops.Dataset):
         self.pipe_dir = pipe_dir
         self.state_dir = state_dir
         self.benchmark = benchmark
+        self._require_pipemode()
 
     def _as_variant_tensor(self):
         return self._tf_plugin.pipe_mode_dataset(self.benchmark, self.record_format, self.state_dir, self.channel,
                                                  self.pipe_dir)
+
+    def _require_pipemode(self):
+        test_dir = os.path.join(self.pipe_dir, self.channel)
+        if os.path.exists(test_dir) and os.path.isdir(test_dir):
+            raise PipeModeDatasetException("PipeModeDataset must be used with SageMaker Pipe Mode, not File Mode.")
 
     @property
     def output_classes(self):
