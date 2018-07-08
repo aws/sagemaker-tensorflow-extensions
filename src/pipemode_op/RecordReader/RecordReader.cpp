@@ -47,7 +47,6 @@ RecordReader::RecordReader(const std::string& file_path, const std::size_t read_
     file_creation_timeout_(file_creation_timeout)  {}
 
 RecordReader::~RecordReader() {
-    std::cout << "record reader destructor" << std::endl;
     if (fd_ >= 0) {
         close(fd_);
     }
