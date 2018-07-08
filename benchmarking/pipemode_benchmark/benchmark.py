@@ -192,10 +192,14 @@ def main(args=None):
 
     executor = concurrent.futures.ProcessPoolExecutor(max_workers=args.parallelism)
     futures = []
+
+    print "Benchmarking starting"
     for benchmark_script in script.all_scripts.values():
         benchmark_script.build(sdist_path=args.sdist_path)
+    print "Built scripts"
     for benchmark_dataset in dataset.all_datasets.values():
         benchmark_dataset.build()
+    print "Built datasets"
     for dataset_name, script_name, instance_type in all_benchmarks:
         print "Submitting benchmark:", dataset_name, script_name, instance_type
         future = executor.submit(benchmark,
