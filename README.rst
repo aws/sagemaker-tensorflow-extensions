@@ -9,7 +9,7 @@ SageMaker specific extensions to TensorFlow. This package includes the :python:`
 
 Pre-Install
 ~~~~~~~~~~~
-SageMaker TensorFlow build requires `cmake` to be installed. Please `pip install cmake` before building SageMaker TensorFlow.
+SageMaker TensorFlow build requires :code:`cmake` to be installed. Please :code:`pip install cmake` before building SageMaker TensorFlow.
 
 Install
 ~~~~~~~
