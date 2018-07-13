@@ -7,6 +7,10 @@ SageMaker TensorFlow
 
 SageMaker specific extensions to TensorFlow. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow DataSets.
 
+Pre-Install
+~~~~~~~~~~~
+SageMaker TensorFlow build requires `cmake` to be installed. Please `pip install cmake` before building SageMaker TensorFlow.
+
 Install
 ~~~~~~~
 SageMaker TensorFlow extensions is installed as a python package :code:`sagemaker_tensorflow`. 
