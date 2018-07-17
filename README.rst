@@ -5,7 +5,7 @@ SageMaker TensorFlow
 .. role:: python(code)
    :language: python
 
-SageMaker specific extensions to TensorFlow. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow DataSets.
+SageMaker specific extensions to TensorFlow, for Python 2. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow DataSets.
 
 Pre-Install
 ~~~~~~~~~~~
@@ -14,6 +14,12 @@ SageMaker TensorFlow build requires :code:`cmake` to be installed. Please :code:
 Install
 ~~~~~~~
 SageMaker TensorFlow extensions is installed as a python package :code:`sagemaker_tensorflow`. 
+
+First, make sure you have cmake installed. If not:
+
+::
+
+    pip install cmake
 
 To install this package, run:
 
