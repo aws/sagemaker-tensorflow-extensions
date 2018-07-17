@@ -13,7 +13,7 @@ SageMaker TensorFlow build requires :code:`cmake` to be installed. Please :code:
 
 Install
 ~~~~~~~
-SageMaker TensorFlow extensions is installed as a python package :code:`sagemaker_tensorflow`. 
+SageMaker TensorFlow extensions is installed as a python package named :code:`sagemaker_tensorflow`. 
 
 First, make sure you have cmake installed. If not:
 
