@@ -34,7 +34,8 @@ To install in a SageMaker docker image, you can use the following RUN command in
 ::
 
     RUN git clone https://github.com/aws/sagemaker-tensorflow-extensions.git && \
-        cd sagemaker-tensorflow-extensions && \
+        pip install cmake && \
+	cd sagemaker-tensorflow-extensions && \
         pip install . && \
         cd .. && \
         rm -rf sagemaker-tensorflow-extensions
@@ -46,7 +47,8 @@ Release branching is used to track different versions of TensorFlow. Tensorflow 
 ::
 
     RUN git clone https://github.com/aws/sagemaker-tensorflow-extensions.git && \
-        cd sagemaker-tensorflow-extensions && \
+        pip install cmake && \
+	cd sagemaker-tensorflow-extensions && \
         git checkout 1.7 && \
         pip install . && \
         cd .. && \
