@@ -8,7 +8,7 @@ import boto3
 import botocore
 import os
 
-TF_VERSION = "1.8.0"
+TF_VERSION = "1.9.0"
 REGION = "us-west-2"
 FROM_IMAGE = "520713654638.dkr.ecr.us-west-2.amazonaws.com/sagemaker-tensorflow:1.6.0-gpu-py2"
 

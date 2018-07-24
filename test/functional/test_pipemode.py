@@ -110,7 +110,10 @@ def test_multi_epoch_pipeline(model_dir):
 
     estimator = make_estimator(model_dir=model_dir)
     estimator.train(input_fn=input_fn)
-    assert os.path.exists(os.path.join(estimator.model_dir, 'model.ckpt-1.index'))
+    print estimator.model_dir
+    print os.path.exists(estimator.model_dir)
+    print os.listdir(estimator.model_dir)
+    assert os.path.exists(os.path.join(estimator.model_dir, 'model.ckpt-0.index'))
 
 
 def test_multi_channels():
