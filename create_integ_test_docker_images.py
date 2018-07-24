@@ -2,11 +2,12 @@ from __future__ import absolute_import
 
 import argparse
 import base64
-import subprocess
-import docker
 import boto3
 import botocore
+import docker
 import os
+import subprocess
+import sys
 
 TF_VERSION = "1.9.0"
 REGION = "us-west-2"
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     dist_path = 'dist/sagemaker_tensorflow-1.9.0.1.0.0-cp27-cp27mu-linux_x86_64.whl'
 
     if not os.path.exists(dist_path):
-        subprocess.check_call(['python', 'setup.py', 'bdist_wheel'])
+        subprocess.check_call([sys.executable, 'setup.py', 'bdist_wheel'])
     try:
         ecr_client.create_repository(repositoryName='sagemaker_tensorflow_integ_test')
     except botocore.exceptions.ClientError as e:
