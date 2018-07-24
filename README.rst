@@ -9,8 +9,8 @@ SageMaker specific extensions to TensorFlow, for Python 2 and TensorFlow version
 
 Install
 ~~~~~~~
+You can build SageMaker TensorFlow into your docker images with the following command:
 
-You can pip install SageMaker TensorFlow into a 
 ::
 
    pip install sagemaker-tensorflow
