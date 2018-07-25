@@ -2,11 +2,11 @@ from __future__ import absolute_import
 
 import argparse
 import base64
+import subprocess
+import docker
 import boto3
 import botocore
-import docker
-import os
-import subprocess
+import glob
 import sys
 
 TF_VERSION = "1.9.0"
@@ -23,10 +23,8 @@ if __name__ == '__main__':
     username, password = base64.b64decode(token['authorizationData'][0]['authorizationToken']).decode().split(':')
     registry = token['authorizationData'][0]['proxyEndpoint']
 
-    dist_path = 'dist/sagemaker_tensorflow-1.9.0.1.0.0-cp27-cp27mu-linux_x86_64.whl'
-
-    if not os.path.exists(dist_path):
-        subprocess.check_call([sys.executable, 'setup.py', 'bdist_wheel'])
+    subprocess.check_call([sys.executable, 'setup.py', 'sdist'])
+    [sdist_path] = glob.glob('dist/sagemaker_tensorflow-{}*'.format(TF_VERSION))
     try:
         ecr_client.create_repository(repositoryName='sagemaker_tensorflow_integ_test')
     except botocore.exceptions.ClientError as e:
@@ -40,7 +38,7 @@ if __name__ == '__main__':
         path='.',
         dockerfile='test/integ/Dockerfile',
         tag=tag,
-        buildargs={'sagemaker_tensorflow': dist_path,
+        buildargs={'sagemaker_tensorflow': sdist_path,
                    'device': args.device,
                    'tensorflow_version': TF_VERSION,
                    'script': 'test/integ/scripts/estimator_script.py'})
