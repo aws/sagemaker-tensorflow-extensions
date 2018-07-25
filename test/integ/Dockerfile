@@ -3,7 +3,7 @@ FROM 520713654638.dkr.ecr.us-west-2.amazonaws.com/sagemaker-tensorflow:1.6.0-gpu
 RUN pip install cmake
 
 ARG device=cpu
-ARG tensorflow_version=1.4.0
+ARG tensorflow_version=1.8.0
 ARG script
 
 RUN if [ "$device"="cpu" ] ; then \
