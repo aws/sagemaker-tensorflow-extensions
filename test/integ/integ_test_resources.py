@@ -40,7 +40,7 @@ def make_test_data(directory, name, num_files, num_records, dimension):
 
     def upload(file, dataset, test_run, index):
         """Returns a dataset and index if uploading failed"""
-        key = 'pipemode/datasets/{}/{}/file_{}.recordio'.format(dataset, test_run, str(index).zfill(6))
+        key = 'sagemaker/pipemode/datasets/{}/{}/file_{}.recordio'.format(dataset, test_run, str(index).zfill(6))
         try:
             bucket.put_object(Key=key, Body=open(file, 'rb'))
         except Exception as ex:
@@ -51,7 +51,7 @@ def make_test_data(directory, name, num_files, num_records, dimension):
     for index in range(num_files):
         filename = os.path.join(directory, name + str(i))
         upload(filename, name + '-files', test_run, index)
-    return 's3://{}/pipemode/datasets/{}/{}/'.format(get_bucket(), name + '-files', test_run)
+    return 's3://{}/sagemaker/pipemode/datasets/{}/{}/'.format(get_bucket(), name + '-files', test_run)
 
 
 def delete_s3_url(url):
@@ -66,7 +66,7 @@ def delete_s3_url(url):
 
 
 def make_output_path():
-    return 's3://{}/pipemode/integ-tests/output/'.format(get_bucket())
+    return 's3://{}/sagemaker/pipemode/integ-tests/output/'.format(get_bucket())
 
 
 def dump_logs(job):
