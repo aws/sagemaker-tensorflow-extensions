@@ -34,9 +34,10 @@ if __name__ == '__main__':
             raise
 
     tag = '{}/sagemaker_tensorflow_integ_test:{}-{}'.format(registry, TF_VERSION, args.device)[8:]
+    python_version = str(sys.version_info[0])
     client.images.build(
         path='.',
-        dockerfile='test/integ/Dockerfile',
+        dockerfile='test/integ/Dockerfile-py{}'.format(python_version),
         tag=tag,
         buildargs={'sagemaker_tensorflow': sdist_path,
                    'device': args.device,

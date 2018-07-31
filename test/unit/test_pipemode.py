@@ -49,39 +49,39 @@ def write_to_channel(channel, records):
 
 
 def test_single_record():
-    channel, directory = write_to_channel("A", ["bear"])
+    channel, directory = write_to_channel("A", [b"bear"])
     with tf.Session() as sess:
         dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory)
         it = dataset.make_one_shot_iterator()
         next = it.get_next()
-        assert "bear" == sess.run(next)
+        assert b"bear" == sess.run(next)
 
 
 def test_multiple_records():
-    channel, directory = write_to_channel("B", ["bunny", "caterpillar"])
+    channel, directory = write_to_channel("B", [b"bunny", b"caterpillar"])
     with tf.Session() as sess:
         dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory)
         it = dataset.make_one_shot_iterator()
         next = it.get_next()
-        assert "bunny" == sess.run(next)
-        assert "caterpillar" == sess.run(next)
+        assert b"bunny" == sess.run(next)
+        assert b"caterpillar" == sess.run(next)
 
 
 def test_large_record():
-    channel, directory = write_to_channel("C", ["a" * 1000000])
+    channel, directory = write_to_channel("C", [b"a" * 1000000])
 
     with tf.Session() as sess:
         dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory)
         it = dataset.make_one_shot_iterator()
         next = it.get_next()
-        assert "a" * 1000000 == sess.run(next)
+        assert b"a" * 1000000 == sess.run(next)
 
 
 def test_invalid_data():
     directory = tempfile.mkdtemp()
     filename = "X_0"
-    with open(directory + "/" + filename, 'w') as f:
-        f.write("adfsafasfd")
+    with open(directory + "/" + filename, 'wb') as f:
+        f.write(b"adfsafasfd")
 
     dataset = PipeModeDataset("X", pipe_dir=directory, state_dir=directory)
     with pytest.raises(tf.errors.InternalError):
@@ -92,7 +92,7 @@ def test_invalid_data():
 
 
 def test_out_of_range():
-    channel, directory = write_to_channel("A", ["bear", "bunny", "truck"])
+    channel, directory = write_to_channel("A", [b"bear", b"bunny", b"truck"])
     with tf.Session() as sess:
         dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory)
         it = dataset.make_one_shot_iterator()
@@ -104,26 +104,26 @@ def test_out_of_range():
 
 
 def test_multiple_iterators():
-    channel, directory = write_to_channel("A", ["bear"])
+    channel, directory = write_to_channel("A", [b"bear"])
 
     dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory)
     with tf.Session() as sess:
         it = dataset.make_one_shot_iterator()
         next = it.get_next()
-        assert sess.run(next) == "bear"
+        assert sess.run(next) == b"bear"
         with pytest.raises(tf.errors.OutOfRangeError):
             sess.run(next)
 
     with open(os.path.join(directory, channel + "_1"), 'wb') as f:
-        write_recordio(f, "bunny")
-        write_recordio(f, "piano")
-        write_recordio(f, "caterpillar")
+        write_recordio(f, b"bunny")
+        write_recordio(f, b"piano")
+        write_recordio(f, b"caterpillar")
 
     with tf.Session() as sess:
         it = dataset.make_one_shot_iterator()
         next = it.get_next()
-        assert "bunny" == sess.run(next)
-        assert "piano" == sess.run(next)
-        assert "caterpillar" == sess.run(next)
+        assert b"bunny" == sess.run(next)
+        assert b"piano" == sess.run(next)
+        assert b"caterpillar" == sess.run(next)
         with pytest.raises(tf.errors.OutOfRangeError):
             sess.run(next)
