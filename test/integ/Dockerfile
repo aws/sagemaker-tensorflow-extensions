@@ -57,4 +57,4 @@ RUN sagemaker_tensorflow_local=$(basename $sagemaker_tensorflow) && \
 
 COPY $script script.py
 
-ENTRYPOINT [$python, "script.py"]
+ENTRYPOINT $python script.py
