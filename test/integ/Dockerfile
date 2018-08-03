@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ARG tensorflow_version=1.7.0
+ARG tensorflow_version=1.8.0
 ARG device=cpu
 ARG script
 ARG python

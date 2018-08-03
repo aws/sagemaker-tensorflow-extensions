@@ -6,8 +6,6 @@ import tempfile
 import tensorflow as tf
 from sagemaker_tensorflow import PipeModeDataset
 
-ds = PipeModeDataset("elizabeth", benchmark=True)
-
 
 class BenchmarkConfig(object):
 
@@ -58,7 +56,7 @@ def input_fn():
             'data': tf.decode_raw(parsed['data'], tf.float64)
         }, parsed['labels'])
 
-    ds = PipeModeDataset(config.channel)
+    ds = PipeModeDataset(config.channel, benchmark=True)
 
     if config.epochs > 1:
         ds = ds.repeat(config.epochs)
@@ -66,17 +64,17 @@ def input_fn():
         ds = ds.prefetch(config.prefetch_size)
     ds = ds.map(parse, num_parallel_calls=config.parallel_transform_calls)
     ds = ds.batch(config.batch_size)
+    print (ds)
     return ds
 
 
 # Perform Estimator training
 column = tf.feature_column.numeric_column('data', shape=(config.dimension, ))
-model_dir = tempfile.mkdtemp()
 estimator = tf.estimator.LinearClassifier(feature_columns=[column])
-
 estimator.train(input_fn=input_fn)
 
 # Confirm that we have read the correct number of pipes
 assert os.path.exists('/opt/ml/input/data/{}_{}'.format(config.channel, config.epochs))
 
+print (os.listdir('/opt/ml/input/data/'))
 print ("Trained")
