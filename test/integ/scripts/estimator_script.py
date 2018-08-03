@@ -6,7 +6,7 @@ import tempfile
 import tensorflow as tf
 from sagemaker_tensorflow import PipeModeDataset
 
-ds = PipeModeDataset("elizabeth")
+ds = PipeModeDataset("elizabeth", benchmark=True)
 
 
 class BenchmarkConfig(object):
@@ -78,3 +78,5 @@ estimator.train(input_fn=input_fn)
 
 # Confirm that we have read the correct number of pipes
 assert os.path.exists('/opt/ml/input/data/{}_{}'.format(config.channel, config.epochs))
+
+print ("Trained")
