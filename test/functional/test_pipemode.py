@@ -38,7 +38,7 @@ def recordio_file():
 def tfrecords_file():
     writer = tf.python_io.TFRecordWriter("test.tfrecords")
     for i in range(100):
-        writer.write("hello world")
+        writer.write(b"hello world")
     writer.close()
     yield
     os.remove('test.tfrecords')
@@ -110,7 +110,7 @@ def test_multi_epoch_pipeline(model_dir):
 
     estimator = make_estimator(model_dir=model_dir)
     estimator.train(input_fn=input_fn)
-    assert os.path.exists(os.path.join(estimator.model_dir, 'model.ckpt-1.index'))
+    assert os.path.exists(os.path.join(estimator.model_dir, 'model.ckpt-0.index'))
 
 
 def test_multi_channels():
@@ -157,7 +157,7 @@ def test_tf_record():
         it = ds.make_one_shot_iterator()
         next = it.get_next()
         for i in range(100):
-            assert sess.run(next) == 'hello world'
+            assert sess.run(next) == b'hello world'
 
 
 FIELD_DEFAULTS = [[0] for i in range(100)]
