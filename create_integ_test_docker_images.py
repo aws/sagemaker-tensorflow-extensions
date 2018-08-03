@@ -37,10 +37,11 @@ if __name__ == '__main__':
     python_version = str(sys.version_info[0])
     client.images.build(
         path='.',
-        dockerfile='test/integ/Dockerfile-py{}'.format(python_version),
+        dockerfile='test/integ/Dockerfile',
         tag=tag,
         buildargs={'sagemaker_tensorflow': sdist_path,
                    'device': args.device,
+                   'python': 'python' if python_version == 2 else 'python3',
                    'tensorflow_version': TF_VERSION,
                    'script': 'test/integ/scripts/estimator_script.py'})
 
