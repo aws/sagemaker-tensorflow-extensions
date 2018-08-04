@@ -79,7 +79,7 @@ def build_record_file(filename, num_records, dimension, classes=2, data_feature_
         data_feature_name - the name to give the numpy array in the Example object
         dimension - the size of each numpy array.
     """
-    with open(filename, 'w') as f:
+    with open(filename, 'wb') as f:
         for i in range(num_records):
             cur_class = i % classes
             loc = int(cur_class - (classes / 2))
@@ -93,7 +93,7 @@ def build_single_record_file(filename, dimension, classes=2, data_feature_name='
     arr = np.random.normal(loc=loc, size=(dimension,))
     feature = {'labels': label_feature(cur_class), data_feature_name: string_feature(arr)}
     example = tf.train.Example(features=tf.train.Features(feature=feature))
-    with open(filename, 'w') as f:
+    with open(filename, 'wb') as f:
         f.write(example.SerializeToString())
 
 

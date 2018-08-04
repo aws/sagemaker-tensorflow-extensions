@@ -10,6 +10,7 @@ import glob
 import sys
 
 TF_VERSION = "1.8.0"
+
 REGION = "us-west-2"
 
 if __name__ == '__main__':
@@ -33,13 +34,15 @@ if __name__ == '__main__':
         else:
             raise
 
-    tag = '{}/sagemaker_tensorflow_integ_test:{}-{}'.format(registry, TF_VERSION, args.device)[8:]
+    python_version = str(sys.version_info[0])
+    tag = '{}/sagemaker_tensorflow_integ_test:{}-{}-{}'.format(registry, TF_VERSION, args.device, python_version)[8:]
     client.images.build(
         path='.',
         dockerfile='test/integ/Dockerfile',
         tag=tag,
         buildargs={'sagemaker_tensorflow': sdist_path,
                    'device': args.device,
+                   'python': 'python' if python_version == 2 else 'python3',
                    'tensorflow_version': TF_VERSION,
                    'script': 'test/integ/scripts/estimator_script.py'})
 

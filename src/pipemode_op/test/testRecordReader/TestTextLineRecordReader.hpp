@@ -19,6 +19,7 @@
 
 namespace sagemaker {
 namespace tensorflow {
+
 class TextLineRecordReaderTest : public ::testing::Test {
  protected:
     TextLineRecordReaderTest();

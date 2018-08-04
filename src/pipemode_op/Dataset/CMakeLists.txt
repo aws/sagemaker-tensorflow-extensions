@@ -19,10 +19,16 @@ file(GLOB_RECURSE sources ./src/*.cpp ./src/*.hpp)
 
 add_library(PipeModeOp SHARED ${sources})
 
-execute_process(COMMAND "python" "-c"
+if(NOT DEFINED ENV{PYTHON_EXECUTABLE})
+    set(ENV{PYTHON_EXECUTABLE} "python")
+endif(NOT DEFINED ENV{PYTHON_EXECUTABLE})
+
+message("python executable $ENV{PYTHON_EXECUTABLE}")
+
+execute_process(COMMAND "$ENV{PYTHON_EXECUTABLE}" "-c"
 	"import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_lib() + '/')"
 	OUTPUT_VARIABLE TF_LIB_DIR)
-execute_process(COMMAND "python" "-c"
+execute_process(COMMAND "$ENV{PYTHON_EXECUTABLE}" "-c"
 	"import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_include() + '/')"
 	OUTPUT_VARIABLE TF_INCLUDE_DIR)
 
