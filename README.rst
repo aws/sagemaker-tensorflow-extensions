@@ -5,7 +5,7 @@ SageMaker TensorFlow
 .. role:: python(code)
    :language: python
 
-SageMaker specific extensions to TensorFlow, for Python 2 and TensorFlow versions 1.7, 1.8, and 1.9. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow DataSets.
+SageMaker specific extensions to TensorFlow, for Python 2.7, 3.4-3.6 and TensorFlow versions 1.7, 1.8, and 1.9. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow DataSets.
 
 Install
 ~~~~~~~
@@ -14,6 +14,13 @@ You can build SageMaker TensorFlow into your docker images with the following co
 ::
 
    pip install sagemaker-tensorflow
+
+
+You can also install sagemaker-tensorflow for a specific version of TensorFlow. The following command will install sagemaker-tensorflow for TensorFlow 1.7:
+
+::
+
+   pip install "sagemaker-tensorflow>=1.7,<1.8"
 
 
 Build from source
