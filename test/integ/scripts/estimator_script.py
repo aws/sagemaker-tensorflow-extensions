@@ -77,8 +77,7 @@ estimator = tf.estimator.LinearClassifier(feature_columns=[column])
 estimator.train(input_fn=input_fn)
 
 # Confirm that we have read the correct number of pipes
-assert os.path.exists('/opt/ml/input/data/{}_{}'.format(config.channel, config.epochs))
-
+assert os.path.exists('/opt/ml/input/data/{}_{}'.format(config.channel, config.epochs + 1))
 
 # Test that we can create a new PipeModeDataset after training has run
 ds = PipeModeDataset(config.channel)
