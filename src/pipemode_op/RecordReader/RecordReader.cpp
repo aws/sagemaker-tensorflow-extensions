@@ -24,17 +24,17 @@
 
 using sagemaker::tensorflow::RecordReader;
 
-void RecordReader::WaitForFile() {
+bool RecordReader::WaitForFile() {
     auto sleep = std::chrono::seconds(0);
     while (sleep < file_creation_timeout_) {
         struct stat buffer;
         if (stat(file_path_.c_str(), &buffer) == 0) {
-            return;
+            return true;
         }
         sleep = sleep + std::chrono::seconds(1);
         std::this_thread::sleep_for(sleep);
     }
-    throw std::runtime_error("File does not exist: " + file_path_);
+    return false;
 }
 
 int UNSET_FILE_DESCRIPTOR = -2;
@@ -45,10 +45,11 @@ RecordReader::RecordReader(const std::string& file_path, const std::size_t read_
     file_path_(file_path),
     read_size_(read_size),
     file_creation_timeout_(file_creation_timeout)  {
-        WaitForFile();
-        fd_ = open(file_path_.c_str(), O_RDONLY);
-        if (-1 == fd_) {
-            throw std::system_error(errno, std::system_category());
+        if (WaitForFile()) {
+            fd_ = open(file_path_.c_str(), O_RDONLY);
+            if (-1 == fd_) {
+                throw std::system_error(errno, std::system_category());
+            }
         }
     }
 
@@ -59,6 +60,9 @@ RecordReader::~RecordReader() {
 }
 
 std::size_t RecordReader::Read(void* dest, std::size_t nbytes) {
+    if (fd_ == UNSET_FILE_DESCRIPTOR) {
+        throw std::runtime_error("File does not exist: " + file_path_);
+    }
     std::size_t bytes_read = 0;
     while (nbytes) {
         ssize_t read_amount = read(fd_, dest + bytes_read, std::min(nbytes, read_size_));
