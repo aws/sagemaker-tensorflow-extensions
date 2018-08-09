@@ -96,9 +96,8 @@ TEST_F(RecordReaderTest, WaitForFile) {
 TEST_F(RecordReaderTest, WaitForFileFails) {
     std::string channelDirectory = CreateTemporaryDirectory();
     auto timeout = std::chrono::seconds(2);
-    std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(
-        new TestReader(channelDirectory + "/missing.file", 200, timeout));
     EXPECT_THROW({
-        reader->WrapWaitForFile();},
+        std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(
+        new TestReader(channelDirectory + "/missing.file", 200, timeout));},
         std::runtime_error);
 }

@@ -44,7 +44,13 @@ RecordReader::RecordReader(const std::string& file_path, const std::size_t read_
     fd_(UNSET_FILE_DESCRIPTOR),
     file_path_(file_path),
     read_size_(read_size),
-    file_creation_timeout_(file_creation_timeout)  {}
+    file_creation_timeout_(file_creation_timeout)  {
+        WaitForFile();
+        fd_ = open(file_path_.c_str(), O_RDONLY);
+        if (-1 == fd_) {
+            throw std::system_error(errno, std::system_category());
+        }
+    }
 
 RecordReader::~RecordReader() {
     if (fd_ >= 0) {
@@ -53,13 +59,6 @@ RecordReader::~RecordReader() {
 }
 
 std::size_t RecordReader::Read(void* dest, std::size_t nbytes) {
-    if (fd_ == UNSET_FILE_DESCRIPTOR) {
-        WaitForFile();
-        fd_ = open(file_path_.c_str(), O_RDONLY);
-        if (-1 == fd_) {
-            throw std::system_error(errno, std::system_category());
-        }
-    }
     std::size_t bytes_read = 0;
     while (nbytes) {
         ssize_t read_amount = read(fd_, dest + bytes_read, std::min(nbytes, read_size_));

@@ -117,7 +117,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6'
     ],
-    install_requires=['tensorflow>=1.9'],
+    install_requires=['tensorflow>=1.9,<1.10'],
     extras_require={
         'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock',
                  'sagemaker', 'docker', 'boto3']
