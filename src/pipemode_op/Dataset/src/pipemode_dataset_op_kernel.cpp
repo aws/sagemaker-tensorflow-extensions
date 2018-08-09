@@ -113,7 +113,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
             channel_(channel),
             benchmark_(benchmark) {}
 
-        std::unique_ptr<IteratorBase> MakeIteratorInternal(const std::string& prefix) const override {
+        std::unique_ptr<IteratorBase> MakeIterator(const std::string& prefix) const override {
             auto new_prefix = prefix + "::PipeMode-" + channel_ + "-"
                 + std::to_string(pipe_state_manager_.GetPipeIndex());
             auto ptr = std::unique_ptr<IteratorBase>(
@@ -134,7 +134,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
             return *shapes;
         }
 
-        std::string DebugString() const override { return "PipeModeDatasetOp::Dataset"; }
+        std::string DebugString() override { return "PipeModeDatasetOp::Dataset"; }
 
      protected:
         Status AsGraphDefInternal(DatasetGraphDefBuilder* b,
