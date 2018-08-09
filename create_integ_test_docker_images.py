@@ -9,6 +9,7 @@ import botocore
 import glob
 import sys
 
+
 TF_VERSION = "1.7.0"
 
 REGION = "us-west-2"

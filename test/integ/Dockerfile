@@ -1,5 +1,10 @@
 FROM ubuntu:16.04
 
+ARG device=cpu
+ARG tensorflow_version=1.7.0
+ARG script
+ARG python
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         curl \
@@ -9,10 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libpng12-dev \
         libzmq3-dev \
         pkg-config \
-        python-dev \
         python3 \
-        python-pip \
-        python3-pip \
         rsync \
         software-properties-common \
         unzip \
@@ -28,19 +30,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ARG tensorflow_version=1.7.0
-ARG device=cpu
-ARG script
-ARG python
+RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
+    $python get-pip.py && \
+    rm get-pip.py
 
-RUN $python -m pip install cmake wheel setuptools
+RUN $python -m pip install cmake
 
 
 RUN if [ "$device"="cpu" ] ; then \
-		$python -m pip install tensorflow==$tensorflow_version; \
-	else \
-		$python -m pip install "tensorflow-gpu"==$tensorflow_version; \
-	fi
+        $python -m pip install tensorflow==$tensorflow_version; \
+    else \
+        $python -m pip install "tensorflow-gpu"==$tensorflow_version; \
+    fi
 
 ARG sagemaker_tensorflow=sagemaker_tensorflow-$tensorflow_version.1.0.0.tar.gz
 
@@ -55,5 +56,6 @@ RUN sagemaker_tensorflow_local=$(basename $sagemaker_tensorflow) && \
     rm $sagemaker_tensorflow_local
 
 COPY $script script.py
+
 ENV python_command=$python
 ENTRYPOINT ["sh", "-c", "$python_command script.py"]

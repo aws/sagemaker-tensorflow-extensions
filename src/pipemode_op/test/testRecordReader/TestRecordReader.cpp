@@ -46,8 +46,8 @@ class TestReader : RecordReader {
         }
 
         // make WaitForFile public for testing
-        void WrapWaitForFile() {
-            WaitForFile();
+        bool WrapWaitForFile() {
+            return WaitForFile();
         }
 };
 
@@ -98,7 +98,16 @@ TEST_F(RecordReaderTest, WaitForFileFails) {
     auto timeout = std::chrono::seconds(2);
     std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(
         new TestReader(channelDirectory + "/missing.file", 200, timeout));
+    ASSERT_FALSE(reader->WrapWaitForFile());
+}
+
+TEST_F(RecordReaderTest, ReadMissingFileFails) {
+    std::string channelDirectory = CreateTemporaryDirectory();
+    auto timeout = std::chrono::seconds(2);
+    std::unique_ptr<TestReader> reader = std::unique_ptr<TestReader>(
+        new TestReader(channelDirectory + "/missing.file", 200, timeout));
+    char buffer[4];
     EXPECT_THROW({
-        reader->WrapWaitForFile();},
+        reader->WrapRead(static_cast<void*>(buffer), 4);},
         std::runtime_error);
 }

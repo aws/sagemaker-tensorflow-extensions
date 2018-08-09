@@ -43,7 +43,7 @@ To install this package, run:
 
 in this directory. 
 
-To build in a SageMaker docker image, you can use the following RUN command in your Dockerfile, assuming you have Python 2.7 and pip already installed in your image:
+To build in a SageMaker docker image, you can use the following RUN command in your Dockerfile:
 
 ::
 

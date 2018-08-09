@@ -94,7 +94,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='sagemaker_tensorflow',
-    version='1.7.0.1.0.1',
+    version='1.7.0.1.0.2',
     description='Amazon Sagemaker specific TensorFlow extensions.',
     packages=find_packages(where='src', exclude=('test',)),
     package_dir={'': 'src'},
