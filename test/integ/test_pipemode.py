@@ -184,7 +184,7 @@ def multi_records_test_data():
     s3_url = make_test_data(
         directory=test_data,
         name='multi',
-        num_files=5,
+        num_files=1,
         num_records=1000,
         dimension=DIMENSION)
     yield s3_url
