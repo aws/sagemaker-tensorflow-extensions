@@ -85,9 +85,11 @@ class RecordReader {
     std::size_t Read(void* data, std::size_t nbytes);
 
     /**
-       Wait for the file this RecordReader is reading to be created.
+       Wait for the file this RecordReader is reading to be created. Will 
+       time-out after file_creation_timeout_ seconds. Returns true if the file
+       was found before time-out, false otherwise.
      */
-    void WaitForFile();
+    bool WaitForFile();
 
  private:
     // The file descriptor of the file being read

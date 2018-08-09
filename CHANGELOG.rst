@@ -2,6 +2,15 @@
 CHANGELOG
 =========
 
+1.9.0.1.0.4
+===========
+
+* bug fix: Fixed bug where creating an iterator, but not reading from the iterator, then creating a second iterator would
+           cause reading from the second iterator to hang. Updated tests.
+
+1.9.0.1.0.3
+===========
+
 1.9.0.1.0.2
 ===========
 
