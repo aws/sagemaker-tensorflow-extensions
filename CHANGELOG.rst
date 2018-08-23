@@ -2,6 +2,11 @@
 CHANGELOG
 =========
 
+1.9.0.1.0.5
+===========
+
+* bug fix: Remove explicit TensorFlow dependency from setup.py.
+
 1.9.0.1.0.4
 ===========
 
