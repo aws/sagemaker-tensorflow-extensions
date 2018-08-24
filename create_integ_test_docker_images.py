@@ -9,7 +9,7 @@ import botocore
 import glob
 import sys
 
-TF_VERSION = "1.9.0"
+TF_VERSION = "1.10.0"
 REGION = "us-west-2"
 
 if __name__ == '__main__':
