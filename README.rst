@@ -9,7 +9,7 @@ SageMaker specific extensions to TensorFlow, for Python 2.7, 3.4-3.6 and TensorF
 
 Install
 ~~~~~~~
-You can build SageMaker TensorFlow into your docker images with the following command:
+You can build SageMaker TensorFlow into a docker image with the following command:
 
 ::
 
@@ -22,19 +22,38 @@ You can also install sagemaker-tensorflow for a specific version of TensorFlow. 
 
    pip install "sagemaker-tensorflow>=1.7,<1.8"
 
-Build from source
-~~~~~~~~~~~~~~~~~
-SageMaker TensorFlow build requires :code:`cmake` to be installed. Please :code:`pip install cmake` before building SageMaker TensorFlow.
+Build and install from source
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The SageMaker TensorFlow build depends on the following: 
 
-SageMaker TensorFlow extensions is installed as a python package named :code:`sagemaker_tensorflow`. 
+* cmake
+* tensorflow
+* curl-dev
 
-First, make sure you have cmake installed. If not:
+To install these run:
+
+::
+
+   pip install cmake tensorflow
+
+On Amazon Linux, curl-dev can be installed with:
+
+::
+
+   yum install curl-dev
+
+On Ubuntu, curl-dev can be installed with:
+
+::
+
+   apt-get install libcurl4-openssl-dev
+
 
 ::
 
     pip install cmake
 
-To install this package, run:
+To build and install this package, run:
 
 ::
 
@@ -47,7 +66,6 @@ To build in a SageMaker docker image, you can use the following RUN command in y
 ::
 
     RUN git clone https://github.com/aws/sagemaker-tensorflow-extensions.git && \
-        pip install cmake && \
 	cd sagemaker-tensorflow-extensions && \
         pip install . && \
         cd .. && \
@@ -60,7 +78,6 @@ Release branching is used to track different versions of TensorFlow. Tensorflow 
 ::
 
     RUN git clone https://github.com/aws/sagemaker-tensorflow-extensions.git && \
-        pip install cmake && \
 	cd sagemaker-tensorflow-extensions && \
         git checkout 1.7 && \
         pip install . && \
@@ -69,7 +86,7 @@ Release branching is used to track different versions of TensorFlow. Tensorflow 
 
 Requirements
 ~~~~~~~~~~~~
-SageMaker TensorFlow extensions builds on Python 2.7 in Linux, with either TensorFlow 1.7, and 1.8. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version installed.
+SageMaker TensorFlow extensions builds on Python 2.7 in Linux, with either TensorFlow 1.7, 1.8, and 1.9. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version installed.
 
 SageMaker Pipe Mode
 ~~~~~~~~~~~~~~~~~~~
