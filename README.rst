@@ -49,10 +49,6 @@ On Ubuntu, curl-dev can be installed with:
    apt-get install libcurl4-openssl-dev
 
 
-::
-
-    pip install cmake
-
 To build and install this package, run:
 
 ::
