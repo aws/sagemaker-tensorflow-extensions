@@ -69,7 +69,7 @@ To build in a SageMaker docker image, you can use the following RUN command in y
 
 Building for a specific TensorFlow version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Release branching is used to track different versions of TensorFlow. Tensorflow versions 1.7 and 1.8 are supported. To build for a specific release of TensorFlow, checkout the release branch prior to running a pip install. For example, to build for TensorFlow 1.7, you can run the following command in your Dockerfile:
+Release branching is used to track different versions of TensorFlow. To build for a specific release of TensorFlow, checkout the release branch prior to running a pip install. For example, to build for TensorFlow 1.7, you can run the following command in your Dockerfile:
 
 ::
 
@@ -82,7 +82,7 @@ Release branching is used to track different versions of TensorFlow. Tensorflow 
 
 Requirements
 ~~~~~~~~~~~~
-SageMaker TensorFlow extensions builds on Python 2.7 in Linux, with either TensorFlow 1.7, 1.8, and 1.9. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version installed.
+SageMaker TensorFlow extensions builds on Python 2.7 in Linux with a TensorFlow version >= 1.7. Older versions of TensorFlow are not supported. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version.
 
 SageMaker Pipe Mode
 ~~~~~~~~~~~~~~~~~~~
