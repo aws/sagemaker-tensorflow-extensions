@@ -82,7 +82,7 @@ Release branching is used to track different versions of TensorFlow. To build fo
 
 Requirements
 ~~~~~~~~~~~~
-SageMaker TensorFlow extensions builds on Python 2.7 in Linux with a TensorFlow version >= 1.7. Older versions of TensorFlow are not supported. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version.
+SageMaker TensorFlow extensions builds on Python 2.7, 3.4-3.6 in Linux with a TensorFlow version >= 1.7. Older versions of TensorFlow are not supported. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version.
 
 SageMaker Pipe Mode
 ~~~~~~~~~~~~~~~~~~~
