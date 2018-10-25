@@ -42,7 +42,7 @@ using tensorflow::DatasetOpKernel;
 using tensorflow::DataTypeVector;
 using tensorflow::DEVICE_CPU;
 using tensorflow::DT_STRING;
-using tensorflow::GraphDatasetBase;
+using tensorflow::DatasetBase;
 using tensorflow::IteratorBase;
 using tensorflow::IteratorContext;
 using tensorflow::IteratorStateReader;
@@ -102,11 +102,11 @@ class PipeModeDatasetOp : public DatasetOpKernel {
     }
 
  private:
-    class Dataset : public GraphDatasetBase {
+    class Dataset : public DatasetBase {
      public:
         explicit Dataset(OpKernelContext* ctx, const std::string& record_format, const std::string& state_directory,
             const std::string& channel_directory, const std::string& channel, bool benchmark):
-            GraphDatasetBase(ctx),
+            DatasetBase(ctx),
             record_format_(record_format),
             channel_directory_(channel_directory),
             pipe_state_manager_(state_directory, channel),
