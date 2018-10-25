@@ -37,12 +37,14 @@ using sagemaker::tensorflow::TextLineRecordReader;
 using sagemaker::tensorflow::TFRecordReader;
 
 using tensorflow::DatasetBase;
+using tensorflow::SerializationContext;
+using tensorflow::DatasetContext;
 using tensorflow::DatasetIterator;
 using tensorflow::DatasetOpKernel;
 using tensorflow::DataTypeVector;
 using tensorflow::DEVICE_CPU;
 using tensorflow::DT_STRING;
-using tensorflow::GraphDatasetBase;
+using tensorflow::DatasetBase;
 using tensorflow::IteratorBase;
 using tensorflow::IteratorContext;
 using tensorflow::IteratorStateReader;
@@ -102,11 +104,11 @@ class PipeModeDatasetOp : public DatasetOpKernel {
     }
 
  private:
-    class Dataset : public GraphDatasetBase {
+    class Dataset : public DatasetBase {
      public:
         explicit Dataset(OpKernelContext* ctx, const std::string& record_format, const std::string& state_directory,
             const std::string& channel_directory, const std::string& channel, bool benchmark):
-            GraphDatasetBase(ctx),
+            DatasetBase(DatasetContext(ctx)),
             record_format_(record_format),
             channel_directory_(channel_directory),
             pipe_state_manager_(state_directory, channel),
@@ -137,7 +139,8 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         std::string DebugString() const override { return "PipeModeDatasetOp::Dataset"; }
 
      protected:
-        Status AsGraphDefInternal(DatasetGraphDefBuilder* b,
+        Status AsGraphDefInternal(SerializationContext* ctx,
+                                  DatasetGraphDefBuilder* b,
                                   Node** output) const override {
             throw std::runtime_error("Conversion to GraphDef is not supported.");
         }

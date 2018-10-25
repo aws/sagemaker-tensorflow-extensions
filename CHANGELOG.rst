@@ -2,6 +2,11 @@
 CHANGELOG
 =========
 
+1.11.0.1.0.0
+============
+
+* enhancement: Support for TensorFlow 1.11
+
 1.10.0.1.0.0
 ============
 
