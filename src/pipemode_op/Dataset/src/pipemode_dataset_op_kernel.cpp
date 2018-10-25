@@ -106,7 +106,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
      public:
         explicit Dataset(OpKernelContext* ctx, const std::string& record_format, const std::string& state_directory,
             const std::string& channel_directory, const std::string& channel, bool benchmark):
-            DatasetBase(DatasetContext(ctx),
+            DatasetBase(DatasetContext(ctx)),
             record_format_(record_format),
             channel_directory_(channel_directory),
             pipe_state_manager_(state_directory, channel),
