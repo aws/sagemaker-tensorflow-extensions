@@ -37,6 +37,7 @@ using sagemaker::tensorflow::TextLineRecordReader;
 using sagemaker::tensorflow::TFRecordReader;
 
 using tensorflow::DatasetBase;
+using tensorflow::SerializationContext;
 using tensorflow::DatasetIterator;
 using tensorflow::DatasetOpKernel;
 using tensorflow::DataTypeVector;
