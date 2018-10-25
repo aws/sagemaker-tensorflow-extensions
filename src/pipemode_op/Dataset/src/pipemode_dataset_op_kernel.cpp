@@ -140,8 +140,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         Status AsGraphDefInternal(SerializationContext* ctx,
                                   DatasetGraphDefBuilder* b,
                                   Node** output) const override {
-            return errors::Unimplemented("%s does not support serialization",
-                                         DebugString());
+            throw std::runtime_error("Conversion to GraphDef is not supported.");
         }
 
      private:
