@@ -128,6 +128,10 @@ A :python:`PipeModeDataset` is a regular TensorFlow :python:`Dataset` and as suc
 	ds = ds.map(parse, num_parallel_calls=10)
 	ds = ds.batch(64)
 
+Support
+-------
+We're here to help. Have a question? Please open a GitHub issue, we'd love to hear from you.
+
 License
 -------
 
