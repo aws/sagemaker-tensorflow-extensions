@@ -129,11 +129,11 @@ A :python:`PipeModeDataset` is a regular TensorFlow :python:`Dataset` and as suc
 	ds = ds.batch(64)
 
 Support
--------
+~~~~~~~
 We're here to help. Have a question? Please open a GitHub issue, we'd love to hear from you.
 
 License
--------
+~~~~~~~
 
 SageMaker TensorFlow is licensed under the Apache 2.0 License. It is copyright 2018
 Amazon.com, Inc. or its affiliates. All Rights Reserved. The license is available at:
