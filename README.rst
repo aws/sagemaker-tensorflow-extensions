@@ -132,7 +132,7 @@ Support
 ~~~~~~~
 We're here to help. Have a question? Please open a `GitHub issue`_, we'd love to hear from you.
 
-__: https://github.com/aws/sagemaker-tensorflow-extensions/issues/new
+..`GitHub issue`: https://github.com/aws/sagemaker-tensorflow-extensions/issues/new
 License
 ~~~~~~~
 
