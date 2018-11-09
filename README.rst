@@ -130,8 +130,9 @@ A :python:`PipeModeDataset` is a regular TensorFlow :python:`Dataset` and as suc
 
 Support
 ~~~~~~~
-We're here to help. Have a question? Please open a GitHub issue, we'd love to hear from you.
+We're here to help. Have a question? Please open a `GitHub issue`_, we'd love to hear from you.
 
+__: https://github.com/aws/sagemaker-tensorflow-extensions/issues/new
 License
 ~~~~~~~
 
