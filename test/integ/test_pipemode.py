@@ -64,11 +64,11 @@ def timeout(seconds=0, minutes=0, hours=0):
         signal.alarm(0)
 
 
-def get_bucket(region='us-west-2'):
+def get_bucket(default_region='us-west-2'):
     boto_session = boto3.Session()
     s3 = boto_session.resource('s3')
     account = boto_session.client('sts').get_caller_identity()['Account']
-    region = boto_session.region_name
+    region = boto_session.region_name or default_region
     default_bucket = 'pipemode-it-{}-{}'.format(region, account)
     try:
         s3.create_bucket(Bucket=default_bucket, CreateBucketConfiguration={'LocationConstraint': region})

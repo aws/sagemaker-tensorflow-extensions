@@ -117,7 +117,7 @@ def test_missing_channel():
     channel, directory = write_to_channel("A", [b"bear", b"bunny", b"truck"])
     with tf.Session() as sess:
         with pytest.raises(PipeModeDatasetException):
-            dataset = PipeModeDataset("Not A Channel", pipe_dir=directory, state_dir=directory, config_dir=directory)
+            PipeModeDataset("Not A Channel", pipe_dir=directory, state_dir=directory, config_dir=directory)
 
 def test_multiple_iterators():
     channel, directory = write_to_channel("A", [b"bear"])

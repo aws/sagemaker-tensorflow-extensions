@@ -20,7 +20,7 @@ import sys
 import tempfile
 import tensorflow as tf
 from .. import recordio_utils
-from sagemaker_tensorflow import PipeModeDataset
+from sagemaker_tensorflow import PipeModeDataset, PipeModeDatasetException
 
 dimension = 100
 
@@ -204,3 +204,11 @@ def test_csv():
             d = sess.run(next)
             sys.stdout.flush()
             assert d == {str(i): i for i in range(100)}
+
+def test_input_config_validation_failure():
+    channel_dir = tempfile.mkdtemp()
+    state_dir = tempfile.mkdtemp()
+    write_config(channel_dir, 'testchannel')
+    with pytest.raises(PipeModeDatasetException):
+        with tf.Session() as sess:
+            PipeModeDataset("Not a Channel", pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir)
