@@ -11,12 +11,13 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import json
 import os
 import tempfile
 import tensorflow as tf
 import sys
 import pytest
-from sagemaker_tensorflow import PipeModeDataset
+from sagemaker_tensorflow import PipeModeDataset, PipeModeDatasetException
 import struct
 
 _kmagic = 0xced7230a
@@ -41,17 +42,27 @@ def write_recordio(f, data):
 
 def write_to_channel(channel, records):
     directory = tempfile.mkdtemp()
+    write_config(directory, channel)
     filepath = os.path.join(directory, channel + "_0")
     with open(filepath, 'wb') as f:
         for record in records:
             write_recordio(f, record)
     return channel, directory
 
+def write_config(directory, channel):
+    configpath = os.path.join(directory, 'inputdataconfig.json')
+    input_data_config = {
+        channel: {
+            "TrainingInputMode": "Pipe"
+        }
+    }
+    with open(configpath, 'w') as f:
+        f.write(json.dumps(input_data_config))
 
 def test_single_record():
     channel, directory = write_to_channel("A", [b"bear"])
     with tf.Session() as sess:
-        dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory)
+        dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory, config_dir=directory)
         it = dataset.make_one_shot_iterator()
         next = it.get_next()
         assert b"bear" == sess.run(next)
@@ -60,7 +71,7 @@ def test_single_record():
 def test_multiple_records():
     channel, directory = write_to_channel("B", [b"bunny", b"caterpillar"])
     with tf.Session() as sess:
-        dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory)
+        dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory, config_dir=directory)
         it = dataset.make_one_shot_iterator()
         next = it.get_next()
         assert b"bunny" == sess.run(next)
@@ -71,7 +82,7 @@ def test_large_record():
     channel, directory = write_to_channel("C", [b"a" * 1000000])
 
     with tf.Session() as sess:
-        dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory)
+        dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory, config_dir=directory)
         it = dataset.make_one_shot_iterator()
         next = it.get_next()
         assert b"a" * 1000000 == sess.run(next)
@@ -82,8 +93,8 @@ def test_invalid_data():
     filename = "X_0"
     with open(directory + "/" + filename, 'wb') as f:
         f.write(b"adfsafasfd")
-
-    dataset = PipeModeDataset("X", pipe_dir=directory, state_dir=directory)
+    write_config(directory, 'X')
+    dataset = PipeModeDataset("X", pipe_dir=directory, state_dir=directory, config_dir=directory)
     with pytest.raises(tf.errors.InternalError):
         with tf.Session() as sess:
             it = dataset.make_one_shot_iterator()
@@ -94,7 +105,7 @@ def test_invalid_data():
 def test_out_of_range():
     channel, directory = write_to_channel("A", [b"bear", b"bunny", b"truck"])
     with tf.Session() as sess:
-        dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory)
+        dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory, config_dir=directory)
         it = dataset.make_one_shot_iterator()
         next = it.get_next()
         for i in range(3):
@@ -102,11 +113,16 @@ def test_out_of_range():
         with pytest.raises(tf.errors.OutOfRangeError):
             sess.run(next)
 
+def test_missing_channel():
+    channel, directory = write_to_channel("A", [b"bear", b"bunny", b"truck"])
+    with tf.Session() as sess:
+        with pytest.raises(PipeModeDatasetException):
+            dataset = PipeModeDataset("Not A Channel", pipe_dir=directory, state_dir=directory, config_dir=directory)
 
 def test_multiple_iterators():
     channel, directory = write_to_channel("A", [b"bear"])
 
-    dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory)
+    dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory, config_dir=directory)
     with tf.Session() as sess:
         it = dataset.make_one_shot_iterator()
         next = it.get_next()

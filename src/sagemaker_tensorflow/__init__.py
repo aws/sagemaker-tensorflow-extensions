@@ -12,6 +12,6 @@
 #  permissions and limitations under the License.
 from __future__ import absolute_import
 
-from sagemaker_tensorflow.pipemode import PipeModeDataset
+from sagemaker_tensorflow.pipemode import PipeModeDataset, PipeModeDatasetException
 
-__all__ = [PipeModeDataset]
+__all__ = [PipeModeDataset, PipeModeDatasetException]
