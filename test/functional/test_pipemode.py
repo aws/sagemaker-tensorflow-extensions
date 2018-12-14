@@ -10,6 +10,7 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
+import json
 import logging
 import os
 import pytest
@@ -19,7 +20,7 @@ import sys
 import tempfile
 import tensorflow as tf
 from .. import recordio_utils
-from sagemaker_tensorflow import PipeModeDataset
+from sagemaker_tensorflow import PipeModeDataset, PipeModeDatasetException
 
 dimension = 100
 
@@ -64,6 +65,16 @@ def model_dir():
     yield model_dir
     shutil.rmtree(model_dir)
 
+def write_config(directory, *channels):
+    configpath = os.path.join(directory, 'inputdataconfig.json')
+    input_data_config = {
+        channel: {
+            "TrainingInputMode": "Pipe"
+        } for channel in channels
+    }
+    with open(configpath, 'w') as f:
+        f.write(json.dumps(input_data_config))
+
 
 def create_fifos(epochs, channel_dir, channel_name, input_file='test.recordio'):
     for epoch in range(epochs):
@@ -98,9 +109,10 @@ def test_multi_epoch_pipeline(model_dir):
     epochs = 3
     channel_name = 'testchannel'
     create_fifos(epochs, channel_dir, channel_name)
+    write_config(channel_dir, 'testchannel')
 
     def input_fn():
-        ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir)
+        ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir)
         ds = ds.map(parse, num_parallel_calls=12)
         ds = ds.repeat(count=2)
         ds = ds.prefetch(3)
@@ -118,9 +130,10 @@ def test_multi_channels():
     epochs = 3
     create_fifos(epochs, channel_dir, "channel_a")
     create_fifos(epochs, channel_dir, "channel_b")
+    write_config(channel_dir, 'channel_a', 'channel_b')
 
     def make_dataset(channel_name):
-        ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir)
+        ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir)
         ds = ds.map(parse, num_parallel_calls=12)
         ds = ds.repeat(count=2)
         ds = ds.prefetch(3)
@@ -150,7 +163,10 @@ def test_tf_record():
     epochs = 1
     channel_name = 'testchannel'
     create_fifos(epochs, channel_dir, channel_name, input_file='test.tfrecords')
-    ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, record_format='TFRecord')
+    write_config(channel_dir, 'testchannel')
+
+    ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir,
+                         record_format='TFRecord')
 
     with tf.Session() as sess:
         it = ds.make_one_shot_iterator()
@@ -168,6 +184,8 @@ def test_csv():
     state_dir = tempfile.mkdtemp()
     epochs = 1
     channel_name = 'testchannel'
+    write_config(channel_dir, 'testchannel')
+
     create_fifos(epochs, channel_dir, channel_name, input_file='test.csv')
 
     def parse(line):
@@ -176,7 +194,8 @@ def test_csv():
         return features
 
     with tf.Session() as sess:
-        ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, record_format='TextLine')
+        ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir,
+                             record_format='TextLine')
         ds = ds.map(parse)
 
         it = ds.make_one_shot_iterator()
@@ -185,3 +204,11 @@ def test_csv():
             d = sess.run(next)
             sys.stdout.flush()
             assert d == {str(i): i for i in range(100)}
+
+def test_input_config_validation_failure():
+    channel_dir = tempfile.mkdtemp()
+    state_dir = tempfile.mkdtemp()
+    write_config(channel_dir, 'testchannel')
+    with pytest.raises(PipeModeDatasetException):
+        with tf.Session() as sess:
+            PipeModeDataset("Not a Channel", pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir)
