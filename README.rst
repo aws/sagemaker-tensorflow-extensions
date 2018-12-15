@@ -135,6 +135,7 @@ We're here to help. Have a question? Please open a `GitHub issue`__, we'd love t
 .. _X: https://github.com/aws/sagemaker-tensorflow-extensions/issues/new
 
 __ X_
+
 License
 ~~~~~~~
 
