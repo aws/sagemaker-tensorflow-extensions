@@ -2,6 +2,16 @@
 CHANGELOG
 =========
 
+1.12.0.1.0.0.post1
+==================
+
+* doc-fix: Fix README for PyPI
+
+1.12.0.1.0.0
+============
+
+* enhancement: Support for TensorFlow 1.12
+
 1.11.0.1.0.0
 ============
 
