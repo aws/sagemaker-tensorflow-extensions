@@ -6,8 +6,9 @@ import tempfile
 import tensorflow as tf
 from sagemaker_tensorflow import PipeModeDataset
 
-ds = PipeModeDataset("elizabeth")
+print("Starting estimator script")
 
+ds = PipeModeDataset("elizabeth")
 
 class BenchmarkConfig(object):
 
@@ -74,12 +75,20 @@ column = tf.feature_column.numeric_column('data', shape=(config.dimension, ))
 model_dir = tempfile.mkdtemp()
 estimator = tf.estimator.LinearClassifier(feature_columns=[column])
 
+print("About to call train")
 estimator.train(input_fn=input_fn)
+
+print("About to call evaluate")
+result = estimator.evaluate(input_fn=input_fn)
+for key,value in sorted(result.items()):
+    print('%s: %s' % (key, value))
 
 # Confirm that we have read the correct number of pipes
 assert os.path.exists('/opt/ml/input/data/{}_{}'.format(config.channel, config.epochs + 1))
 
 # Test that we can create a new PipeModeDataset after training has run
+print("Validate that new PipeModeDataset on existing channel can be created")
+
 ds = PipeModeDataset(config.channel)
 
 with tf.Session() as sess:
@@ -87,11 +96,15 @@ with tf.Session() as sess:
     next = it.get_next()
     sess.run(next)
 
+print("Validate create, read, discard, recreate")
+
 # Test that we can create a PipeModeDataset, discard it, and read from a new one
 ds = PipeModeDataset(config.channel)
 with tf.Session() as sess:
     it = ds.make_one_shot_iterator()
     next = it.get_next()
+
+
 ds = PipeModeDataset(config.channel)
 with tf.Session() as sess:
     it = ds.make_one_shot_iterator()
