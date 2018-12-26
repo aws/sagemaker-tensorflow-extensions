@@ -128,6 +128,9 @@ A :python:`PipeModeDataset` is a regular TensorFlow :python:`Dataset` and as suc
 	ds = ds.map(parse, num_parallel_calls=10)
 	ds = ds.batch(64)
 
+
+If you are using the SageMaker Python SDK :code:`TensorFlow` Estimator to launch TensorFlow training on SageMaker, note that the default channel name is :code:`training` when just a single s3 URI is passed to :code:`fit`.
+
 Support
 ~~~~~~~
 We're here to help. Have a question? Please open a `GitHub issue`__, we'd love to hear from you.
