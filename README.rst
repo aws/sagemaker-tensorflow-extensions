@@ -1,4 +1,3 @@
-===============================
 SageMaker TensorFlow 
 ===============================
 
@@ -8,7 +7,7 @@ SageMaker TensorFlow
 SageMaker specific extensions to TensorFlow, for Python 2.7, 3.4-3.6 and TensorFlow versions 1.7-1.11. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow Datasets.
 
 Install
-~~~~~~~
+-------
 You can build SageMaker TensorFlow into a docker image with the following command:
 
 ::
@@ -23,7 +22,7 @@ You can also install sagemaker-tensorflow for a specific version of TensorFlow. 
    pip install "sagemaker-tensorflow>=1.7,<1.8"
 
 Build and install from source
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------
 The SageMaker TensorFlow build depends on the following: 
 
 * cmake
@@ -68,7 +67,7 @@ To build in a SageMaker docker image, you can use the following RUN command in y
         rm -rf sagemaker-tensorflow-extensions
 
 Building for a specific TensorFlow version
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------
 Release branching is used to track different versions of TensorFlow. To build for a specific release of TensorFlow, checkout the release branch prior to running a pip install. For example, to build for TensorFlow 1.7, you can run the following command in your Dockerfile:
 
 ::
@@ -81,17 +80,17 @@ Release branching is used to track different versions of TensorFlow. To build fo
         rm -rf sagemaker-tensorflow-extensions
 
 Requirements
-~~~~~~~~~~~~
+------------
 SageMaker TensorFlow extensions builds on Python 2.7, 3.4-3.6 in Linux with a TensorFlow version >= 1.7. Older versions of TensorFlow are not supported. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version.
 
 SageMaker Pipe Mode
-~~~~~~~~~~~~~~~~~~~
+-------------------
 SageMaker Pipe Mode is a mechanism for providing S3 data to a training job via Linux fifos. Training programs can read from the fifo and get high-throughput data transfer from S3, without managing the S3 access in the program itself. 
 
 SageMaker Pipe Mode is enabled when a SageMaker Training Job is created. Multiple S3 datasets can be mapped to individual fifos, configured in the training request. Pipe Mode is covered in more detail in the SageMaker documentation: https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo.html#your-algorithms-training-algo-running-container-inputdataconfig
 
 Using the PipeModeDataset
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 The :code:`PipeModeDataset` is a TensorFlow :code:`Dataset` for reading SageMaker Pipe Mode channels. After installing the sagemaker tensorflow extensions package, the :code:`PipeModeDataset` can be imported from a moduled named :code:`sagemaker_tensorflow`.
 
 To construct a :code:`PipeModeDataset` that reads TFRecord encoded records from a "training" channel, do the following:
@@ -128,11 +127,44 @@ A :python:`PipeModeDataset` is a regular TensorFlow :python:`Dataset` and as suc
 	ds = ds.map(parse, num_parallel_calls=10)
 	ds = ds.batch(64)
 
+Using the PipeModeDataset with the SageMaker Python SDK
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The :code:`sagemaker_tensorflow` module is available for TensorFlow scripts to import when launched on SageMaker via the SageMaker Python SDK. If you are using the SageMaker Python SDK :code:`TensorFlow` Estimator to launch TensorFlow training on SageMaker, note that the default channel name is :code:`training` when just a single s3 URI is passed to :code:`fit`.
 
-If you are using the SageMaker Python SDK :code:`TensorFlow` Estimator to launch TensorFlow training on SageMaker, note that the default channel name is :code:`training` when just a single s3 URI is passed to :code:`fit`.
+Using the PipeModeDataset with SageMaker Augmented Manifest Files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SageMaker Augmented Manifest Files provide a mechanism to associate metdata (such as labels) with binary data (like images) for training. An Augmented Manifest File is a single json-lines file, stored as an object in S3. During training, SageMaker reads the data from an Augmented Manifest File and passes the data to the running algorithm container, through a SageMaker pipe mode channel.
+
+To learn more about preparing and using an Augmented Manifest File, please consult the SageMaker documentation on Augmented Manifest Files `here`__.
+
+.. _SMAMF: https://docs.aws.amazon.com/sagemaker/latest/dg/augmented-manifest.html
+
+__ SMAMF_
+
+You can use the PipeModeDataset to read data from a pipe mode channel that is backed by an Augmented Manifest, by following these guidelines:
+
+Firstly, use a Dataset :code:`batch` operation to combine successive records into a single :code:`tuple`. Each attribute in an Augmented Manifest File record is queued into the Pipe Mode's fifo as a separate record. By batching, you can combine these successive per-attribute records into a single tuple. In general, if your Augmented Manifest File contains n attributes, then you should issue a call to :code:`batch(n)` on your PipeModeDataset and then use a simple combining function applied with a :code:`map` to combine each record in the batch into a single tuple. For example, assume your Augmented Manifest File contains 3 attributes, the following code sample will read Augmented Manifest records into a 3-tuple of string Tensors when applied to a PipeModeDataset.
+
+.. code:: python
+
+        ds = PipeModeDataset("my_channel")
+	def combine(records):
+	    return (records[0], records[1], records[2])
+	ds = ds.batch(3)     # My Augmented Manifest has 3 attributes
+	ds = ds.map(combine) # Convert each batch of three records into a single tuple with three Tensors.
+
+	# Perform other operations on the Dataset - e.g. subsequent batching, decoding
+	...
+	return ds
+
+Secondly, ensure you pass :code:`"RecordIO"` as the value for :code:`RecordWrapperType` when you launch the SageMaker training job with an Augmented Manifest File.
+
+Thirdly, ensure your PipeModeDataset splits records using RecordIO decoding in your training script. You can do this by simply constructing the PipeModeDataset with no :code:`record_format` argument, as RecordIO is the default record wrapping type for the PipeModeDataset.
+
+If you follow these steps then the PipeModeDataset will produce tuples of string Tensors that you can then decode or process further (for example, by doing a jpeg decode if your data are images).
 
 Support
-~~~~~~~
+-------
 We're here to help. Have a question? Please open a `GitHub issue`__, we'd love to hear from you.
 
 .. _X: https://github.com/aws/sagemaker-tensorflow-extensions/issues/new
@@ -140,7 +172,7 @@ We're here to help. Have a question? Please open a `GitHub issue`__, we'd love t
 __ X_
 
 License
-~~~~~~~
+-------
 
 SageMaker TensorFlow is licensed under the Apache 2.0 License. It is copyright 2018
 Amazon.com, Inc. or its affiliates. All Rights Reserved. The license is available at:
