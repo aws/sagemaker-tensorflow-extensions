@@ -146,16 +146,17 @@ You can use the PipeModeDataset to read data from a pipe mode channel that is ba
 Firstly, use a Dataset :code:`batch` operation to combine successive records into a single :code:`tuple`. Each attribute in an Augmented Manifest File record is queued into the Pipe Mode's fifo as a separate record. By batching, you can combine these successive per-attribute records into a single tuple. In general, if your Augmented Manifest File contains n attributes, then you should issue a call to :code:`batch(n)` on your PipeModeDataset and then use a simple combining function applied with a :code:`map` to combine each record in the batch into a single tuple. For example, assume your Augmented Manifest File contains 3 attributes, the following code sample will read Augmented Manifest records into a 3-tuple of string Tensors when applied to a PipeModeDataset.
 
 .. code:: python
-
+	
         ds = PipeModeDataset("my_channel")
+	
 	def combine(records):
 	    return (records[0], records[1], records[2])
+	
 	ds = ds.batch(3)     # My Augmented Manifest has 3 attributes
 	ds = ds.map(combine) # Convert each batch of three records into a single tuple with three Tensors.
 
 	# Perform other operations on the Dataset - e.g. subsequent batching, decoding
 	...
-	return ds
 
 Secondly, ensure you pass :code:`"RecordIO"` as the value for :code:`RecordWrapperType` when you launch the SageMaker training job with an Augmented Manifest File.
 
