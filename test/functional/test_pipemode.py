@@ -36,6 +36,13 @@ def recordio_file():
 
 
 @pytest.fixture(autouse=True, scope='session')
+def multipart_recordio_file():
+    recordio_utils.build_record_file('test.mp.recordio', num_records=100, dimension=dimension, multipart=True)
+    yield
+    os.remove('test.mp.recordio')
+
+
+@pytest.fixture(autouse=True, scope='session')
 def tfrecords_file():
     writer = tf.python_io.TFRecordWriter("test.tfrecords")
     for i in range(100):
@@ -64,6 +71,7 @@ def model_dir():
     model_dir = tempfile.mkdtemp()
     yield model_dir
     shutil.rmtree(model_dir)
+
 
 def write_config(directory, *channels):
     configpath = os.path.join(directory, 'inputdataconfig.json')
@@ -157,6 +165,25 @@ def test_multi_channels():
             sess.run(next)
 
 
+def test_multipart_recordio(model_dir):
+    channel_dir = tempfile.mkdtemp()
+    state_dir = tempfile.mkdtemp()
+    channel_name = 'testchannel'
+    create_fifos(1, channel_dir, channel_name, input_file='test.mp.recordio')
+    write_config(channel_dir, 'testchannel')
+
+    def input_fn():
+        ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir)
+        ds = ds.map(parse, num_parallel_calls=12)
+        ds = ds.prefetch(3)
+        ds = ds.batch(3)
+        it = ds.make_one_shot_iterator()
+        return it.get_next()
+
+    estimator = make_estimator(model_dir=model_dir)
+    estimator.train(input_fn=input_fn)
+
+
 def test_tf_record():
     channel_dir = tempfile.mkdtemp()
     state_dir = tempfile.mkdtemp()
@@ -205,10 +232,11 @@ def test_csv():
             sys.stdout.flush()
             assert d == {str(i): i for i in range(100)}
 
+
 def test_input_config_validation_failure():
     channel_dir = tempfile.mkdtemp()
     state_dir = tempfile.mkdtemp()
     write_config(channel_dir, 'testchannel')
     with pytest.raises(PipeModeDatasetException):
-        with tf.Session() as sess:
+        with tf.Session():
             PipeModeDataset("Not a Channel", pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir)

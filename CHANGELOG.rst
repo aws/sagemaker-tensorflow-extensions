@@ -1,6 +1,10 @@
 =========
 CHANGELOG
 =========
+1.12.0.1.0.1
+==================
+
+* Add support for multipart recordio records
 
 1.12.0.1.0.0.post1
 ==================
