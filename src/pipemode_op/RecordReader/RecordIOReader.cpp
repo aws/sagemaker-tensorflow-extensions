@@ -48,22 +48,25 @@ inline std::uint32_t GetPaddedSize(std::uint32_t size) {
 
 
 bool RecordIOReader::ReadRecord(std::string* storage) {
-    RecordIOHeader header;
-    if (!Read(&header, sizeof(header))) {
-        return false;
-    }
-    ValidateMagicNumber(header);
-    if (0 != GetRecordFlag(header)) {  // RecordIO multipart records are not yet supported.
-        throw std::runtime_error("Multipart records are not supported");
-    }
-    std::size_t expected_size = GetRecordSize(header);
-    std::size_t padded_expected_size = GetPaddedSize(expected_size);
-    storage->resize(expected_size);
-    Read(&(storage->at(0)), expected_size);
-    static char ignore[4] = {0, 0, 0, 0};
-    std::size_t pad_amount = padded_expected_size - expected_size;
-    if (pad_amount) {
-        Read(&ignore, pad_amount);
-    }
+    std::size_t total_record_size = 0;
+    std::uint32_t record_flag = 0;
+    do {
+        RecordIOHeader header;
+        if (!Read(&header, sizeof(header))) {
+            return false;
+        }
+        ValidateMagicNumber(header);
+        record_flag = GetRecordFlag(header);
+        std::size_t expected_size = GetRecordSize(header);
+        std::size_t padded_expected_size = GetPaddedSize(expected_size);
+        total_record_size += expected_size;
+        storage->resize(total_record_size);
+        Read(&(storage->at(total_record_size - expected_size)), expected_size);
+        static char ignore[4] = {0, 0, 0, 0};
+        std::size_t pad_amount = padded_expected_size - expected_size;
+        if (pad_amount) {
+            Read(&ignore, pad_amount);
+        }
+    } while (record_flag == 1 || record_flag == 2);
     return true;
 }
