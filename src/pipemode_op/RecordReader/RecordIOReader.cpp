@@ -22,6 +22,8 @@
 using sagemaker::tensorflow::RecordIOReader;
 
 std::uint32_t RECORD_IO_MAGIC = 0xced7230a;
+std::uint32_t RECORD_IO_START_MULTIPART_RECORD_FLAG = 1;
+std::uint32_t RECORD_IO_CONTINUE_MULTIPART_RECORD_FLAG = 2;
 
 struct RecordIOHeader {
     std::uint32_t magic_number;
@@ -46,17 +48,19 @@ inline std::uint32_t GetPaddedSize(std::uint32_t size) {
     return size + (4 - size % 4) % 4;
 }
 
+inline bool HasFollowingMultipartRecords(const RecordIOHeader& header) {
+    return GetRecordFlag(header) == RECORD_IO_START_MULTIPART_RECORD_FLAG ||
+        GetRecordFlag(header) == RECORD_IO_CONTINUE_MULTIPART_RECORD_FLAG;
+}
 
 bool RecordIOReader::ReadRecord(std::string* storage) {
     std::size_t total_record_size = 0;
-    std::uint32_t record_flag = 0;
+    RecordIOHeader header;
     do {
-        RecordIOHeader header;
         if (!Read(&header, sizeof(header))) {
             return false;
         }
         ValidateMagicNumber(header);
-        record_flag = GetRecordFlag(header);
         std::size_t expected_size = GetRecordSize(header);
         std::size_t padded_expected_size = GetPaddedSize(expected_size);
         total_record_size += expected_size;
@@ -67,6 +71,6 @@ bool RecordIOReader::ReadRecord(std::string* storage) {
         if (pad_amount) {
             Read(&ignore, pad_amount);
         }
-    } while (record_flag == 1 || record_flag == 2);
+    } while (HasFollowingMultipartRecords(header));
     return true;
 }
