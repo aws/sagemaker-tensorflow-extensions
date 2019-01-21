@@ -36,14 +36,29 @@ for amount in range(4):
         padding[amount] = bytearray([0x00 for _ in range(amount)])
 
 
-def write_recordio(f, data):
+def write_recordio(f, data, header_flag=0):
     """Writes a single data point as a RecordIO record to the given file."""
     length = len(data)
     f.write(struct.pack('I', _kmagic))
-    f.write(struct.pack('I', length))
+    header = (header_flag << 29) | length
+    f.write(struct.pack('I', header))
     pad = (((length + 3) >> 2) << 2) - length
     f.write(data)
     f.write(padding[pad])
+
+
+def write_recordio_multipart(f, data):
+    """Writes a single data point into three multipart records."""
+    length = len(data)
+    stride = int(length / 3)
+
+    data_start = data[0:stride]
+    data_middle = data[stride:2 * stride]
+    data_end = data[2 * stride:]
+
+    write_recordio(f, data_start, 1)
+    write_recordio(f, data_middle, 2)
+    write_recordio(f, data_end, 3)
 
 
 def string_feature(value):
@@ -54,13 +69,16 @@ def label_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
 
 
-def write_numpy_array(f, feature_name, label, arr):
+def write_numpy_array(f, feature_name, label, arr, multipart=False):
     feature = {'labels': label_feature(label), feature_name: string_feature(arr)}
     example = tf.train.Example(features=tf.train.Features(feature=feature))
-    write_recordio(f, example.SerializeToString())
+    if multipart:
+        write_recordio_multipart(f, example.SerializeToString())
+    else:
+        write_recordio(f, example.SerializeToString())
 
 
-def build_record_file(filename, num_records, dimension, classes=2, data_feature_name='data'):
+def build_record_file(filename, num_records, dimension, classes=2, data_feature_name='data', multipart=False):
     """Builds a recordio encoded file of TF protobuf Example objects. Each object
     is a labeled numpy array. Each example has two field - a single int64 'label'
     field and a single bytes list field, containing a serialized numpy array.
@@ -83,7 +101,7 @@ def build_record_file(filename, num_records, dimension, classes=2, data_feature_
         for i in range(num_records):
             cur_class = i % classes
             loc = int(cur_class - (classes / 2))
-            write_numpy_array(f, data_feature_name, cur_class, np.random.normal(loc=loc, size=(dimension,)))
+            write_numpy_array(f, data_feature_name, cur_class, np.random.normal(loc=loc, size=(dimension,)), multipart)
 
 
 def build_single_record_file(filename, dimension, classes=2, data_feature_name='data'):

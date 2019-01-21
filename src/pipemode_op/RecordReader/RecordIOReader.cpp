@@ -22,6 +22,8 @@
 using sagemaker::tensorflow::RecordIOReader;
 
 std::uint32_t RECORD_IO_MAGIC = 0xced7230a;
+std::uint32_t RECORD_IO_START_MULTIPART_RECORD_FLAG = 1;
+std::uint32_t RECORD_IO_CONTINUE_MULTIPART_RECORD_FLAG = 2;
 
 struct RecordIOHeader {
     std::uint32_t magic_number;
@@ -46,24 +48,29 @@ inline std::uint32_t GetPaddedSize(std::uint32_t size) {
     return size + (4 - size % 4) % 4;
 }
 
+inline bool HasFollowingMultipartRecords(const RecordIOHeader& header) {
+    return GetRecordFlag(header) == RECORD_IO_START_MULTIPART_RECORD_FLAG ||
+        GetRecordFlag(header) == RECORD_IO_CONTINUE_MULTIPART_RECORD_FLAG;
+}
 
 bool RecordIOReader::ReadRecord(std::string* storage) {
+    std::size_t total_record_size = 0;
     RecordIOHeader header;
-    if (!Read(&header, sizeof(header))) {
-        return false;
-    }
-    ValidateMagicNumber(header);
-    if (0 != GetRecordFlag(header)) {  // RecordIO multipart records are not yet supported.
-        throw std::runtime_error("Multipart records are not supported");
-    }
-    std::size_t expected_size = GetRecordSize(header);
-    std::size_t padded_expected_size = GetPaddedSize(expected_size);
-    storage->resize(expected_size);
-    Read(&(storage->at(0)), expected_size);
-    static char ignore[4] = {0, 0, 0, 0};
-    std::size_t pad_amount = padded_expected_size - expected_size;
-    if (pad_amount) {
-        Read(&ignore, pad_amount);
-    }
+    do {
+        if (!Read(&header, sizeof(header))) {
+            return false;
+        }
+        ValidateMagicNumber(header);
+        std::size_t expected_size = GetRecordSize(header);
+        std::size_t padded_expected_size = GetPaddedSize(expected_size);
+        total_record_size += expected_size;
+        storage->resize(total_record_size);
+        Read(&(storage->at(total_record_size - expected_size)), expected_size);
+        static char ignore[4] = {0, 0, 0, 0};
+        std::size_t pad_amount = padded_expected_size - expected_size;
+        if (pad_amount) {
+            Read(&ignore, pad_amount);
+        }
+    } while (HasFollowingMultipartRecords(header));
     return true;
 }

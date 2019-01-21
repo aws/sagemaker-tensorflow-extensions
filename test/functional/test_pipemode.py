@@ -25,6 +25,11 @@ dimension = 100
 
 tf.logging.set_verbosity(logging.INFO)
 
+@pytest.fixture(autouse=True, scope='session')
+def multipart_recordio_file():
+    recordio_utils.build_record_file('test.mp.recordio', num_records=100, dimension=dimension, multipart=True)
+    yield
+    os.remove('test.mp.recordio')
 
 @pytest.fixture(autouse=True, scope='session')
 def recordio_file():
@@ -142,6 +147,24 @@ def test_multi_channels():
             assert len(b[1]) == 10
         with pytest.raises(tf.errors.OutOfRangeError):
             sess.run(next)
+
+
+def test_multipart_recordio(model_dir):
+    channel_dir = tempfile.mkdtemp()
+    state_dir = tempfile.mkdtemp()
+    channel_name = 'testchannel'
+    create_fifos(1, channel_dir, channel_name, input_file='test.mp.recordio')
+
+    def input_fn():
+        ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir)
+        ds = ds.map(parse, num_parallel_calls=12)
+        ds = ds.prefetch(3)
+        ds = ds.batch(3)
+        it = ds.make_one_shot_iterator()
+        return it.get_next()
+
+    estimator = make_estimator(model_dir=model_dir)
+    estimator.train(input_fn=input_fn)
 
 
 def test_tf_record():

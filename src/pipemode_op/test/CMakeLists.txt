@@ -22,7 +22,7 @@ set(XX -D_GLIBCXX_USE_CXX11_ABI=0)
 # Download and install GoogleTest
 ExternalProject_Add(
     gtest
-    URL https://github.com/google/googletest/archive/master.zip
+    URL https://github.com/google/googletest/archive/release-1.8.1.zip
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
     # Disable install step
     INSTALL_COMMAND ""
