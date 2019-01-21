@@ -68,7 +68,7 @@ def get_bucket(region='us-west-2'):
     boto_session = boto3.Session()
     s3 = boto_session.resource('s3')
     account = boto_session.client('sts').get_caller_identity()['Account']
-    region = boto_session.region_name
+    region = boto_session.region_name or DEFAULT_REGION
     default_bucket = 'pipemode-it-{}-{}'.format(region, account)
     try:
         s3.create_bucket(Bucket=default_bucket, CreateBucketConfiguration={'LocationConstraint': region})
