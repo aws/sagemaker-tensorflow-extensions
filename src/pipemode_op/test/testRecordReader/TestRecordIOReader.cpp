@@ -76,40 +76,6 @@ TEST_F(RecordIOReaderTest, InvalidMagicNumber) {
         std::runtime_error);
 }
 
-
-TEST_F(RecordIOReaderTest, InvalidHeader) {
-    std::vector<char> vec(8);;
-
-    vec[0] = 0xa;
-    vec[1] = 0x23;
-    vec[2] = 0xd7;
-    vec[3] = 0xce;
-
-    std::string data = "abcd";
-    std::uint32_t length = data.size();
-    length |= (1u << 29u);
-    char* plength = reinterpret_cast<char*>(&length);
-
-    vec[4] = *(plength + 0);
-    vec[5] = *(plength + 1);
-    vec[6] = *(plength + 2);
-    vec[7] = *(plength + 3);
-
-    vec.insert(vec.end(), data.begin(), data.end());
-    std::string encoding;
-    encoding.insert(encoding.begin(), vec.begin(), vec.end());
-
-    std::string channel_dir = CreateTemporaryDirectory();
-    std::unique_ptr<RecordIOReader> ptr = MakeRecordIOReader(
-        CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoding, 0), 4);
-    std::string storage;
-
-    EXPECT_THROW({
-        ptr->ReadRecord(&storage);},
-        std::runtime_error);
-}
-
-
 TEST_F(RecordIOReaderTest, TestReadSingleRecord) {
     std::string input = "Elizabeth Is 10 months Old";
     std::string encoded = ToRecordIO(input);
