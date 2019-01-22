@@ -71,6 +71,7 @@ class PipeModeDataset(dataset_ops.Dataset):
     def _as_variant_tensor(self):
         return self._tf_plugin.pipe_mode_dataset(self.benchmark, self.record_format, self.state_dir, self.channel,
                                                  self.pipe_dir)
+
     def _validate_input_data_config(self):
         if self.channel not in self.input_data_config:
             raise PipeModeDatasetException("Channel {} not found in Training Job InputDataConfig".format(self.channel))
