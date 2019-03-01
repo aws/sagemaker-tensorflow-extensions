@@ -11,6 +11,7 @@ import sys
 
 TF_VERSION = "1.12.0"
 REGION = "us-west-2"
+REPOSITORY_NAME = "sagemaker-tensorflow-extensions-test"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -26,7 +27,7 @@ if __name__ == '__main__':
     subprocess.check_call([sys.executable, 'setup.py', 'sdist'])
     [sdist_path] = glob.glob('dist/sagemaker_tensorflow-{}*'.format(TF_VERSION))
     try:
-        ecr_client.create_repository(repositoryName='sagemaker_tensorflow_integ_test')
+        ecr_client.create_repository(repositoryName=REPOSITORY_NAME)
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'RepositoryAlreadyExistsException':
             pass
@@ -34,11 +35,19 @@ if __name__ == '__main__':
             raise
 
     python_version = str(sys.version_info[0])
-    tag = '{}/sagemaker_tensorflow_integ_test:{}-{}-{}'.format(registry, TF_VERSION, args.device, python_version)[8:]
+    tag = '{}/{}:{}-{}-{}'.format(registry, REPOSITORY_NAME, TF_VERSION, args.device, python_version)[8:]
+
+    # pull existing image for layer cache
+    try:
+        client.images.pull(tag, auth_config={'username': username, 'password': password})
+    except docker.errors.NotFound:
+        pass
+
     client.images.build(
         path='.',
         dockerfile='test/integ/Dockerfile',
         tag=tag,
+        cache_from=[tag],
         buildargs={'sagemaker_tensorflow': sdist_path,
                    'device': args.device,
                    'python': 'python' if python_version == 2 else 'python3',
