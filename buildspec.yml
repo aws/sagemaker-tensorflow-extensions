@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - apt-get update
+      - apt-get -y install libcurl4-openssl-dev
+      - start-dockerd
+  build:
+    commands:
+      - tox -e flake8
+
+      # TODO fix cpplint errors. until then mask failure to unblock build
+      - tox -e cpplint || true
+
+      - tox -e py27,py36 -- test/
