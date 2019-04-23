@@ -54,7 +54,6 @@ class PipeModeDataset(dataset_ops.Dataset):
             config_dir: The path for SageMaker input data config.
             benchmark: If True, causes the Dataset to emit timing and throughput metrics to stdout.
         """
-        super(PipeModeDataset, self).__init__()
         try:
             os.makedirs(state_dir)
         except OSError as e:
@@ -68,6 +67,7 @@ class PipeModeDataset(dataset_ops.Dataset):
         with open(os.path.join(config_dir, 'inputdataconfig.json')) as f:
             self.input_data_config = json.load(f)
         self._validate_input_data_config()
+        self._graph_attr = ops.get_default_graph()
 
     def _as_variant_tensor(self):
         return self._tf_plugin.pipe_mode_dataset(self.benchmark, self.record_format, self.state_dir, self.channel,
