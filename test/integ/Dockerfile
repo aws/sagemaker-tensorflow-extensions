@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 
 ARG device=cpu
-ARG tensorflow_version=1.12.0
+ARG tensorflow_version=1.13.1
 ARG script
 ARG python
 
