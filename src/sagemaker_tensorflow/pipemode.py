@@ -54,6 +54,7 @@ class PipeModeDataset(dataset_ops.Dataset):
             config_dir: The path for SageMaker input data config.
             benchmark: If True, causes the Dataset to emit timing and throughput metrics to stdout.
         """
+        super(PipeModeDataset, self).__init__()
         try:
             os.makedirs(state_dir)
         except OSError as e:
