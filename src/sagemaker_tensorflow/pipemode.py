@@ -67,6 +67,7 @@ class PipeModeDataset(dataset_ops.Dataset):
         with open(os.path.join(config_dir, 'inputdataconfig.json')) as f:
             self.input_data_config = json.load(f)
         self._validate_input_data_config()
+        super(PipeModeDataset, self).__init__()
 
     def _as_variant_tensor(self):
         return self._tf_plugin.pipe_mode_dataset(self.benchmark, self.record_format, self.state_dir, self.channel,

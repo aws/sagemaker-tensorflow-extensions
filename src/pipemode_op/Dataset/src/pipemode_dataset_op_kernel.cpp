@@ -142,7 +142,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         Status AsGraphDefInternal(SerializationContext* ctx,
                                   DatasetGraphDefBuilder* b,
                                   Node** output) const override {
-            throw std::runtime_error("Conversion to GraphDef is not supported.");
+            return tensorflow::errors::Unimplemented("Conversion to GraphDef is not supported.");
         }
 
      private:
