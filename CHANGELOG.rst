@@ -1,6 +1,11 @@
 =========
 CHANGELOG
 =========
+1.14.0.1.0.0
+============
+
+* enhancement: Support for TensorFlow 1.14
+
 1.13.1.1.0.0
 ============
 
