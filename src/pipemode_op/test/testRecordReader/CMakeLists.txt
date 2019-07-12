@@ -18,7 +18,7 @@ execute_process(COMMAND "python" "-c"
 	OUTPUT_VARIABLE TF_LIB_DIR)
 
 find_library(TF_LIB 
-	NAMES tensorflow_framework
+	NAMES libtensorflow_framework.so.1
 	PATHS "${TF_LIB_DIR}"
 	NO_DEFAULT_PATH)
 
