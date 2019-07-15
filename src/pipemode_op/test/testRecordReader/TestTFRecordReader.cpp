@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <memory>
 #include "TFRecordReader.hpp"
 #include "TestTFRecordReader.hpp"
 #include "common.hpp"

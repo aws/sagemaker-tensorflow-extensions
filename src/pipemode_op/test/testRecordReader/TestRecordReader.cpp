@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <string>
 #include <fstream>
+#include <memory>
 #include <RecordReader.hpp>
 #include <RecordIOReader.hpp>
 #include "common.hpp"
