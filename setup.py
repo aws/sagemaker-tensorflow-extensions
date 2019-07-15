@@ -78,16 +78,18 @@ class CMakeBuild(build_ext):
         build_args += ['--', '-j{}'.format(multiprocessing.cpu_count())]
 
         env = os.environ.copy()
-        env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(
+        env['CXXFLAGS'] = '{} -DNDEBUG -DVERSION_INFO=\\"{}\\"'.format(
             env.get('CXXFLAGS', ''),
             self.distribution.get_version())
+
+        env['CXX'] = 'g++-4.8'
         env['PYTHON_EXECUTABLE'] = sys.executable
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args,
                               cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args,
-                              cwd=self.build_temp)
+                              cwd=self.build_temp, env=env)
         subprocess.check_call(['ctest'], cwd=self.build_temp)
         print()
 

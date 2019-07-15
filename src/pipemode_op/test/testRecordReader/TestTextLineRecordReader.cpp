@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <memory>
 #include <string>
 #include <fstream>
 #include <RecordReader.hpp>
