@@ -6,6 +6,7 @@ ARG script
 ARG python
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        g++-4.8 \
         build-essential \
         curl \
         git \
