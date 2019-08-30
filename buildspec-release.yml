@@ -1,0 +1,33 @@
+version 0.2
+
+phases:
+  pre_build:
+    commands:
+      - apt-get update
+      - apt-get -y install libcurl4-openssl-dev g++-4.8
+      - pip install cpplint
+      - start-dockerd
+
+  build:
+    commands:
+      # prepare the release (update versions, changelog etc.)
+      - git-release --prepare
+
+      - tox -e flake8
+
+      - cpplint --linelength=120 --filter=-build/c++11 --extensions=cpp,hpp --quiet --recursive src/
+
+      # run tests
+      - tox -e py27,py36 -- test/
+
+      # generate the distribution package
+      - python3 setup.py sdist
+
+      # publish the release to github
+      - git-release --publish
+
+artifacts:
+  files:
+    - dist/sagemaker_tensorflow-*.tar.gz
+  name: ARTIFACT_1
+  discard-paths: yes
