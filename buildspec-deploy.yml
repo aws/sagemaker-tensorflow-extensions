@@ -12,7 +12,6 @@ phases:
 
       - echo 'md5sum of python packages:'
       - md5sum $PACKAGE_FILE_27
-      - md5sum $PACKAGE_FILE_35
       - md5sum $PACKAGE_FILE_36
 
       # import private key and ensure passphrase is cached
