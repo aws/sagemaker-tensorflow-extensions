@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.2 (2019-09-09)
+
+### Bug fixes and other changes
+
+ * remove py35 whl file becasue codebuild does not install py35
+
 ## v0.1.1 (2019-09-09)
 
 ### Bug fixes and other changes
