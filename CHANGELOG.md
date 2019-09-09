@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.3 (2019-09-09)
+
+### Bug fixes and other changes
+
+ * remove py35 from buildspec-deploy
+
 ## v0.1.2 (2019-09-09)
 
 ### Bug fixes and other changes
