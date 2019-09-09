@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.1 (2019-09-09)
+
+### Bug fixes and other changes
+
+ * filter cpplint header_guard error in release build
+
 ## v0.1.0 (2019-09-04)
 
 ### Bug fixes and other changes
@@ -81,4 +87,3 @@
  * Creating initial file from template
  * Creating initial file from template
  * Initial commit
-
