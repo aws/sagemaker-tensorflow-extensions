@@ -17,8 +17,8 @@ phases:
       # import private key and ensure passphrase is cached
       - echo "$GPG_PRIVATE_KEY" | gpg --batch --import
       - gpg --pinentry-mode loopback --passphrase "$GPG_PASSWORD" --detach-sign -a -o /dev/null $PACKAGE_FILE_27
-      - gpg --pinentry-mode lookpack --passphrase "$GPG_PASSWORD" --detach-sign -a -o /dev/null $PACKAGE_FILE_36
+      - gpg --pinentry-mode loopback --passphrase "$GPG_PASSWORD" --detach-sign -a -o /dev/null $PACKAGE_FILE_36
 
       # publish to pypi
-      - python27 -m twine upload $PACKAGE_FILE_27 --sign -u $PYPI_USER -p $PYPI_PASSWORD
-      - python36 -m twine upload $PACKAGE_FILE_36 --sign -u $PYPI_USER -p $PYPI_PASSWORD
+      - python3 -m twine upload --skip-existing $PACKAGE_FILE_27 --sign -u $PYPI_USER -p $PYPI_PASSWORD
+      - python3 -m twine upload --skip-existing $PACKAGE_FILE_36 --sign -u $PYPI_USER -p $PYPI_PASSWORD
