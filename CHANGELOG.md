@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.4 (2019-09-10)
+
+### Bug fixes and other changes
+
+ * fix a repo in buildspec-deploy
+
 ## v0.1.3 (2019-09-09)
 
 ### Bug fixes and other changes
