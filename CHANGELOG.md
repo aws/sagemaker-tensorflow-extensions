@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.5 (2019-09-11)
+
+### Bug fixes and other changes
+
+ * skipping existing files on pypi
+
 ## v0.1.4 (2019-09-10)
 
 ### Bug fixes and other changes
