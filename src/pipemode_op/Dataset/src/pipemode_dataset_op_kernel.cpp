@@ -36,7 +36,6 @@ using sagemaker::tensorflow::RecordReader;
 using sagemaker::tensorflow::TextLineRecordReader;
 using sagemaker::tensorflow::TFRecordReader;
 
-using tensorflow::data;
 using tensorflow::DatasetBase;
 using tensorflow::SerializationContext;
 using tensorflow::DatasetContext;
@@ -89,17 +88,17 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         std::string channel_directory;
         std::string channel;
         bool benchmark;
-        OP_REQUIRES_OK(ctx, ParseScalarArgument<std::string>(ctx, "record_format",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "record_format",
                                                         &record_format));
-        OP_REQUIRES_OK(ctx, ParseScalarArgument<std::string>(ctx, "state_directory",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "state_directory",
                                                         &state_directory));
-        OP_REQUIRES_OK(ctx, ParseScalarArgument<std::string>(ctx, "channel_directory",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "channel_directory",
                                                         &channel_directory));
-        OP_REQUIRES_OK(ctx, ParseScalarArgument<std::string>(ctx, "channel",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "channel",
                                                         &channel));
         OP_REQUIRES(ctx, record_format == "RecordIO" || record_format == "TFRecord" || record_format == "TextLine",
             tensorflow::errors::InvalidArgument("Invalid record format: " + record_format));
-        OP_REQUIRES_OK(ctx, data::ParseScalarArgument<bool>(ctx, "benchmark",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<bool>(ctx, "benchmark",
                                                         &benchmark));
         *output = new Dataset(ctx, record_format, state_directory, channel_directory, channel, benchmark);
     }
