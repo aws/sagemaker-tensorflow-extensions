@@ -82,7 +82,7 @@ class CMakeBuild(build_ext):
             env.get('CXXFLAGS', ''),
             self.distribution.get_version())
 
-        env['CXX'] = 'g++-4.8'
+        env['CXX'] = 'g++-5'
         env['PYTHON_EXECUTABLE'] = sys.executable
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
