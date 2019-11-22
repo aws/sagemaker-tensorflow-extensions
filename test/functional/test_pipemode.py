@@ -112,6 +112,7 @@ def make_estimator(model_dir):
 
 
 def test_multi_epoch_pipeline(model_dir):
+    print("test_multi_epoch_pipeline ===== > starting")
     channel_dir = tempfile.mkdtemp()
     state_dir = tempfile.mkdtemp()
     epochs = 3
@@ -130,6 +131,8 @@ def test_multi_epoch_pipeline(model_dir):
 
     estimator = make_estimator(model_dir=model_dir)
     estimator.train(input_fn=input_fn)
+
+    print("test_multi_epoch_pipeline ===== > worked")
 
 
 def test_multi_channels():
