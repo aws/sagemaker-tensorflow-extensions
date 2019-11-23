@@ -1,12 +1,12 @@
 FROM ubuntu:16.04
 
 ARG device=cpu
-ARG tensorflow_version=1.14.0
+ARG tensorflow_version=1.15.0
 ARG script
 ARG python
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        g++-4.8 \
+        g++-5 \
         build-essential \
         curl \
         git \
