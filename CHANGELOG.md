@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.0 (2019-11-23)
+
+### Features
+
+ * upgrade to TF 1.15
+
+### Bug fixes and other changes
+
+ * Upgrade pip so it would find all the latest versions of tensorflow.
+
 ## v0.1.5 (2019-09-11)
 
 ### Bug fixes and other changes
