@@ -49,14 +49,14 @@ config = BenchmarkConfig()
 
 def input_fn():
     features = {
-        'data': tf.FixedLenFeature([], tf.string),
-        'labels': tf.FixedLenFeature([], tf.int64),
+        'data': tf.io.FixedLenFeature([], tf.string),
+        'labels': tf.io.FixedLenFeature([], tf.int64),
     }
 
     def parse(record):
-        parsed = tf.parse_single_example(record, features)
+        parsed = tf.io.parse_single_example(record, features)
         return ({
-            'data': tf.decode_raw(parsed['data'], tf.float64)
+            'data': tf.io.decode_raw(parsed['data'], tf.float64)
         }, parsed['labels'])
 
     ds = PipeModeDataset(config.channel)
@@ -92,22 +92,17 @@ print("Validate that new PipeModeDataset on existing channel can be created")
 
 ds = PipeModeDataset(config.channel)
 
-with tf.Session() as sess:
-    it = ds.make_one_shot_iterator()
-    next = it.get_next()
-    sess.run(next)
+it = iter(ds)
+next = it.get_next()
 
 print("Validate create, read, discard, recreate")
 
 # Test that we can create a PipeModeDataset, discard it, and read from a new one
 ds = PipeModeDataset(config.channel)
-with tf.Session() as sess:
-    it = ds.make_one_shot_iterator()
-    next = it.get_next()
+it = iter(ds)
+next = it.get_next()
 
 
 ds = PipeModeDataset(config.channel)
-with tf.Session() as sess:
-    it = ds.make_one_shot_iterator()
-    next = it.get_next()
-    sess.run(next)
+it = iter(ds)
+next = it.get_next()
