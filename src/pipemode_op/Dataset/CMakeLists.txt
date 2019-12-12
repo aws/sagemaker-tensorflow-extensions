@@ -33,7 +33,7 @@ execute_process(COMMAND "$ENV{PYTHON_EXECUTABLE}" "-c"
 	OUTPUT_VARIABLE TF_INCLUDE_DIR)
 
 find_library(TF_LIB 
-	NAMES libtensorflow_framework.so.1
+	NAMES libtensorflow_framework.so.2
 	PATHS "${TF_LIB_DIR}"
 	NO_DEFAULT_PATH)
 

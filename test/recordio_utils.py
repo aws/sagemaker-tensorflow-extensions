@@ -121,15 +121,13 @@ def validate_record_file(filename, dimension):
     encoded = data[8:8 + length]
 
     features = {
-        'data': tf.FixedLenFeature([], tf.string),
-        'labels': tf.FixedLenFeature([], tf.int64),
+        'data': tf.io.FixedLenFeature([], tf.string),
+        'labels': tf.io.FixedLenFeature([], tf.int64),
     }
-    parsed = tf.parse_single_example(encoded, features)
-    x = tf.decode_raw(parsed['data'], tf.float64)
+    parsed = tf.io.parse_single_example(encoded, features)
+    array = tf.io.decode_raw(parsed['data'], tf.float64)
 
-    with tf.Session() as sess:
-        array = sess.run(x)
-        assert array.shape[0] == dimension
+    assert array.shape[0] == dimension
 
 
 if __name__ == '__main__':

@@ -24,7 +24,8 @@ from sagemaker_tensorflow import PipeModeDataset, PipeModeDatasetException
 
 dimension = 100
 
-tf.logging.set_verbosity(logging.INFO)
+logger = tf.get_logger()
+logger.setLevel(logging.INFO)
 
 
 @pytest.fixture(autouse=True, scope='session')
@@ -44,7 +45,7 @@ def multipart_recordio_file():
 
 @pytest.fixture(autouse=True, scope='session')
 def tfrecords_file():
-    writer = tf.python_io.TFRecordWriter("test.tfrecords")
+    writer = tf.io.TFRecordWriter("test.tfrecords")
     for i in range(100):
         writer.write(b"hello world")
     writer.close()
@@ -94,15 +95,15 @@ def create_fifos(epochs, channel_dir, channel_name, input_file='test.recordio'):
 
 
 features = {
-    'data': tf.FixedLenFeature([], tf.string),
-    'labels': tf.FixedLenFeature([], tf.int64),
+    'data': tf.io.FixedLenFeature([], tf.string),
+    'labels': tf.io.FixedLenFeature([], tf.int64),
 }
 
 
 def parse(record):
-    parsed = tf.parse_single_example(record, features)
+    parsed = tf.io.parse_single_example(record, features)
     return ({
-        'data': tf.decode_raw(parsed['data'], tf.float64)
+        'data': tf.io.decode_raw(parsed['data'], tf.float64)
     }, parsed['labels'])
 
 
@@ -152,17 +153,16 @@ def test_multi_channels():
     ds_b = make_dataset("channel_b")
     dataset = tf.data.Dataset.zip((ds_a, ds_b))
 
-    with tf.Session() as sess:
-        it = dataset.make_one_shot_iterator()
-        next = it.get_next()
-        for i in range(20):
-            a, b = sess.run(next)
-            assert a[0]['data'].shape == (10, 100)
-            assert len(a[1]) == 10
-            assert b[0]['data'].shape == (10, 100)
-            assert len(b[1]) == 10
-        with pytest.raises(tf.errors.OutOfRangeError):
-            sess.run(next)
+    it = iter(dataset)
+    for i in range(20):
+        a, b = it.get_next()
+        assert a[0]['data'].shape == (10, 100)
+        assert len(a[1]) == 10
+        assert b[0]['data'].shape == (10, 100)
+        assert len(b[1]) == 10
+    with pytest.raises(tf.errors.OutOfRangeError):
+        it.get_next()
+
 
 
 def test_multipart_recordio(model_dir):
@@ -195,11 +195,9 @@ def test_tf_record():
     ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir,
                          record_format='TFRecord')
 
-    with tf.Session() as sess:
-        it = ds.make_one_shot_iterator()
-        next = it.get_next()
-        for i in range(100):
-            assert sess.run(next) == b'hello world'
+    it = iter(ds)
+    for i in range(100):
+        assert it.get_next() == b'hello world'
 
 
 FIELD_DEFAULTS = [[0] for i in range(100)]
@@ -216,21 +214,20 @@ def test_csv():
     create_fifos(epochs, channel_dir, channel_name, input_file='test.csv')
 
     def parse(line):
-        fields = tf.decode_csv(line, FIELD_DEFAULTS)
+        fields = tf.io.decode_csv(line, FIELD_DEFAULTS)
         features = dict(zip(COLUMNS, fields))
         return features
 
-    with tf.Session() as sess:
-        ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir,
-                             record_format='TextLine')
-        ds = ds.map(parse)
+    ds = PipeModeDataset(channel_name, pipe_dir=channel_dir, state_dir=state_dir,
+                         config_dir=channel_dir,
+                         record_format='TextLine')
+    ds = ds.map(parse)
 
-        it = ds.make_one_shot_iterator()
-        next = it.get_next()
-        for i in range(100):
-            d = sess.run(next)
-            sys.stdout.flush()
-            assert d == {str(i): i for i in range(100)}
+    it = iter(ds)
+    for i in range(100):
+        d = it.get_next()
+        sys.stdout.flush()
+        assert d == {str(i): i for i in range(100)}
 
 
 def test_input_config_validation_failure():
@@ -238,5 +235,4 @@ def test_input_config_validation_failure():
     state_dir = tempfile.mkdtemp()
     write_config(channel_dir, 'testchannel')
     with pytest.raises(PipeModeDatasetException):
-        with tf.Session():
-            PipeModeDataset("Not a Channel", pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir)
+        PipeModeDataset("Not a Channel", pipe_dir=channel_dir, state_dir=state_dir, config_dir=channel_dir)
