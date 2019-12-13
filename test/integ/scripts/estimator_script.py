@@ -54,7 +54,7 @@ def input_fn():
     }
 
     def parse(record):
-        parsed = tf.io.parse_single_example(record, features)
+        parsed = tf.io.parse_single_example(serialized=record, features=features)
         return ({
             'data': tf.io.decode_raw(parsed['data'], tf.float64)
         }, parsed['labels'])
@@ -89,20 +89,27 @@ for key,value in sorted(result.items()):
 
 # Test that we can create a new PipeModeDataset after training has run
 print("Validate that new PipeModeDataset on existing channel can be created")
+tf.compat.v1.disable_eager_execution()
 
 ds = PipeModeDataset(config.channel)
-
-it = iter(ds)
-next = it.get_next()
+with tf.compat.v1.Session() as sess:
+    it = ds.make_one_shot_iterator()
+    next = it.get_next()
+    sess.run(next)
 
 print("Validate create, read, discard, recreate")
 
 # Test that we can create a PipeModeDataset, discard it, and read from a new one
 ds = PipeModeDataset(config.channel)
-it = iter(ds)
-next = it.get_next()
+with tf.compat.v1.Session() as sess:
+    it = ds.make_one_shot_iterator()
+    next = it.get_next()
 
 
+with tf.compat.v1.Session() as sess:
+    it = ds.make_one_shot_iterator()
+    next = it.get_next()
+    sess.run(next)
+
+print("Validate recreate")
 ds = PipeModeDataset(config.channel)
-it = iter(ds)
-next = it.get_next()
