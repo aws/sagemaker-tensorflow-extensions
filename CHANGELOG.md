@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.1 (2019-12-13)
+
+### Bug fixes and other changes
+
+ * test v1 compat.
+ * TF 2.0 support.
+
 ## v0.2.0 (2019-11-23)
 
 ### Features
