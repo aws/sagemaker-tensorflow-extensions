@@ -11,7 +11,7 @@ import sys
 
 TF_VERSION = "1.15.0"
 REGION = "us-west-2"
-git REPOSITORY_NAME = "sagemaker-tensorflow-extensions-test"
+REPOSITORY_NAME = "sagemaker-tensorflow-extensions-test"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
