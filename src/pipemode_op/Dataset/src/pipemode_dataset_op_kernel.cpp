@@ -88,7 +88,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         std::string channel_directory;
         std::string channel;
         bool benchmark;
-        std::uint64_t metric_batch_size;
+        std::uint64_t benchmark_records_interval;
         OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "record_format",
                                                         &record_format));
         OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "state_directory",
@@ -101,30 +101,30 @@ class PipeModeDatasetOp : public DatasetOpKernel {
             tensorflow::errors::InvalidArgument("Invalid record format: " + record_format));
         OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<bool>(ctx, "benchmark",
                                                         &benchmark));
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::uint64_t>(ctx, "metric_batch_size",
-                                                        &metric_batch_size));
-        *output = new Dataset(ctx, record_format, state_directory, channel_directory, channel, benchmark, metric_batch_size);
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::uint64_t>(ctx, "benchmark_records_interval",
+                                                        &benchmark_records_interval));
+        *output = new Dataset(ctx, record_format, state_directory, channel_directory, channel, benchmark, benchmark_records_interval);
     }
 
  private:
     class Dataset : public DatasetBase {
      public:
         explicit Dataset(OpKernelContext* ctx, const std::string& record_format, const std::string& state_directory,
-            const std::string& channel_directory, const std::string& channel, bool benchmark, std::uint64_t metric_batch_size):
+            const std::string& channel_directory, const std::string& channel, bool benchmark, std::uint64_t benchmark_records_interval):
             DatasetBase(DatasetContext(ctx)),
             record_format_(record_format),
             channel_directory_(channel_directory),
             pipe_state_manager_(state_directory, channel),
             channel_(channel),
             benchmark_(benchmark),
-            metric_batch_size_(metric_batch_size) {}
+            benchmark_records_interval_(benchmark_records_interval) {}
 
         std::unique_ptr<IteratorBase> MakeIteratorInternal(const std::string& prefix) const override {
             auto new_prefix = prefix + "::PipeMode-" + channel_ + "-"
                 + std::to_string(pipe_state_manager_.GetPipeIndex());
             auto ptr = std::unique_ptr<IteratorBase>(
                 new Iterator({this, new_prefix}, record_format_, channel_directory_, channel_, benchmark_,
-                    pipe_state_manager_.GetPipeIndex(), metric_batch_size_));
+                    pipe_state_manager_.GetPipeIndex(), benchmark_records_interval_));
             pipe_state_manager_.IncrementPipeIndex();
             return ptr;
         }
@@ -155,15 +155,15 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         std::string channel_;
         PipeStateManager pipe_state_manager_;
         bool benchmark_;
-        std::uint64_t metric_batch_size_;
+        std::uint64_t benchmark_records_interval_;
 
         class Iterator : public DatasetIterator<Dataset> {
          public:
             explicit Iterator(const Params& params, const std::string& record_format,
                 const std::string& channel_directory, const std::string& channel, const bool benchmark,
-                const uint32_t pipe_index, const uint64_t metric_batch_size)
+                const uint32_t pipe_index, const uint64_t benchmark_records_interval)
                 : DatasetIterator<Dataset>(params), read_time_(0), read_bytes_(0),
-                    benchmark_(benchmark), metric_batch_size_(metric_batch_size) {
+                    benchmark_(benchmark), benchmark_records_interval_(benchmark_records_interval) {
                     std::string pipe_path = BuildPipeName(channel_directory, channel, pipe_index);
                     if (record_format == "RecordIO") {
                         record_reader_ = std::unique_ptr<RecordReader>(new RecordIOReader(pipe_path));
@@ -192,11 +192,11 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                     auto delta_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
                     read_time_ += delta_ns;
                     read_bytes_ += storage->size();
-                    num_samples_ ++;
-                    if (metric_batch_size_ != 0 && (num_samples_ % metric_batch_size_ == 0)) {
-                        std::cout << "PipeModeDatasetOp::Dataset::Iterator batch: " << num_samples_  << std::endl;
-                        std::cout << "PipeModeDatasetOp::Dataset::Iterator batch read_time_ns: " << delta_ns.count() << std::endl;
-                        std::cout << "PipeModeDatasetOp::Dataset::Iterator batch read_bytes: " << storage->size() << std::endl;
+                    records_read_ ++;
+                    if (benchmark_records_interval_ != 0 && (records_read_ % benchmark_records_interval_ == 0)) {
+                        std::cout << "PipeModeDatasetOp::Dataset::Iterator records: " << records_read_  << std::endl;
+                        std::cout << "PipeModeDatasetOp::Dataset::Iterator records read_time_ns: " << delta_ns.count() << std::endl;
+                        std::cout << "PipeModeDatasetOp::Dataset::Iterator records read_bytes: " << storage->size() << std::endl;
                     }
 
                 } catch(std::runtime_error& err) {
@@ -223,8 +223,8 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                 GUARDED_BY(mu_);
             std::chrono::nanoseconds read_time_;
             std::uint64_t read_bytes_;
-            std::uint64_t num_samples_ = 0;
-            std::uint64_t metric_batch_size_;
+            std::uint64_t records_read_ = 0;
+            std::uint64_t benchmark_records_interval_;
         };
     };
 };
@@ -237,7 +237,7 @@ REGISTER_OP("PipeModeDataset")
     .Input("state_directory: string")
     .Input("channel: string")
     .Input("channel_directory: string")
-    .Input("metric_batch_size: uint64")
+    .Input("benchmark_records_interval: uint64")
     .Output("handle: variant")
     .SetIsStateful()
     .SetShapeFn(tensorflow::shape_inference::ScalarShape);

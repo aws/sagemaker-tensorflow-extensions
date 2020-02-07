@@ -41,7 +41,7 @@ class PipeModeDataset(dataset_ops.Dataset):
 
     def __init__(self, channel, record_format='RecordIO',
                  state_dir='/opt/ml/pipe_state', pipe_dir='/opt/ml/input/data',
-                 config_dir='/opt/ml/input/config', benchmark=False, metric_batch_size=0):
+                 config_dir='/opt/ml/input/config', benchmark=False, benchmark_records_interval=0):
         """Create a Dataset for reading from a SageMaker PipeMode channel.
 
         Supports records encoded using either RecordIO, TFRecord, or new line text encoding.
@@ -53,7 +53,7 @@ class PipeModeDataset(dataset_ops.Dataset):
             state_dir: The directory where pipe index state is persisted.
             config_dir: The path for SageMaker input data config.
             benchmark: If True, causes the Dataset to emit timing and throughput metrics to stdout.
-            metric_batch_size: The number of records per interval to emit timing and throughput metrics to stdout.
+            benchmark_records_interval: The number of records per interval to emit timing and throughput metrics to stdout.
                         If zero, no emitting the metrics.
         """
         try:
@@ -66,7 +66,7 @@ class PipeModeDataset(dataset_ops.Dataset):
         self.pipe_dir = pipe_dir
         self.state_dir = state_dir
         self.benchmark = benchmark
-        self.metric_batch_size = metric_batch_size
+        self.benchmark_records_interval = benchmark_records_interval
         with open(os.path.join(config_dir, 'inputdataconfig.json')) as f:
             self.input_data_config = json.load(f)
         self._validate_input_data_config()
@@ -74,7 +74,7 @@ class PipeModeDataset(dataset_ops.Dataset):
 
     def _as_variant_tensor(self):
         return self._tf_plugin.pipe_mode_dataset(self.benchmark, self.record_format, self.state_dir, self.channel,
-                                                 self.pipe_dir, self.metric_batch_size)
+                                                 self.pipe_dir, self.benchmark_records_interval)
 
     def _inputs(self):
         return []
