@@ -103,7 +103,8 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                                                         &benchmark));
         OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::uint64_t>(ctx, "benchmark_records_interval",
                                                         &benchmark_records_interval));
-        *output = new Dataset(ctx, record_format, state_directory, channel_directory, channel, benchmark, benchmark_records_interval);
+        *output = new Dataset(ctx, record_format, state_directory, channel_directory, channel, benchmark,
+                              benchmark_records_interval);
     }
 
  private:
@@ -193,7 +194,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                     auto delta_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
                     read_time_ += delta_ns;
                     read_bytes_ += storage->size();
-                    records_read_ ++;
+                    records_read_++;
                     if (benchmark_records_interval_ != 0 && (records_read_ % benchmark_records_interval_ == 0)) {
                         std::cout << "PipeModeDatasetOp::Dataset::Iterator records: " << records_read_  << std::endl;
                         std::cout << "PipeModeDatasetOp::Dataset::Iterator records read_time_ns: " << delta_ns.count()
@@ -201,7 +202,6 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                         std::cout << "PipeModeDatasetOp::Dataset::Iterator records read_bytes: " << storage->size()
                             << std::endl;
                     }
-
                 } catch(std::runtime_error& err) {
                     return Status(tensorflow::error::INTERNAL, err.what());
                 }
