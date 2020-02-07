@@ -110,7 +110,8 @@ class PipeModeDatasetOp : public DatasetOpKernel {
     class Dataset : public DatasetBase {
      public:
         explicit Dataset(OpKernelContext* ctx, const std::string& record_format, const std::string& state_directory,
-            const std::string& channel_directory, const std::string& channel, bool benchmark, std::uint64_t benchmark_records_interval):
+            const std::string& channel_directory, const std::string& channel, bool benchmark,
+            std::uint64_t benchmark_records_interval):
             DatasetBase(DatasetContext(ctx)),
             record_format_(record_format),
             channel_directory_(channel_directory),
@@ -195,8 +196,10 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                     records_read_ ++;
                     if (benchmark_records_interval_ != 0 && (records_read_ % benchmark_records_interval_ == 0)) {
                         std::cout << "PipeModeDatasetOp::Dataset::Iterator records: " << records_read_  << std::endl;
-                        std::cout << "PipeModeDatasetOp::Dataset::Iterator records read_time_ns: " << delta_ns.count() << std::endl;
-                        std::cout << "PipeModeDatasetOp::Dataset::Iterator records read_bytes: " << storage->size() << std::endl;
+                        std::cout << "PipeModeDatasetOp::Dataset::Iterator records read_time_ns: " << delta_ns.count()
+                            << std::endl;
+                        std::cout << "PipeModeDatasetOp::Dataset::Iterator records read_bytes: " << storage->size()
+                            << std::endl;
                     }
 
                 } catch(std::runtime_error& err) {
@@ -207,7 +210,8 @@ class PipeModeDatasetOp : public DatasetOpKernel {
             ~Iterator() {
                 if (benchmark_) {
                     int64_t read_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(read_time_).count();
-                    std::cout << "PipeModeDatasetOp::Dataset::Iterator epoch read_time_ms: " << read_time_ms << std::endl;
+                    std::cout << "PipeModeDatasetOp::Dataset::Iterator epoch read_time_ms: " << read_time_ms
+                        << std::endl;
                     std::cout << "PipeModeDatasetOp::Dataset::Iterator epoch read_bytes: " << read_bytes_  << std::endl;
                     auto read_giga_bytes = read_bytes_ / std::pow(1024, 3);
                     double read_seconds = read_time_ms / 1000.0;

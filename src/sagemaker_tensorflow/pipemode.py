@@ -53,8 +53,8 @@ class PipeModeDataset(dataset_ops.Dataset):
             state_dir: The directory where pipe index state is persisted.
             config_dir: The path for SageMaker input data config.
             benchmark: If True, causes the Dataset to emit timing and throughput metrics to stdout.
-            benchmark_records_interval: The number of records per interval to emit timing and throughput metrics to stdout.
-                        If zero, no emitting the metrics.
+            benchmark_records_interval: The number of records per interval to emit timing and throughput metrics
+                                        to stdout. If zero, no emitting the metrics.
         """
         try:
             os.makedirs(state_dir)
