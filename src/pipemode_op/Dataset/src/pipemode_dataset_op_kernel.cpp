@@ -210,12 +210,12 @@ class PipeModeDatasetOp : public DatasetOpKernel {
             ~Iterator() {
                 if (benchmark_) {
                     int64_t read_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(read_time_).count();
-                    std::cout << "PipeModeDatasetOp::Dataset::Iterator epoch read_time_ms: " << read_time_ms
+                    std::cout << "PipeModeDatasetOp::Dataset::Iterator total read_time_ms: " << read_time_ms
                         << std::endl;
-                    std::cout << "PipeModeDatasetOp::Dataset::Iterator epoch read_bytes: " << read_bytes_  << std::endl;
+                    std::cout << "PipeModeDatasetOp::Dataset::Iterator total read_bytes: " << read_bytes_  << std::endl;
                     auto read_giga_bytes = read_bytes_ / std::pow(1024, 3);
                     double read_seconds = read_time_ms / 1000.0;
-                    std::cout << "PipeModeDatasetOp::Dataset::Iterator epoch read_GB/s: "
+                    std::cout << "PipeModeDatasetOp::Dataset::Iterator total read_GB/s: "
                         << read_giga_bytes / read_seconds << std::endl;
                 }
             }
