@@ -50,7 +50,7 @@ if __name__ == '__main__':
         cache_from=[tag],
         buildargs={'sagemaker_tensorflow': sdist_path,
                    'device': args.device,
-                   'python': 'python' if python_version == 2 else 'python3',
+                   'python': '/usr/bin/python3',
                    'tensorflow_version': TF_VERSION,
                    'script': 'test/integ/scripts/estimator_script.py'})
 
