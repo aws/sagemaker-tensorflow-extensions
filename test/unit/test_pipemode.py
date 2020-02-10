@@ -143,3 +143,25 @@ def test_multiple_iterators():
         assert b"caterpillar" == sess.run(next)
         with pytest.raises(tf.errors.OutOfRangeError):
             sess.run(next)
+
+def test_benchmark_records_interval_enabled(capfd):
+    channel, directory = write_to_channel("A", [b"bear"])
+
+    dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory, config_dir=directory, benchmark_records_interval=1)
+    with tf.Session() as sess:
+        it = dataset.make_one_shot_iterator()
+        next = it.get_next()
+        assert sess.run(next) == b"bear"
+        out, err = capfd.readouterr()
+        assert 'Iterator records' in out
+
+def test_benchmark_records_interval_disabled(capfd):
+    channel, directory = write_to_channel("A", [b"bear"])
+
+    dataset = PipeModeDataset(channel, pipe_dir=directory, state_dir=directory, config_dir=directory, benchmark_records_interval=0)
+    with tf.Session() as sess:
+        it = dataset.make_one_shot_iterator()
+        next = it.get_next()
+        assert sess.run(next) == b"bear"
+        out, err = capfd.readouterr()
+        assert 'Iterator records' not in out
