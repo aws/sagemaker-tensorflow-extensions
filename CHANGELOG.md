@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.0 (2020-02-12)
+
+### Features
+
+ * add parameter benchmark_records_interval to emit benchmark metrics on a configurable interval
+
 ## v0.2.1 (2019-12-13)
 
 ### Bug fixes and other changes
