@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.1 (2020-02-12)
+
+### Bug Fixes and Other Changes
+
+ * bump library version to unblock release pipeline
+ * Add configurable metrics interval
+
 ## v0.2.1 (2020-02-11)
 
 ### Bug Fixes and Other Changes
