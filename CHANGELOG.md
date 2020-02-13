@@ -4,6 +4,18 @@
 
 ### Bug Fixes and Other Changes
 
+ * Revert "infra: set --min-version for release process (#67)"
+ * bump library version to unblock release pipeline
+ * Add configurable metrics interval
+
+### Testing and Release Infrastructure
+
+ * set --min-version for release process
+
+## v0.2.1 (2020-02-13)
+
+### Bug Fixes and Other Changes
+
  * bump library version to unblock release pipeline
  * Add configurable metrics interval
 
