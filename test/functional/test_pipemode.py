@@ -126,8 +126,7 @@ def test_multi_epoch_pipeline(model_dir):
         ds = ds.repeat(count=2)
         ds = ds.prefetch(3)
         ds = ds.batch(3)
-        it = ds.make_one_shot_iterator()
-        return it.get_next()
+        return ds
 
     estimator = make_estimator(model_dir=model_dir)
     estimator.train(input_fn=input_fn)
@@ -177,8 +176,7 @@ def test_multipart_recordio(model_dir):
         ds = ds.map(parse, num_parallel_calls=12)
         ds = ds.prefetch(3)
         ds = ds.batch(3)
-        it = ds.make_one_shot_iterator()
-        return it.get_next()
+        return ds
 
     estimator = make_estimator(model_dir=model_dir)
     estimator.train(input_fn=input_fn)
