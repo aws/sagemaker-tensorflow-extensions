@@ -98,7 +98,7 @@ class PipeModeDataset(dataset_ops.Dataset):
     @property
     def output_shapes(self):
         """The shape of the output Tensor."""
-        return tensor_shape.scalar()
+        return tensor_shape.TensorShape([])
 
     @property
     def output_types(self):
@@ -108,7 +108,7 @@ class PipeModeDataset(dataset_ops.Dataset):
     @property
     def element_spec(self):
         return tensor_spec.TensorSpec(
-            shape=tensor_shape.TensorShape(None),
+            shape=self.output_shapes,
             dtype=self.output_types,
             name=self.channel,
         )
