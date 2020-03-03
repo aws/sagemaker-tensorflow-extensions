@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.0 (2020-03-03)
+
+### Features
+
+ * upgrade to TF 2.1
+
 ## v0.3.0 (2020-02-12)
 
 ### Features
