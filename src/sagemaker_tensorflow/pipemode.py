@@ -20,6 +20,7 @@ import tensorflow as tf
 from tensorflow.python.data.ops import dataset_ops
 from tensorflow.python.framework import ops
 from tensorflow.python.framework import tensor_shape
+from tensorflow.python.framework import tensor_spec
 from tensorflow.python.framework import dtypes
 
 
@@ -74,7 +75,7 @@ class PipeModeDataset(dataset_ops.Dataset):
         with open(os.path.join(config_dir, 'inputdataconfig.json')) as f:
             self.input_data_config = json.load(f)
         self._validate_input_data_config()
-        super(PipeModeDataset, self).__init__()
+        super(PipeModeDataset, self).__init__(variant_tensor=self._as_variant_tensor())
 
     def _as_variant_tensor(self):
         return self._tf_plugin.pipe_mode_dataset(self.benchmark, self.record_format, self.state_dir, self.channel,
@@ -97,9 +98,17 @@ class PipeModeDataset(dataset_ops.Dataset):
     @property
     def output_shapes(self):
         """The shape of the output Tensor."""
-        return tensor_shape.scalar()
+        return tensor_shape.TensorShape([])
 
     @property
     def output_types(self):
         """The type of data stored in the output Tensor."""
         return dtypes.string
+
+    @property
+    def element_spec(self):
+        return tensor_spec.TensorSpec(
+            shape=self.output_shapes,
+            dtype=self.output_types,
+            name=self.channel,
+        )

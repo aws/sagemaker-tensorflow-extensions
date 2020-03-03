@@ -10,6 +10,7 @@ print("Starting estimator script")
 
 ds = PipeModeDataset("elizabeth")
 
+
 class BenchmarkConfig(object):
 
     def __init__(self):
@@ -83,7 +84,7 @@ assert os.path.exists('/opt/ml/input/data/{}_{}'.format(config.channel, config.e
 
 print("About to call evaluate")
 result = estimator.evaluate(input_fn=input_fn)
-for key,value in sorted(result.items()):
+for key, value in sorted(result.items()):
     print('%s: %s' % (key, value))
 
 
@@ -93,7 +94,7 @@ tf.compat.v1.disable_eager_execution()
 
 ds = PipeModeDataset(config.channel)
 with tf.compat.v1.Session() as sess:
-    it = ds.make_one_shot_iterator()
+    it = tf.compat.v1.data.make_one_shot_iterator(ds)
     next = it.get_next()
     sess.run(next)
 
@@ -102,12 +103,12 @@ print("Validate create, read, discard, recreate")
 # Test that we can create a PipeModeDataset, discard it, and read from a new one
 ds = PipeModeDataset(config.channel)
 with tf.compat.v1.Session() as sess:
-    it = ds.make_one_shot_iterator()
+    it = tf.compat.v1.data.make_one_shot_iterator(ds)
     next = it.get_next()
 
 
 with tf.compat.v1.Session() as sess:
-    it = ds.make_one_shot_iterator()
+    it = tf.compat.v1.data.make_one_shot_iterator(ds)
     next = it.get_next()
     sess.run(next)
 
