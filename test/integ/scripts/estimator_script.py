@@ -8,7 +8,7 @@ from sagemaker_tensorflow import PipeModeDataset
 
 print("Starting estimator script")
 
-ds = PipeModeDataset("elizabeth",benchmark=True)
+ds = PipeModeDataset("elizabeth", benchmark=True)
 
 
 class BenchmarkConfig(object):
@@ -92,7 +92,7 @@ for key, value in sorted(result.items()):
 print("Validate that new PipeModeDataset on existing channel can be created")
 tf.compat.v1.disable_eager_execution()
 
-ds = PipeModeDataset(config.channel,benchmark=True)
+ds = PipeModeDataset(config.channel, benchmark=True)
 with tf.compat.v1.Session() as sess:
     it = tf.compat.v1.data.make_one_shot_iterator(ds)
     next = it.get_next()
@@ -101,7 +101,7 @@ with tf.compat.v1.Session() as sess:
 print("Validate create, read, discard, recreate")
 
 # Test that we can create a PipeModeDataset, discard it, and read from a new one
-ds = PipeModeDataset(config.channel,benchmark=True)
+ds = PipeModeDataset(config.channel, benchmark=True)
 with tf.compat.v1.Session() as sess:
     it = tf.compat.v1.data.make_one_shot_iterator(ds)
     next = it.get_next()
@@ -113,4 +113,4 @@ with tf.compat.v1.Session() as sess:
     sess.run(next)
 
 print("Validate recreate")
-ds = PipeModeDataset(config.channel,benchmark=True)
+ds = PipeModeDataset(config.channel, benchmark=True)
