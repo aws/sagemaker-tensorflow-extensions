@@ -4,7 +4,7 @@ phases:
   build:
     commands:
       - PACKAGE_FILE_27="$CODEBUILD_SRC_DIR_ARTIFACT_1/sagemaker_tensorflow-*-cp27-*.whl"
-      - PACKAGE_FILE_36="$CODEBUILD_SRC_DIR_ARTIFACT_1/sagemaker_tensorflow-*-cp36-*.whl"
+      - PACKAGE_FILE_37="$CODEBUILD_SRC_DIR_ARTIFACT_1/sagemaker_tensorflow-*-cp37-*.whl"
       - PYPI_USER=$(aws secretsmanager get-secret-value --secret-id /codebuild/pypi/user --query SecretString --output text)
       - PYPI_PASSWORD=$(aws secretsmanager get-secret-value --secret-id /codebuild/pypi/password --query SecretString --output text)
       - GPG_PRIVATE_KEY=$(aws secretsmanager get-secret-value --secret-id /codebuild/gpg/private_key --query SecretString --output text)
@@ -12,13 +12,13 @@ phases:
 
       - echo 'md5sum of python packages:'
       - md5sum $PACKAGE_FILE_27
-      - md5sum $PACKAGE_FILE_36
+      - md5sum $PACKAGE_FILE_37
 
       # import private key and ensure passphrase is cached
       - echo "$GPG_PRIVATE_KEY" | gpg --batch --import
       - gpg --pinentry-mode loopback --passphrase "$GPG_PASSWORD" --detach-sign -a -o /dev/null $PACKAGE_FILE_27
-      - gpg --pinentry-mode loopback --passphrase "$GPG_PASSWORD" --detach-sign -a -o /dev/null $PACKAGE_FILE_36
+      - gpg --pinentry-mode loopback --passphrase "$GPG_PASSWORD" --detach-sign -a -o /dev/null $PACKAGE_FILE_37
 
       # publish to pypi
       - python3 -m twine upload --skip-existing $PACKAGE_FILE_27 --sign -u $PYPI_USER -p $PYPI_PASSWORD
-      - python3 -m twine upload --skip-existing $PACKAGE_FILE_36 --sign -u $PYPI_USER -p $PYPI_PASSWORD
+      - python3 -m twine upload --skip-existing $PACKAGE_FILE_37 --sign -u $PYPI_USER -p $PYPI_PASSWORD
