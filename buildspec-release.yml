@@ -18,12 +18,12 @@ phases:
       - cpplint --linelength=120 --filter=-build/c++11,-build/header_guard --extensions=cpp,hpp --quiet --recursive src/
 
       # run tests
-      - tox -e py27,py36 -- test/
+      - tox -e py27,py36,py37 -- test/
 
       # generate the distribution package
       - python setup.py sdist
       - |
-        PYTHON_VERSIONS="python3.6 python2.7"
+        PYTHON_VERSIONS="python3.7 python2.7"
         for PYTHON in ${PYTHON_VERSIONS}; do
           $PYTHON -m pip install -U pip
           $PYTHON -m pip install wheel tensorflow==1.15 twine==1.11 cmake
@@ -36,6 +36,6 @@ phases:
 artifacts:
   files:
     - dist/sagemaker_tensorflow-*-cp27-*.whl
-    - dist/sagemaker_tensorflow-*-cp36-*.whl
+    - dist/sagemaker_tensorflow-*-cp37-*.whl
   name: ARTIFACT_1
   discard-paths: yes
