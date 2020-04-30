@@ -18,7 +18,7 @@ phases:
       - cpplint --linelength=120 --filter=-build/c++11,-build/header_guard --extensions=cpp,hpp --quiet --recursive src/
 
       # run tests
-      - tox -e py27,py36,py37 -- test/
+      - tox -e py36,py37 -- test/
 
       # generate the distribution package
       - python setup.py sdist
