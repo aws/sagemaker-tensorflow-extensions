@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.1 (2020-04-30)
+
+### Bug Fixes and Other Changes
+
+ * Py37
+ * manually bump package version and tensorflow version
+
 ## v0.3.0 (2020-04-29)
 
 ### Features
