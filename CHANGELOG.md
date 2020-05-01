@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.1.post0 (2020-05-01)
+
+### Documentation Changes
+
+ * add steps for releasing the package
+
 ## v0.3.1 (2020-04-30)
 
 ### Bug Fixes and Other Changes
