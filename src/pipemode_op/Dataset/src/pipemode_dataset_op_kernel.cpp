@@ -223,8 +223,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
          private:
             bool benchmark_;
             mutex mu_;
-            std::unique_ptr<RecordReader> record_reader_
-                GUARDED_BY(mu_);
+            std::unique_ptr<RecordReader> record_reader_ GUARDED_BY(mu_);
             std::chrono::nanoseconds read_time_;
             std::uint64_t read_bytes_;
             std::uint64_t records_read_ = 0;
