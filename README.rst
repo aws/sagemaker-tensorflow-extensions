@@ -4,7 +4,7 @@ SageMaker TensorFlow
 .. role:: python(code)
    :language: python
 
-SageMaker specific extensions to TensorFlow, for Python 2.7, 3.4-3.7 and TensorFlow versions 1.7-1.15.2 and 2.0 to 2.2. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow Datasets.
+SageMaker specific extensions to TensorFlow, for Python 2.7, 3.4-3.7 and TensorFlow versions 2.0-2.2. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow Datasets.
 
 Install
 -------
@@ -19,7 +19,7 @@ You can also install sagemaker-tensorflow for a specific version of TensorFlow. 
 
 ::
 
-   pip install "sagemaker-tensorflow>=1.7,<1.8"
+   pip install "sagemaker-tensorflow>=2.0,<2.1"
 
 Build and install from source
 -----------------------------
@@ -81,9 +81,7 @@ Release branching is used to track different versions of TensorFlow. To build fo
 
 Requirements
 ------------
-SageMaker TensorFlow extensions builds on Python 2.7, 3.4-3.7 in Linux with a TensorFlow version >= 1.7. Older versions of TensorFlow are not supported. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version.
-
-Please note that TensorFlow extensions 2.2.0 only builds on Python 3.7.
+SageMaker TensorFlow extensions builds on Python 2.7, 3.6-3.7 in Linux with a TensorFlow version >= 2.0. For older TensorFlow versions, please refer to `SageMaker TensorFlow 1.x Requirements <https://github.com/aws/sagemaker-tensorflow-extensions#requirements>`__.
 
 SageMaker Pipe Mode
 -------------------
@@ -165,6 +163,20 @@ Second, pass :code:`"RecordIO"` as the value for :code:`RecordWrapperType` when 
 Third, ensure your PipeModeDataset splits records using RecordIO decoding in your training script. You can do this by simply constructing the PipeModeDataset with no :code:`record_format` argument, as RecordIO is the default record wrapping type for the PipeModeDataset.
 
 If you follow these steps then the PipeModeDataset will produce tuples of string Tensors that you can then decode or process further (for example, by doing a jpeg decode if your data are images).
+
+Release SageMaker TensorFlow Extensions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To release the package, please follow the below steps:
+
+1. Make your changes and run the test in CodeBuild docker container.
+
+2. If you are bumping TensorFlow version, please make sure you bump the versions in ``create_integ_test_docker_images.py``, ``tox.ini`` and ``buildspec-release.yml``. Please drop the Python versions that the new TensorFlow version no longer supports.
+
+3. If you are adding new Python version, please make sure the new Python version is installed in the CodeBuild docker container. Add the new Python version to tox environment and update the tox commands in ``buildspec.yml`` and ``buildspec-release.yml``.
+
+4. If any Python versions are dropped or added, please make sure you update the ``classifiers`` in ``setup.py``.
+
+5. Before starting the release process, you will need to manually bump the package version in ``setup.py``.
 
 Support
 -------
