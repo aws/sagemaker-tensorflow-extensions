@@ -12,6 +12,7 @@
 # language governing permissions and limitations under the License.
 
 cmake_minimum_required(VERSION 3.10)
+set(CMAKE_GENERATOR "Unix Makefiles")
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_VERBOSE_MAKEFILE on )
 
