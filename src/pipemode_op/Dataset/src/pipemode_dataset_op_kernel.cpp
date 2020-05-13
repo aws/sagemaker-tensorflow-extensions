@@ -89,7 +89,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         std::string channel;
         bool benchmark;
         std::uint64_t benchmark_records_interval;
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "record_format",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "record_format",
                                                         &record_format));
         OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "state_directory",
                                                         &state_directory));
@@ -181,7 +181,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                                  bool* end_of_sequence) override {
                 *end_of_sequence = false;
                 Tensor result_tensor(DT_STRING, TensorShape({}));
-                std::string* storage = &result_tensor.scalar<std::string>()();
+                std::string* storage = &result_tensor.scalar<tensorflow::tstring>()();
                 try {
                     mutex_lock l(mu_);
                     auto start = std::chrono::high_resolution_clock::now();
