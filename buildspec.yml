@@ -4,8 +4,8 @@ phases:
   pre_build:
     commands:
       - apt-get update
-      - apt-get -y install libcurl4-openssl-dev g++-5
-      - pip install cpplint
+      - apt-get -y install libcurl4-openssl-dev g++-7
+      - python3.7 -m pip install cpplint
       - start-dockerd
   build:
     commands:
@@ -13,4 +13,4 @@ phases:
 
       - cpplint --linelength=120 --filter=-build/c++11 --extensions=cpp,hpp --quiet --recursive src/
 
-      - tox -e py27,py36 -- test/
+      - tox -e py37 -- test/

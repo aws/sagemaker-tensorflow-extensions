@@ -13,8 +13,10 @@
 #include <iostream>
 #include <string>
 #include "tensorflow/core/lib/hash/crc32c.h"
+#include "tensorflow/core/platform/tstring.h"
 #include "TFRecordReader.hpp"
 
+using namespace tensorflow;
 using sagemaker::tensorflow::TFRecordReader;
 
 inline void ValidateLength(const std::uint64_t& length, const std::uint32_t masked_crc32_of_length) {
@@ -24,7 +26,7 @@ inline void ValidateLength(const std::uint64_t& length, const std::uint32_t mask
     }
 }
 
-bool TFRecordReader::ReadRecord(std::string* storage) {
+bool TFRecordReader::ReadRecord(::tensorflow::tstring* storage) {
     std::uint64_t length;
     std::uint32_t masked_crc32_of_length;
     if (!Read(&length, sizeof(length))) {
@@ -32,8 +34,8 @@ bool TFRecordReader::ReadRecord(std::string* storage) {
     }
     Read(&masked_crc32_of_length, sizeof(masked_crc32_of_length));
     ValidateLength(length, masked_crc32_of_length);
-    storage->resize(length);
-    Read(&(storage->at(0)), length);
+    storage->resize_uninitialized(length);
+    Read(&((*storage)[0]), length);
     std::uint32_t footer;
     Read(&footer, sizeof(footer));
     return true;

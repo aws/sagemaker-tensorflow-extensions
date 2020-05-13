@@ -22,9 +22,11 @@
 #include <RecordIOReader.hpp>
 #include "common.hpp"
 #include "TestRecordIOReader.hpp"
+#include "tensorflow/core/platform/tstring.h"
 
 using sagemaker::tensorflow::RecordIOReaderTest;
 using sagemaker::tensorflow::RecordIOReader;
+using tensorflow::tstring;
 
 
 RecordIOReaderTest::RecordIOReaderTest() {}
@@ -71,7 +73,7 @@ std::unique_ptr<RecordIOReader> MakeRecordIOReader(std::string path,
 TEST_F(RecordIOReaderTest, InvalidMagicNumber) {
     std::unique_ptr<RecordIOReader> ptr = MakeRecordIOReader(CreateChannel(CreateTemporaryDirectory(),
         "elizabeth", "not a magic number", 0), 4);
-    std::string storage;
+    tensorflow::tstring storage;
     EXPECT_THROW({
         ptr->ReadRecord(&storage);},
         std::runtime_error);
@@ -82,7 +84,7 @@ TEST_F(RecordIOReaderTest, TestReadSingleRecord) {
     std::string encoded = ToRecordIO(input);
     std::unique_ptr<RecordIOReader> ptr = MakeRecordIOReader(
         CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoded, 0), 4);
-    std::string storage;
+    tensorflow::tstring storage;
     ptr->ReadRecord(&storage);
     EXPECT_EQ(input, storage);
 }
@@ -98,7 +100,7 @@ TEST_F(RecordIOReaderTest, TestReadMultipleRecords) {
     std::unique_ptr<RecordIOReader> ptr = MakeRecordIOReader(
         CreateChannel(CreateTemporaryDirectory(), "elizabeth", multi_record, 0), 4);
     for (int i = 0; i < 2; i++) {
-        std::string result;
+        tensorflow::tstring result;
         ptr->ReadRecord(&result);
         EXPECT_EQ(input + std::to_string(i), result);
     }
@@ -118,7 +120,7 @@ TEST_F(RecordIOReaderTest, TestLargeRecords) {
         CreateChannel(CreateTemporaryDirectory(), "elizabeth", multi_record, 0), 65536);
 
     for (int i = 0; i < 2; i++) {
-        std::string result;
+        tensorflow::tstring result;
         ptr->ReadRecord(&result);
         EXPECT_EQ(input, result);
     }
@@ -138,7 +140,7 @@ TEST_F(RecordIOReaderTest, TestManyRecords) {
         CreateChannel(CreateTemporaryDirectory(), "elizabeth", multi_record, 0), 65536);
 
     for (int i = 0; i < 2000000; i++) {
-        std::string result;
+        tensorflow::tstring result;
         ptr->ReadRecord(&result);
         EXPECT_EQ(input, result);
     }

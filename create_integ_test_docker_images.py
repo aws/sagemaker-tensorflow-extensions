@@ -9,7 +9,7 @@ import botocore
 import glob
 import sys
 
-TF_VERSION = "2.1.0"
+TF_VERSION = "2.2.0"
 REGION = "us-west-2"
 REPOSITORY_NAME = "sagemaker-tensorflow-extensions-test"
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         cache_from=[tag],
         buildargs={'sagemaker_tensorflow': sdist_path,
                    'device': args.device,
-                   'python': '/usr/bin/python3',
+                   'python': '/usr/bin/python3.7',
                    'tensorflow_version': TF_VERSION,
                    'script': 'test/integ/scripts/estimator_script.py'})
 

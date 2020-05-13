@@ -70,9 +70,11 @@ class CMakeBuild(build_ext):
         extdir = os.path.abspath(
             os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + os.path.join(extdir, 'sagemaker_tensorflow')]
+        cmake_args += ['-DCMAKE_CXX_COMPILER=/usr/bin/g++-7']
+        cmake_args += ['-DCMAKE_C_COMPILER=/usr/bin/gcc-7']
 
         cfg = 'Debug' if self.debug else 'Release'
-        build_args = ['--config', cfg]
+        build_args = ['--config', 'Debug']
 
         cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
         build_args += ['--', '-j{}'.format(multiprocessing.cpu_count())]
@@ -82,7 +84,7 @@ class CMakeBuild(build_ext):
             env.get('CXXFLAGS', ''),
             self.distribution.get_version())
 
-        env['CXX'] = 'g++-5'
+        env['CXX'] = 'g++-7'
         env['PYTHON_EXECUTABLE'] = sys.executable
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
@@ -90,13 +92,13 @@ class CMakeBuild(build_ext):
                               cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args,
                               cwd=self.build_temp, env=env)
-        subprocess.check_call(['ctest'], cwd=self.build_temp)
+        subprocess.check_call(['ctest', '--verbose'], cwd=self.build_temp)
         print()
 
 
 setup(
     name='sagemaker_tensorflow',
-    version='2.1.0.1.0.0',
+    version='2.2.0.1.0.0',
     description='Amazon Sagemaker specific TensorFlow extensions.',
     packages=find_packages(where='src', exclude=('test',)),
     package_dir={'': 'src'},
@@ -114,10 +116,7 @@ setup(
         "Natural Language :: English",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.7'
     ],
     extras_require={
         'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock',
