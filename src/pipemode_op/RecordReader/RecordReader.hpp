@@ -20,7 +20,6 @@
 #include <thread>
 #include <chrono>
 
-
 namespace sagemaker {
 namespace tensorflow {
 
