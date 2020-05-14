@@ -12,6 +12,7 @@
 // language governing permissions and limitations under the License.
 
 #include "RecordReader.hpp"
+#include "tensorflow/core/platform/tstring.h"
 
 #include <sys/stat.h>
 #include <fcntl.h>

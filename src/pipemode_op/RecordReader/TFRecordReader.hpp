@@ -16,6 +16,7 @@
 
 #include <string>
 #include "RecordReader.hpp"
+#include "tensorflow/core/platform/tstring.h"
 
 namespace sagemaker {
 namespace tensorflow {
