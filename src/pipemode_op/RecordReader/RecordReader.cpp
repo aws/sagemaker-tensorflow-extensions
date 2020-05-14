@@ -23,6 +23,7 @@
 #include <system_error>
 
 using sagemaker::tensorflow::RecordReader;
+using tensorflow::tstring;
 
 bool RecordReader::WaitForFile() {
     auto sleep = std::chrono::seconds(0);

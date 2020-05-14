@@ -22,8 +22,6 @@
 
 #include "tensorflow/core/platform/tstring.h"
 
-using tensorflow::tstring;
-
 namespace sagemaker {
 namespace tensorflow {
 

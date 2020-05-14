@@ -19,8 +19,6 @@
 #include <string>
 #include "RecordIOReader.hpp"
 
-using sagemaker::tensorflow::RecordIOReader;
-
 std::uint32_t RECORD_IO_MAGIC = 0xced7230a;
 std::uint32_t RECORD_IO_START_MULTIPART_RECORD_FLAG = 1;
 std::uint32_t RECORD_IO_CONTINUE_MULTIPART_RECORD_FLAG = 2;
