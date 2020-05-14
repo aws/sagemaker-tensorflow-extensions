@@ -12,14 +12,12 @@
 // language governing permissions and limitations under the License.
 
 #include "TextLineRecordReader.hpp"
-#include "tensorflow/core/platform/tstring.h"
 #include <algorithm>
 #include <iostream>
 #include <string>
 
 using sagemaker::tensorflow::RecordReader;
 using sagemaker::tensorflow::TextLineRecordReader;
-using tensorflow::tstring;
 
 TextLineRecordReader::TextLineRecordReader(const std::string& file_path, const std::size_t buffer_capacity,
     const std::size_t read_size, const std::chrono::seconds file_creation_timeout, const char delim):
@@ -46,7 +44,7 @@ void TextLineRecordReader::FillBuffer() {
     offset_ = 0;
 }
 
-bool TextLineRecordReader::ReadRecord(tensorflow::tstring* data) {
+bool TextLineRecordReader::ReadRecord(std::string* data) {
     data->resize(0);
     static const std::size_t STEP_SIZE = 1024;
     while (true) {

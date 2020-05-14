@@ -12,7 +12,6 @@
 // language governing permissions and limitations under the License.
 
 #include "RecordReader.hpp"
-#include "tensorflow/core/platform/tstring.h"
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -24,7 +23,6 @@
 #include <system_error>
 
 using sagemaker::tensorflow::RecordReader;
-using tensorflow::tstring;
 
 bool RecordReader::WaitForFile() {
     auto sleep = std::chrono::seconds(0);

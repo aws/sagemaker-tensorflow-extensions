@@ -181,7 +181,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                                  bool* end_of_sequence) override {
                 *end_of_sequence = false;
                 Tensor result_tensor(DT_STRING, TensorShape({}));
-                tensorflow::tstring* storage = &result_tensor.scalar<tensorflow::tstring>()();
+                std::string* storage = (std::string*) &result_tensor.scalar<tensorflow::tstring>()();
                 try {
                     mutex_lock l(mu_);
                     auto start = std::chrono::high_resolution_clock::now();
