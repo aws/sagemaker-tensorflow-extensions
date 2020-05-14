@@ -61,7 +61,7 @@ class TextLineRecordReader : public RecordReader {
 
     virtual ~TextLineRecordReader();
 
-    bool ReadRecord(tensorflow::tstring* storage) override;
+    bool ReadRecord(std::string* storage) override;
 
  protected:
     /**
