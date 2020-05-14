@@ -24,7 +24,7 @@ inline void ValidateLength(const std::uint64_t& length, const std::uint32_t mask
     }
 }
 
-bool TFRecordReader::ReadRecord(std::string* storage) {
+bool TFRecordReader::ReadRecord(tensorflow::tstring* storage) {
     std::uint64_t length;
     std::uint32_t masked_crc32_of_length;
     if (!Read(&length, sizeof(length))) {

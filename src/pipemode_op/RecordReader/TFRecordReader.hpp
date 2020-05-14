@@ -30,7 +30,7 @@ class TFRecordReader : public RecordReader {
     using RecordReader::RecordReader;
 
  public:
-    bool ReadRecord(std::string* storage) override;
+    bool ReadRecord(tensorflow::tstring* storage) override;
 };
 
 }  // namespace tensorflow

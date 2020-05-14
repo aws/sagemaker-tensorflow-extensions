@@ -20,6 +20,8 @@
 #include <thread>
 #include <chrono>
 
+#include "tensorflow/core/platform/tstring.h"
+
 namespace sagemaker {
 namespace tensorflow {
 
@@ -71,7 +73,7 @@ class RecordReader {
        param [out] storage The string where the record is written to.
        return true if a record could be read, false otherwise.
      */
-    virtual bool ReadRecord(std::string* storage) = 0;
+    virtual bool ReadRecord(tensorflow::tstring* storage) = 0;
 
  protected:
     /**

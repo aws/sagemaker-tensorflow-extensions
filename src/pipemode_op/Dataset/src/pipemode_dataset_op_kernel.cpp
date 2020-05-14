@@ -83,19 +83,19 @@ class PipeModeDatasetOp : public DatasetOpKernel {
     using DatasetOpKernel::DatasetOpKernel;
 
     void MakeDataset(OpKernelContext* ctx, DatasetBase** output) override {
-        std::string record_format;
-        std::string state_directory;
-        std::string channel_directory;
-        std::string channel;
+        tensorflow::tstring record_format;
+        tensorflow::tstring state_directory;
+        tensorflow::tstring channel_directory;
+        tensorflow::tstring channel;
         bool benchmark;
         std::uint64_t benchmark_records_interval;
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "record_format",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "record_format",
                                                         &record_format));
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "state_directory",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "state_directory",
                                                         &state_directory));
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "channel_directory",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "channel_directory",
                                                         &channel_directory));
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "channel",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "channel",
                                                         &channel));
         OP_REQUIRES(ctx, record_format == "RecordIO" || record_format == "TFRecord" || record_format == "TextLine",
             tensorflow::errors::InvalidArgument("Invalid record format: " + record_format));
@@ -181,7 +181,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                                  bool* end_of_sequence) override {
                 *end_of_sequence = false;
                 Tensor result_tensor(DT_STRING, TensorShape({}));
-                std::string* storage = (std::string*) &result_tensor.scalar<tensorflow::tstring>()();
+                tensorflow::tstring* storage = &result_tensor.scalar<tensorflow::tstring>()();
                 try {
                     mutex_lock l(mu_);
                     auto start = std::chrono::high_resolution_clock::now();
