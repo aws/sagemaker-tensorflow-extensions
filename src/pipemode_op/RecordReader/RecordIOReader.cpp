@@ -53,7 +53,7 @@ inline bool HasFollowingMultipartRecords(const RecordIOHeader& header) {
         GetRecordFlag(header) == RECORD_IO_CONTINUE_MULTIPART_RECORD_FLAG;
 }
 
-bool RecordIOReader::ReadRecord(std::string* storage) {
+bool RecordIOReader::ReadRecord(tensorflow::tstring* storage) {
     std::size_t total_record_size = 0;
     RecordIOHeader header;
     do {

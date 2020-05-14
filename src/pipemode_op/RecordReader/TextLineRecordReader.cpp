@@ -44,7 +44,7 @@ void TextLineRecordReader::FillBuffer() {
     offset_ = 0;
 }
 
-bool TextLineRecordReader::ReadRecord(std::string* data) {
+bool TextLineRecordReader::ReadRecord(tensorflow::tstring* data) {
     data->resize(0);
     static const std::size_t STEP_SIZE = 1024;
     while (true) {
