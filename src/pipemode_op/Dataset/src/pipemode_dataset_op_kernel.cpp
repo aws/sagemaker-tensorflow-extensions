@@ -24,6 +24,7 @@
 #include "tensorflow/core/framework/op_def_builder.h"
 #include "tensorflow/core/framework/shape_inference.h"
 #include "tensorflow/core/framework/dataset.h"
+#include "tensorflow/core/platform/tstring.h"
 
 #include "PipeStateManager.hpp"
 #include "RecordIOReader.hpp"
@@ -57,6 +58,7 @@ using tensorflow::PartialTensorShape;
 using tensorflow::Status;
 using tensorflow::Tensor;
 using tensorflow::TensorShape;
+using tensorflow::tstring;
 
 std::string BuildPipeName(const std::string& channel_directory,
     const std::string& channel_name, const uint32_t pipe_index) {
@@ -181,7 +183,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                                  bool* end_of_sequence) override {
                 *end_of_sequence = false;
                 Tensor result_tensor(DT_STRING, TensorShape({}));
-                std::string* storage = (std::string*) &result_tensor.scalar<tensorflow::tstring>()();
+                tensorflow::tstring* storage = &result_tensor.scalar<tensorflow::tstring>()();
                 try {
                     mutex_lock l(mu_);
                     auto start = std::chrono::high_resolution_clock::now();

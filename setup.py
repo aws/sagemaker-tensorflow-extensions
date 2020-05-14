@@ -70,6 +70,8 @@ class CMakeBuild(build_ext):
         extdir = os.path.abspath(
             os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + os.path.join(extdir, 'sagemaker_tensorflow')]
+        cmake_args += ['-DCMAKE_CXX_COMPILER=/usr/bin/g++-7']
+        cmake_args += ['-DCMAKE_C_COMPILER=/usr/bin/gcc-7']
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', 'Debug']
@@ -82,7 +84,7 @@ class CMakeBuild(build_ext):
             env.get('CXXFLAGS', ''),
             self.distribution.get_version())
 
-        env['CXX'] = 'g++-5'
+        env['CXX'] = 'g++-7'
         env['PYTHON_EXECUTABLE'] = sys.executable
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)

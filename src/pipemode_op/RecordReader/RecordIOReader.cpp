@@ -18,8 +18,10 @@
 #include <stdexcept>
 #include <string>
 #include "RecordIOReader.hpp"
+#include "tensorflow/core/platform/tstring.h"
 
 using sagemaker::tensorflow::RecordIOReader;
+using tensorflow::tstring;
 
 std::uint32_t RECORD_IO_MAGIC = 0xced7230a;
 std::uint32_t RECORD_IO_START_MULTIPART_RECORD_FLAG = 1;
@@ -53,7 +55,7 @@ inline bool HasFollowingMultipartRecords(const RecordIOHeader& header) {
         GetRecordFlag(header) == RECORD_IO_CONTINUE_MULTIPART_RECORD_FLAG;
 }
 
-bool RecordIOReader::ReadRecord(std::string* storage) {
+bool RecordIOReader::ReadRecord(tensorflow::tstring* storage) {
     std::size_t total_record_size = 0;
     RecordIOHeader header;
     do {
@@ -65,7 +67,8 @@ bool RecordIOReader::ReadRecord(std::string* storage) {
         std::size_t padded_expected_size = GetPaddedSize(expected_size);
         total_record_size += expected_size;
         storage->resize(total_record_size);
-        Read(&(storage->at(total_record_size - expected_size)), expected_size);
+        storage += total_record_size - expected_size
+        Read(&(storage), expected_size);
         static char ignore[4] = {0, 0, 0, 0};
         std::size_t pad_amount = padded_expected_size - expected_size;
         if (pad_amount) {
