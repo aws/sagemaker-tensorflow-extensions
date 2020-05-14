@@ -18,9 +18,11 @@
 #include "TFRecordReader.hpp"
 #include "TestTFRecordReader.hpp"
 #include "common.hpp"
+#include "tensorflow/core/platform/tstring.h"
 
 using sagemaker::tensorflow::TFRecordReader;
 using sagemaker::tensorflow::TFRecordReaderTest;
+using tensorflow::tstring;
 
 #include "tensorflow/core/lib/hash/crc32c.h"
 

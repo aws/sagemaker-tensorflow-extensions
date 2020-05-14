@@ -92,7 +92,7 @@ class CMakeBuild(build_ext):
                               cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args,
                               cwd=self.build_temp, env=env)
-        subprocess.check_call(['ctest'], cwd=self.build_temp)
+        subprocess.check_call(['ctest', '--verbose'], cwd=self.build_temp)
         print()
 
 

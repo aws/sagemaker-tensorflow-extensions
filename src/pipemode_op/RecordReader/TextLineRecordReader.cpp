@@ -17,9 +17,9 @@
 #include <iostream>
 #include <string>
 
+using namespace tensorflow;
 using sagemaker::tensorflow::RecordReader;
 using sagemaker::tensorflow::TextLineRecordReader;
-using tensorflow::tstring;
 
 TextLineRecordReader::TextLineRecordReader(const std::string& file_path, const std::size_t buffer_capacity,
     const std::size_t read_size, const std::chrono::seconds file_creation_timeout, const char delim):
@@ -46,7 +46,7 @@ void TextLineRecordReader::FillBuffer() {
     offset_ = 0;
 }
 
-bool TextLineRecordReader::ReadRecord(tensorflow::tstring* data) {
+bool TextLineRecordReader::ReadRecord(::tensorflow::tstring* data) {
     data->resize(0);
     static const std::size_t STEP_SIZE = 1024;
     while (true) {
@@ -57,7 +57,6 @@ bool TextLineRecordReader::ReadRecord(tensorflow::tstring* data) {
             if (data->size() == 0) {
                 return false;
             } else {
-                data->shrink_to_fit();
                 return true;
             }
         }
@@ -67,7 +66,6 @@ bool TextLineRecordReader::ReadRecord(tensorflow::tstring* data) {
                 const char next_char = buffer_[offset_++];
                 --volume_;
                 if (next_char == delim_) {
-                    data->shrink_to_fit();
                     return true;
                 } else {
                     data->push_back(next_char);

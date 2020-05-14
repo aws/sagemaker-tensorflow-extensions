@@ -21,9 +21,12 @@
 #include <TextLineRecordReader.hpp>
 #include "common.hpp"
 #include "TestTextLineRecordReader.hpp"
+#include "tensorflow/core/platform/tstring.h"
+
 
 using sagemaker::tensorflow::TextLineRecordReader;
 using sagemaker::tensorflow::TextLineRecordReaderTest;
+using tensorflow::tstring;
 
 TextLineRecordReaderTest::TextLineRecordReaderTest() {}
 
@@ -37,7 +40,7 @@ TEST_F(TextLineRecordReaderTest, TestReadLine) {
     std::string channelDirectory = CreateTemporaryDirectory();
     std::unique_ptr<TextLineRecordReader> reader = std::unique_ptr<TextLineRecordReader>(new TextLineRecordReader(
         CreateChannel(channelDirectory, "elizabeth", "abc\ndef", 0), 100, 200, std::chrono::seconds(2), '\n'));
-    std::string data;
+    tensorflow::tstring data;
     bool result = reader->ReadRecord(&data);
     EXPECT_EQ(std::string("abc"), data);
     EXPECT_EQ(true, result);
@@ -54,7 +57,7 @@ TEST_F(TextLineRecordReaderTest, TestReadSingleLine) {
     std::string channelDirectory = CreateTemporaryDirectory();
     std::unique_ptr<TextLineRecordReader> reader = std::unique_ptr<TextLineRecordReader>(new TextLineRecordReader(
         CreateChannel(channelDirectory, "elizabeth", "abc", 0), 100, 200, std::chrono::seconds(2), '\n'));
-    std::string data;
+    tensorflow::tstring data;
     bool result = reader->ReadRecord(&data);
     EXPECT_EQ(std::string("abc"), data);
     EXPECT_EQ(true, result);
@@ -67,7 +70,7 @@ TEST_F(TextLineRecordReaderTest, TestReadSingleLineTrailingNewLine) {
     std::string channelDirectory = CreateTemporaryDirectory();
     std::unique_ptr<TextLineRecordReader> reader = std::unique_ptr<TextLineRecordReader>(new TextLineRecordReader(
         CreateChannel(channelDirectory, "elizabeth", "abc\n", 0), 100, 200, std::chrono::seconds(2), '\n'));
-    std::string data;
+    tensorflow::tstring data;
     bool result = reader->ReadRecord(&data);
     EXPECT_EQ(std::string("abc"), data);
     EXPECT_EQ(true, result);
@@ -80,7 +83,7 @@ TEST_F(TextLineRecordReaderTest, TestBlankLine) {
     std::string channelDirectory = CreateTemporaryDirectory();
     std::unique_ptr<TextLineRecordReader> reader = std::unique_ptr<TextLineRecordReader>(new TextLineRecordReader(
         CreateChannel(channelDirectory, "elizabeth", "abc\n\ndef", 0), 100, 200, std::chrono::seconds(2), '\n'));
-    std::string data;
+    tensorflow::tstring data;
     bool result = reader->ReadRecord(&data);
     EXPECT_EQ(std::string("abc"), data);
     EXPECT_EQ(true, result);
@@ -99,7 +102,7 @@ TEST_F(TextLineRecordReaderTest, TestOnlyNewLine) {
     std::string channelDirectory = CreateTemporaryDirectory();
     std::unique_ptr<TextLineRecordReader> reader = std::unique_ptr<TextLineRecordReader>(new TextLineRecordReader(
         CreateChannel(channelDirectory, "elizabeth", "\n", 0), 100, 200, std::chrono::seconds(2), '\n'));
-    std::string data;
+    tensorflow::tstring data;
     bool result = reader->ReadRecord(&data);
     EXPECT_EQ(std::string(""), data);
     EXPECT_EQ(true, result);
@@ -112,7 +115,7 @@ TEST_F(TextLineRecordReaderTest, TestReadLineNoData) {
     std::string channelDirectory = CreateTemporaryDirectory();
     std::unique_ptr<TextLineRecordReader> reader = std::unique_ptr<TextLineRecordReader>(new TextLineRecordReader(
         CreateChannel(channelDirectory, "elizabeth", "", 0), 100, 200, std::chrono::seconds(2), '\n'));
-    std::string data;
+    tensorflow::tstring data;
     bool result = reader->ReadRecord(&data);
     EXPECT_EQ(std::string(""), data);
     EXPECT_FALSE(result);

@@ -22,6 +22,8 @@
 
 #include "tensorflow/core/platform/tstring.h"
 
+using namespace tensorflow;
+
 namespace sagemaker {
 namespace tensorflow {
 
@@ -35,7 +37,6 @@ namespace tensorflow {
   */
 class RecordReader {
  public:
-    using tensorflow::tstring;
     /**
        Constructs a new RecordReader that reads records from a file.
     
@@ -74,7 +75,7 @@ class RecordReader {
        param [out] storage The string where the record is written to.
        return true if a record could be read, false otherwise.
      */
-    virtual bool ReadRecord(tensorflow::tstring* storage) = 0;
+    virtual bool ReadRecord(::tensorflow::tstring* storage) = 0;
 
  protected:
     /**

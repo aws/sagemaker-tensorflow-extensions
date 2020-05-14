@@ -21,7 +21,9 @@
 #include <RecordIOReader.hpp>
 #include "common.hpp"
 #include "TestRecordReader.hpp"
+#include "tensorflow/core/platform/tstring.h"
 
+using namespace tensorflow;
 using sagemaker::tensorflow::RecordReader;
 using sagemaker::tensorflow::RecordReaderTest;
 
@@ -36,8 +38,9 @@ void RecordReaderTest::TearDown() {}
 class TestReader : RecordReader {
  public:
         using RecordReader::RecordReader;
+        using namespace tensorflow;
 
-        bool ReadRecord(std::string* storage) override {
+        bool ReadRecord(::tensorfow::tstring* storage) override {
             return false;
         }
 
