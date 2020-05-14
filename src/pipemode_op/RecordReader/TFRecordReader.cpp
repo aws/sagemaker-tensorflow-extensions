@@ -34,8 +34,8 @@ bool TFRecordReader::ReadRecord(::tensorflow::tstring* storage) {
     }
     Read(&masked_crc32_of_length, sizeof(masked_crc32_of_length));
     ValidateLength(length, masked_crc32_of_length);
-    storage->resize(length);
-    Read(&(storage[0]), length);
+    storage->resize_uninitialized(length);
+    Read(&(storage.begin()), length);
     std::uint32_t footer;
     Read(&footer, sizeof(footer));
     return true;

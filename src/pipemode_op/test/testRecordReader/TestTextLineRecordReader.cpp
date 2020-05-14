@@ -23,7 +23,6 @@
 #include "TestTextLineRecordReader.hpp"
 #include "tensorflow/core/platform/tstring.h"
 
-
 using sagemaker::tensorflow::TextLineRecordReader;
 using sagemaker::tensorflow::TextLineRecordReaderTest;
 using tensorflow::tstring;

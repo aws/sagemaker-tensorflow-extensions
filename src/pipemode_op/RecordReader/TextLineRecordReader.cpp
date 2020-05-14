@@ -47,7 +47,7 @@ void TextLineRecordReader::FillBuffer() {
 }
 
 bool TextLineRecordReader::ReadRecord(::tensorflow::tstring* data) {
-    data->resize(0);
+    data->resize_uninitialized(0);
     static const std::size_t STEP_SIZE = 1024;
     while (true) {
         if (!volume_) {

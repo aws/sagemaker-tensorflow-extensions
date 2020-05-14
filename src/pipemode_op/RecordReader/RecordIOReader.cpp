@@ -66,8 +66,8 @@ bool RecordIOReader::ReadRecord(::tensorflow::tstring* storage) {
         std::size_t expected_size = GetRecordSize(header);
         std::size_t padded_expected_size = GetPaddedSize(expected_size);
         total_record_size += expected_size;
-        storage->resize(total_record_size);
-        Read(&(storage[total_record_size - expected_size]), expected_size);
+        storage->resize_uninitialized(total_record_size);
+        Read(&(storage.begin()) + (total_record_size - expected_size), expected_size);
         static char ignore[4] = {0, 0, 0, 0};
         std::size_t pad_amount = padded_expected_size - expected_size;
         if (pad_amount) {
