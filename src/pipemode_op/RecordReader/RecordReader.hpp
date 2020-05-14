@@ -22,8 +22,6 @@
 
 #include "tensorflow/core/platform/tstring.h"
 
-using tensorflow::tstring;
-
 namespace sagemaker {
 namespace tensorflow {
 
@@ -37,6 +35,7 @@ namespace tensorflow {
   */
 class RecordReader {
  public:
+    using tensorflow::tstring;
     /**
        Constructs a new RecordReader that reads records from a file.
     

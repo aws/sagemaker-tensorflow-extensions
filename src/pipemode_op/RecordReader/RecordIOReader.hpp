@@ -18,8 +18,6 @@
 #include "RecordReader.hpp"
 #include "tensorflow/core/platform/tstring.h"
 
-using tensorflow::tstring;
-
 namespace sagemaker {
 namespace tensorflow {
 
@@ -31,6 +29,7 @@ namespace tensorflow {
  */
 class RecordIOReader : public RecordReader {
     using RecordReader::RecordReader;
+    using tensorflow::tstring;
 
  public:
     bool ReadRecord(tensorflow::tstring* storage) override;
