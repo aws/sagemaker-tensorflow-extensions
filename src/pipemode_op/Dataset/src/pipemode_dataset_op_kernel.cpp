@@ -24,6 +24,7 @@
 #include "tensorflow/core/framework/op_def_builder.h"
 #include "tensorflow/core/framework/shape_inference.h"
 #include "tensorflow/core/framework/dataset.h"
+#include "tensorflow/code/platform/mutex.h"
 
 #include "PipeStateManager.hpp"
 #include "RecordIOReader.hpp"
@@ -89,7 +90,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         std::string channel;
         bool benchmark;
         std::uint64_t benchmark_records_interval;
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "record_format",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "record_format",
                                                         &record_format));
         OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "state_directory",
                                                         &state_directory));
@@ -181,7 +182,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                                  bool* end_of_sequence) override {
                 *end_of_sequence = false;
                 Tensor result_tensor(DT_STRING, TensorShape({}));
-                std::string* storage = &result_tensor.scalar<tensorflow::tstring>()();
+                std::string* storage = &result_tensor.scalar<std::string>()();
                 try {
                     mutex_lock l(mu_);
                     auto start = std::chrono::high_resolution_clock::now();
@@ -223,7 +224,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
          private:
             bool benchmark_;
             mutex mu_;
-            std::unique_ptr<RecordReader> record_reader_ GUARDED_BY(mu_);
+            std::unique_ptr<RecordReader> record_reader_ TF_GUARDED_BY(mu_);
             std::chrono::nanoseconds read_time_;
             std::uint64_t read_bytes_;
             std::uint64_t records_read_ = 0;
