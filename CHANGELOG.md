@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.5.0 (2020-05-15)
+
+### Features
+
+ * support TensorFlow 2.2 Python 3.7
+
 ## v1.4.0.post0 (2020-05-05)
 
 ### Documentation Changes
