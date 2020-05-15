@@ -1,21 +1,22 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 ARG device=cpu
-ARG tensorflow_version=2.1.0
+ARG tensorflow_version=2.2.0
 ARG script
 ARG python
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        g++-5 \
+        libcurl4-openssl-dev \
+        g++-7 \
         build-essential \
         curl \
         git \
         libcurl3-dev \
         libfreetype6-dev \
-        libpng12-dev \
         libzmq3-dev \
         pkg-config \
         python3 \
+        python3-pip \
         rsync \
         software-properties-common \
         unzip \
@@ -31,17 +32,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
-    $python get-pip.py && \
-    rm get-pip.py
-
-RUN $python -m pip install cmake
+RUN pip3 install --upgrade pip
+RUN pip3 install cmake setuptools
 
 
 RUN if [ "$device"="cpu" ] ; then \
-		$python -m pip install tensorflow==$tensorflow_version; \
+		pip3 install tensorflow==$tensorflow_version; \
 	else \
-		$python -m pip install "tensorflow-gpu"==$tensorflow_version; \
+		pip3 install "tensorflow-gpu"==$tensorflow_version; \
 	fi
 
 ARG sagemaker_tensorflow=sagemaker_tensorflow-$tensorflow_version.1.0.0.tar.gz
@@ -52,7 +50,7 @@ COPY $sagemaker_tensorflow .
 
 RUN sagemaker_tensorflow_local=$(basename $sagemaker_tensorflow) && \
     \
-    $python -m pip install $sagemaker_tensorflow_local && \
+    pip3 install $sagemaker_tensorflow_local && \
     \
     rm $sagemaker_tensorflow_local
 

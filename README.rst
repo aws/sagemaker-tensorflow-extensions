@@ -4,7 +4,7 @@ SageMaker TensorFlow
 .. role:: python(code)
    :language: python
 
-SageMaker specific extensions to TensorFlow, for Python 2.7, 3.6 and TensorFlow versions 2.0-2.1. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow Datasets.
+SageMaker specific extensions to TensorFlow, for Python 2.7, 3.4-3.7 and TensorFlow versions 1.7-1.15.2 and 2.0 to 2.2. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow Datasets.
 
 Install
 -------
@@ -81,7 +81,9 @@ Release branching is used to track different versions of TensorFlow. To build fo
 
 Requirements
 ------------
-SageMaker TensorFlow extensions builds on Python 2.7, 3.6 in Linux with a TensorFlow version >= 2.0. For older TensorFlow versions, please refer to `SageMaker TensorFlow 1.x Requirements <https://github.com/aws/sagemaker-tensorflow-extensions#requirements>`__.
+SageMaker TensorFlow extensions builds on Python 2.7, 3.4-3.7 in Linux with a TensorFlow version >= 1.7. Older versions of TensorFlow are not supported. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version.
+
+Please note that TensorFlow extensions 2.2.0 only builds on Python 3.7.
 
 SageMaker Pipe Mode
 -------------------
@@ -167,6 +169,7 @@ If you follow these steps then the PipeModeDataset will produce tuples of string
 Release SageMaker TensorFlow Extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 To release the package, please follow the below steps:
+
 1. Make your changes and run the test in CodeBuild docker container.
 
 2. If you are bumping TensorFlow version, please make sure you bump the versions in ``create_integ_test_docker_images.py``, ``tox.ini`` and ``buildspec-release.yml``. Please drop the Python versions that the new TensorFlow version no longer supports.

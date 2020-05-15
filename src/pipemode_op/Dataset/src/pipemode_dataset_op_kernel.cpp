@@ -24,6 +24,7 @@
 #include "tensorflow/core/framework/op_def_builder.h"
 #include "tensorflow/core/framework/shape_inference.h"
 #include "tensorflow/core/framework/dataset.h"
+#include "tensorflow/core/platform/tstring.h"
 
 #include "PipeStateManager.hpp"
 #include "RecordIOReader.hpp"
@@ -57,6 +58,7 @@ using tensorflow::PartialTensorShape;
 using tensorflow::Status;
 using tensorflow::Tensor;
 using tensorflow::TensorShape;
+using tensorflow::tstring;
 
 std::string BuildPipeName(const std::string& channel_directory,
     const std::string& channel_name, const uint32_t pipe_index) {
@@ -83,19 +85,19 @@ class PipeModeDatasetOp : public DatasetOpKernel {
     using DatasetOpKernel::DatasetOpKernel;
 
     void MakeDataset(OpKernelContext* ctx, DatasetBase** output) override {
-        std::string record_format;
-        std::string state_directory;
-        std::string channel_directory;
-        std::string channel;
+        tensorflow::tstring record_format;
+        tensorflow::tstring state_directory;
+        tensorflow::tstring channel_directory;
+        tensorflow::tstring channel;
         bool benchmark;
         std::uint64_t benchmark_records_interval;
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "record_format",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "record_format",
                                                         &record_format));
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "state_directory",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "state_directory",
                                                         &state_directory));
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "channel_directory",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "channel_directory",
                                                         &channel_directory));
-        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::string>(ctx, "channel",
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "channel",
                                                         &channel));
         OP_REQUIRES(ctx, record_format == "RecordIO" || record_format == "TFRecord" || record_format == "TextLine",
             tensorflow::errors::InvalidArgument("Invalid record format: " + record_format));
@@ -181,7 +183,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                                  bool* end_of_sequence) override {
                 *end_of_sequence = false;
                 Tensor result_tensor(DT_STRING, TensorShape({}));
-                std::string* storage = &result_tensor.scalar<std::string>()();
+                tensorflow::tstring* storage = &result_tensor.scalar<tensorflow::tstring>()();
                 try {
                     mutex_lock l(mu_);
                     auto start = std::chrono::high_resolution_clock::now();
@@ -223,8 +225,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
          private:
             bool benchmark_;
             mutex mu_;
-            std::unique_ptr<RecordReader> record_reader_
-                GUARDED_BY(mu_);
+            std::unique_ptr<RecordReader> record_reader_ TF_GUARDED_BY(mu_);
             std::chrono::nanoseconds read_time_;
             std::uint64_t read_bytes_;
             std::uint64_t records_read_ = 0;

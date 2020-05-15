@@ -11,11 +11,13 @@
 // ANY KIND, either express or implied. See the License for the specific
 // language governing permissions and limitations under the License.
 
-#include "TextLineRecordReader.hpp"
 #include <algorithm>
 #include <iostream>
 #include <string>
+#include "TextLineRecordReader.hpp"
+#include "tensorflow/core/platform/tstring.h"
 
+using tensorflow::tstring;
 using sagemaker::tensorflow::RecordReader;
 using sagemaker::tensorflow::TextLineRecordReader;
 
@@ -44,8 +46,8 @@ void TextLineRecordReader::FillBuffer() {
     offset_ = 0;
 }
 
-bool TextLineRecordReader::ReadRecord(std::string* data) {
-    data->resize(0);
+bool TextLineRecordReader::ReadRecord(::tensorflow::tstring* data) {
+    data->resize_uninitialized(0);
     static const std::size_t STEP_SIZE = 1024;
     while (true) {
         if (!volume_) {
@@ -55,7 +57,7 @@ bool TextLineRecordReader::ReadRecord(std::string* data) {
             if (data->size() == 0) {
                 return false;
             } else {
-                data->shrink_to_fit();
+                data->resize_uninitialized(data->size());
                 return true;
             }
         }
@@ -65,7 +67,7 @@ bool TextLineRecordReader::ReadRecord(std::string* data) {
                 const char next_char = buffer_[offset_++];
                 --volume_;
                 if (next_char == delim_) {
-                    data->shrink_to_fit();
+                    data->resize_uninitialized(data->size());
                     return true;
                 } else {
                     data->push_back(next_char);
