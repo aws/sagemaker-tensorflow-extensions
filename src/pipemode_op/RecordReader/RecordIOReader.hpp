@@ -31,7 +31,6 @@ namespace tensorflow {
  */
 class RecordIOReader : public RecordReader {
     using RecordReader::RecordReader;
-    using tensorflow::tstring;
 
  public:
     bool ReadRecord(::tensorflow::tstring* storage) override;
