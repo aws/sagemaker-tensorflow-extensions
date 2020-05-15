@@ -74,7 +74,7 @@ class CMakeBuild(build_ext):
         cmake_args += ['-DCMAKE_C_COMPILER=/usr/bin/gcc-7']
 
         cfg = 'Debug' if self.debug else 'Release'
-        build_args = ['--config', 'Debug']
+        build_args = ['--config', cfg]
 
         cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
         build_args += ['--', '-j{}'.format(multiprocessing.cpu_count())]
