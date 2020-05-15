@@ -70,7 +70,7 @@ TEST_F(TFRecordReaderTest, ReadRecord) {
     std::string encoded = ToTFRecord("hello");
     std::unique_ptr<TFRecordReader> reader = MakeTFRecordReader(
         CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoded, 0), 4);
-    tensorflow::tfstring record;
+    tensorflow::tstring record;
     reader->ReadRecord(&record);
     EXPECT_EQ("hello", record);
     EXPECT_FALSE(reader->ReadRecord(&record));
@@ -79,7 +79,7 @@ TEST_F(TFRecordReaderTest, ReadRecord) {
 TEST_F(TFRecordReaderTest, ReadRecordFails) {
     std::unique_ptr<TFRecordReader> reader = MakeTFRecordReader(
         CreateChannel(CreateTemporaryDirectory(), "elizabeth", "not a record", 0), 4);
-    tensorflow::tfstring record;
+    tensorflow::tstring record;
     EXPECT_THROW({
         reader->ReadRecord(&record);},
         std::runtime_error);
