@@ -19,7 +19,7 @@ You can also install sagemaker-tensorflow for a specific version of TensorFlow. 
 
 ::
 
-   pip install "sagemaker-tensorflow>=2.0,<2.2"
+   pip install "sagemaker-tensorflow>=2.0,<2.1"
 
 Build and install from source
 -----------------------------
