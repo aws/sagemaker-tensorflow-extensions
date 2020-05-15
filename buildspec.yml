@@ -11,6 +11,6 @@ phases:
     commands:
       - tox -e flake8
 
-      - cpplint --linelength=120 --filter=-build/c++11 --extensions=cpp,hpp --quiet --recursive src/
+      - python3.7 -m cpplint --linelength=120 --filter=-build/c++11 --extensions=cpp,hpp --quiet --recursive src/
 
       - tox -e py37 -- test/

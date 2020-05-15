@@ -17,7 +17,7 @@
 #include <iostream>
 #include <string>
 
-using namespace tensorflow;
+using tensorflow::tstring;
 using sagemaker::tensorflow::RecordReader;
 using sagemaker::tensorflow::TextLineRecordReader;
 

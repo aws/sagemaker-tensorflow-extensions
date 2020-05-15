@@ -23,7 +23,7 @@
 #include "TestRecordReader.hpp"
 #include "tensorflow/core/platform/tstring.h"
 
-using namespace tensorflow;
+using tensorflow::tstring;
 using sagemaker::tensorflow::RecordReader;
 using sagemaker::tensorflow::RecordReaderTest;
 
