@@ -38,7 +38,6 @@ void RecordReaderTest::TearDown() {}
 class TestReader : RecordReader {
  public:
         using RecordReader::RecordReader;
-        using namespace tensorflow;
 
         bool ReadRecord(::tensorfow::tstring* storage) override {
             return false;
