@@ -39,7 +39,7 @@ class TestReader : RecordReader {
  public:
         using RecordReader::RecordReader;
 
-        bool ReadRecord(::tensorfow::tstring* storage) override {
+        bool ReadRecord(::tensorflow::tstring* storage) override {
             return false;
         }
 
