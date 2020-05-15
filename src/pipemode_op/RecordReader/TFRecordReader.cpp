@@ -16,8 +16,8 @@
 #include "tensorflow/core/platform/tstring.h"
 #include "TFRecordReader.hpp"
 
+using namespace tensorflow;
 using sagemaker::tensorflow::TFRecordReader;
-using tensorflow::tstring;
 
 inline void ValidateLength(const std::uint64_t& length, const std::uint32_t masked_crc32_of_length) {
     if (tensorflow::crc32c::Unmask(masked_crc32_of_length)

@@ -20,7 +20,7 @@
 #include "RecordIOReader.hpp"
 #include "tensorflow/core/platform/tstring.h"
 
-using namespace tensorflow
+using namespace tensorflow;
 using sagemaker::tensorflow::RecordIOReader;
 
 std::uint32_t RECORD_IO_MAGIC = 0xced7230a;
