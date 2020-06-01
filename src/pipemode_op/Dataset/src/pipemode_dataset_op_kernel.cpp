@@ -11,11 +11,6 @@
 // ANY KIND, either express or implied. See the License for the specific
 // language governing permissions and limitations under the License.
 
-#include "PipeStateManager.hpp"
-#include "RecordIOReader.hpp"
-#include "TextLineRecordReader.hpp"
-#include "TFRecordReader.hpp"
-
 #include <sys/stat.h>
 
 #include <chrono>
@@ -30,6 +25,11 @@
 #include "tensorflow/core/framework/op_def_builder.h"
 #include "tensorflow/core/framework/shape_inference.h"
 #include "tensorflow/core/framework/dataset.h"
+
+#include "PipeStateManager.hpp"
+#include "RecordIOReader.hpp"
+#include "TextLineRecordReader.hpp"
+#include "TFRecordReader.hpp"
 
 using sagemaker::tensorflow::PipeStateManager;
 using sagemaker::tensorflow::RecordIOReader;
