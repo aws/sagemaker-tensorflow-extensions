@@ -16,12 +16,6 @@
 #include "TextLineRecordReader.hpp"
 #include "TFRecordReader.hpp"
 
-#include "tensorflow/core/framework/common_shape_fns.h"
-#include "tensorflow/core/framework/op.h"
-#include "tensorflow/core/framework/op_def_builder.h"
-#include "tensorflow/core/framework/shape_inference.h"
-#include "tensorflow/core/framework/dataset.h"
-
 #include <nsync.h>
 #include <sys/stat.h>
 
@@ -29,6 +23,12 @@
 #include <iostream>
 #include <string>
 #include <thread>
+
+#include "tensorflow/core/framework/common_shape_fns.h"
+#include "tensorflow/core/framework/op.h"
+#include "tensorflow/core/framework/op_def_builder.h"
+#include "tensorflow/core/framework/shape_inference.h"
+#include "tensorflow/core/framework/dataset.h"
 
 using sagemaker::tensorflow::PipeStateManager;
 using sagemaker::tensorflow::RecordIOReader;
