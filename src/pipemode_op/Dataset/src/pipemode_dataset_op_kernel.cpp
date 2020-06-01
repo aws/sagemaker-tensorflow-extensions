@@ -16,13 +16,14 @@
 #include "TextLineRecordReader.hpp"
 #include "TFRecordReader.hpp"
 
-#include <nsync.h>
 #include <sys/stat.h>
 
 #include <chrono>
 #include <iostream>
 #include <string>
 #include <thread>
+
+#include <nsync.h>
 
 #include "tensorflow/core/framework/common_shape_fns.h"
 #include "tensorflow/core/framework/op.h"
