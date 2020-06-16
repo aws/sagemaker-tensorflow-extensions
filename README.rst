@@ -1,12 +1,14 @@
-SageMaker TensorFlow 
-===============================
+SageMaker TensorFlow
+====================
 
 .. role:: python(code)
    :language: python
 
-SageMaker specific extensions to TensorFlow, for Python 2.7, 3.4-3.7 and TensorFlow versions 1.7-1.15.2 (Python 3.7 support is only available for TensorFlow 1.15.2), and for Python 3.6-3.7. This package includes the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow Datasets.
+This package contains SageMaker-specific extensions to TensorFlow, including the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow Datasets.
 
-TensorFlow 2 support is available on the tf-2 branch. TensorFlow 2 releases are available on `PyPI <https://pypi.org/project/sagemaker-tensorflow/#history>`_ for release versions beginning with 2.
+This package supports Python 3.6-3.7 and TensorFlow versions 1.7-1.15.2, as well as TensorFlow 2.
+For TensorFlow 2 support, see the `tf-2 branch <https://github.com/aws/sagemaker-tensorflow-extensions/tree/tf-2>`_.
+``sagemaker-tensorflow`` releases for all supported versions are available on `PyPI <https://pypi.org/project/sagemaker-tensorflow/#history>`_.
 
 Install
 -------
@@ -25,7 +27,7 @@ You can also install sagemaker-tensorflow for a specific version of TensorFlow. 
 
 Build and install from source
 -----------------------------
-The SageMaker TensorFlow build depends on the following: 
+The SageMaker TensorFlow build depends on the following:
 
 * cmake
 * tensorflow
@@ -56,7 +58,7 @@ To build and install this package, run:
 
     pip install .
 
-in this directory. 
+in this directory.
 
 To build in a SageMaker docker image, you can use the following RUN command in your Dockerfile:
 
@@ -87,7 +89,7 @@ SageMaker TensorFlow extensions builds on Python 2.7, 3.4-3.7 in Linux with a Te
 
 SageMaker Pipe Mode
 -------------------
-SageMaker Pipe Mode is a mechanism for providing S3 data to a training job via Linux fifos. Training programs can read from the fifo and get high-throughput data transfer from S3, without managing the S3 access in the program itself. 
+SageMaker Pipe Mode is a mechanism for providing S3 data to a training job via Linux fifos. Training programs can read from the fifo and get high-throughput data transfer from S3, without managing the S3 access in the program itself.
 
 SageMaker Pipe Mode is enabled when a SageMaker training job is created. Multiple S3 datasets can be mapped to individual fifos, configured in the training request. Pipe Mode is covered in more detail in the SageMaker documentation: https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo.html#your-algorithms-training-algo-running-container-inputdataconfig
 
@@ -100,7 +102,7 @@ To construct a :code:`PipeModeDataset` that reads TFRecord encoded records from 
 .. code:: python
 
   from sagemaker_tensorflow import PipeModeDataset
-  
+
   ds = PipeModeDataset(channel='training', record_format='TFRecord')
 
 A :python:`PipeModeDataset` should be created for a SageMaker Pipe Mode channel. Each channel corresponds to a single S3 dataset, configured when the training job is created. You can create multiple :python:`PipeModeDataset` instances over different channels to read from multiple S3 datasets in the same training job.
@@ -148,12 +150,12 @@ You can use the PipeModeDataset to read data from a Pipe Mode channel that is ba
 First, use a Dataset :code:`batch` operation to combine successive records into a single tuple. Each attribute in an Augmented Manifest File record is queued into the Pipe Mode's fifo as a separate record. By batching, you can combine these successive per-attribute records into a single per-record tuple. In general, if your Augmented Manifest File contains n attributes, then you should issue a call to :code:`batch(n)` on your PipeModeDataset and then use a simple combining function applied with a :code:`map` to combine each per-attribute record in the batch into a single tuple. For example, assume your Augmented Manifest File contains 3 attributes, the following code sample will read Augmented Manifest records into a 3-tuple of string Tensors when applied to a PipeModeDataset.
 
 .. code:: python
-	
+
         ds = PipeModeDataset("my_channel")
-	
+
 	def combine(records):
 	    return (records[0], records[1], records[2])
-	
+
 	ds = ds.batch(3)     # Batch series of three attributes together.
 	ds = ds.map(combine) # Convert each batch of three records into a single tuple with three Tensors.
 
