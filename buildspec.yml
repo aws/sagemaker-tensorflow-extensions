@@ -13,4 +13,4 @@ phases:
 
       - python3.7 -m cpplint --linelength=120 --filter=-build/c++11 --extensions=cpp,hpp --quiet --recursive src/
 
-      - tox -e py37 -- test/
+      - tox -e py36,py37 -- test/
