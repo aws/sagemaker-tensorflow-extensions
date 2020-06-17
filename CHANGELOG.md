@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.1.post1 (2020-06-17)
+
+### Documentation Changes
+
+ * update wording to reflect current state of version support
+ * clarify support for TF2 in README
+
 ## v0.3.1.post0 (2020-05-01)
 
 ### Documentation Changes
