@@ -15,7 +15,7 @@ phases:
 
       - tox -e flake8
 
-      - cpplint --linelength=120 --filter=-build/c++11,-build/header_guard --extensions=cpp,hpp --quiet --recursive src/
+      - python3.7 -m cpplint --linelength=120 --filter=-build/c++11,-build/header_guard --extensions=cpp,hpp --quiet --recursive src/
 
       # run tests
       - tox -e py36,py37 -- test/
