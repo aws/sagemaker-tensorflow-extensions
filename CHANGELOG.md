@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.5.1 (2020-06-18)
+
+### Bug Fixes and Other Changes
+
+ * add Python 3.6 support back
+
+### Testing and Release Infrastructure
+
+ * fix cpplint invocation in release buildspec
+
 ## v1.5.0 (2020-05-15)
 
 ### Features
