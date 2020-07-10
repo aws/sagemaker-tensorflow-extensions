@@ -12,18 +12,16 @@ For TensorFlow 2 support, see the `tf-2 branch <https://github.com/aws/sagemaker
 
 Install
 -------
-You can build SageMaker TensorFlow into a docker image with the following command:
-
-::
-
-   pip install sagemaker-tensorflow
-
-
-You can also install sagemaker-tensorflow for a specific version of TensorFlow. The following command will install sagemaker-tensorflow for TensorFlow 1.7:
+sagemaker-tensorflow needs to match the specific version of TensorFlow to work correctly. The following command will install sagemaker-tensorflow for TensorFlow 1.7:
 
 ::
 
    pip install "sagemaker-tensorflow>=1.7,<1.8"
+
+To find your TensorFlow version:
+::
+
+   python -c "import tensorflow as tf; print(tf.__version__)"
 
 Build and install from source
 -----------------------------
