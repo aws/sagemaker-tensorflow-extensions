@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.1.post3 (2020-07-20)
+
+### Documentation Changes
+
+ * improving docs to stress that you must install for the specific TF version
+
 ## v0.3.1.post2 (2020-06-25)
 
 ### Testing and Release Infrastructure
