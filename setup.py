@@ -119,6 +119,6 @@ setup(
     ],
     extras_require={
         'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock',
-                 'sagemaker', 'docker', 'boto3']
+                 'sagemaker<2', 'docker', 'boto3']
     },
 )
