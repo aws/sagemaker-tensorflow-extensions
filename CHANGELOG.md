@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.1.post4 (2020-08-03)
+
+### Testing and Release Infrastructure
+
+ * pin sagemaker<2 in test dependencies
+
 ## v0.3.1.post3 (2020-07-20)
 
 ### Documentation Changes
