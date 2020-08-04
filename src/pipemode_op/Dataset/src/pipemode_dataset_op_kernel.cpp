@@ -146,6 +146,10 @@ class PipeModeDatasetOp : public DatasetOpKernel {
 
         std::string DebugString() const override { return "PipeModeDatasetOp::Dataset"; }
 
+        Status CheckExternalState() const override {
+            return ctx->CheckExternalState();
+        }
+
      protected:
         Status AsGraphDefInternal(SerializationContext* ctx,
                                   DatasetGraphDefBuilder* b,
