@@ -147,8 +147,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         std::string DebugString() const override { return "PipeModeDatasetOp::Dataset"; }
 
         Status CheckExternalState() const override {
-            Status s = Status();
-            return s;
+            return Status();
         }
 
      protected:
