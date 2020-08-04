@@ -146,6 +146,10 @@ class PipeModeDatasetOp : public DatasetOpKernel {
 
         std::string DebugString() const override { return "PipeModeDatasetOp::Dataset"; }
 
+        Status CheckExternalState() const override {
+            return Status();
+        }
+
      protected:
         Status AsGraphDefInternal(SerializationContext* ctx,
                                   DatasetGraphDefBuilder* b,
@@ -221,6 +225,16 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                         << read_giga_bytes / read_seconds << std::endl;
                 }
             }
+
+         Status SaveInternal(SerializationContext* ctx,
+                             IteratorStateWriter* writer) override {
+            return Status();
+         }
+
+         Status RestoreInternal(IteratorContext* ctx,
+                                IteratorStateReader* reader) override {
+             return Status();
+         }
 
          private:
             bool benchmark_;
