@@ -229,16 +229,12 @@ class PipeModeDatasetOp : public DatasetOpKernel {
 
          Status SaveInternal(SerializationContext* ctx,
                              IteratorStateWriter* writer) override {
-            mutex_lock l(mu_);
-            TF_RETURN_IF_ERROR(Iterator::SaveInput(ctx, writer, input_impl_));
-            return Status::OK();
+            return Status();
          }
 
          Status RestoreInternal(IteratorContext* ctx,
                                 IteratorStateReader* reader) override {
-             mutex_lock l(mu_);
-             TF_RETURN_IF_ERROR(Iterator::RestoreInput(ctx, reader, input_impl_));
-             return Status::OK();
+             return Status();
          }
 
          private:
