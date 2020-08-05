@@ -169,11 +169,11 @@ If you follow these steps then the PipeModeDataset will produce tuples of string
 Release SageMaker TensorFlow Extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 To release the package, please follow the below steps:
-1. Make your changes and run the test in CodeBuild docker container.
-2. If you are bumping TensorFlow version, please make sure you bump the versions in ``create_integ_test_docker_images.py``, ``tox.ini`` and ``buildspec-release.yml``. Please drop the Python versions that the new TensorFlow version no longer supports.
-3. If you are adding new Python version, please make sure the new Python version is installed in the CodeBuild docker container. Add the new Python version to tox environment and update the tox commands in ``buildspec.yml`` and ``buildspec-release.yml``.
-4. If any Python versions are dropped or added, please make sure you update the ``classifiers`` in ``setup.py``.
-5. Before starting the release process, you will need to manually bump the package version in ``setup.py``.
+	1. Make your changes and run the test in CodeBuild docker container.
+	2. If you are bumping TensorFlow version, please make sure you bump the versions in ``create_integ_test_docker_images.py``, ``tox.ini`` and ``buildspec-release.yml``. Please drop the Python versions that the new TensorFlow version no longer supports.
+	3. If you are adding new Python version, please make sure the new Python version is installed in the CodeBuild docker container. Add the new Python version to tox environment and update the tox commands in ``buildspec.yml`` and ``buildspec-release.yml``.
+	4. If any Python versions are dropped or added, please make sure you update the ``classifiers`` in ``setup.py``.
+	5. Before starting the release process, you will need to manually bump the package version in ``setup.py``.
 
 Support
 -------
