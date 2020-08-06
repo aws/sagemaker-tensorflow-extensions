@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.1.post5 (2020-08-06)
+
+### Documentation Changes
+
+ * fix the release section format
+
 ## v0.3.1.post4 (2020-08-03)
 
 ### Testing and Release Infrastructure
