@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.1.post6 (2020-09-17)
+
+### Documentation Changes
+
+ * updated broken Homepage link
+
 ## v0.3.1.post5 (2020-08-06)
 
 ### Documentation Changes
