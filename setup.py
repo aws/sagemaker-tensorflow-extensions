@@ -104,7 +104,7 @@ setup(
     ext_modules=[CMakeExtension(name='pipemode_op', sourcedir='src/pipemode_op')],
     cmdclass=dict(build_ext=CMakeBuild),
     long_description=read('README.rst'),
-    url='https://github.com/aws/sagemaker-tensorflow',
+    url='https://github.com/aws/sagemaker-tensorflow-extensions',
     license='Apache License 2.0',
     author='Amazon Web Services',
     maintainer='Amazon Web Services',
