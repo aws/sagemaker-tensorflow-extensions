@@ -9,13 +9,13 @@ import botocore
 import glob
 import sys
 
-TF_VERSION = "1.15.2"
+TF_VERSION = "1.13.1"
 REGION = "us-west-2"
 REPOSITORY_NAME = "sagemaker-tensorflow-extensions-test"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('device', nargs='?', default='cpu')
+    parser.add_argument('devce', nargs='?', default='cpu')
     args = parser.parse_args()
 
     client = docker.from_env()
