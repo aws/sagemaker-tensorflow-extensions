@@ -14,7 +14,7 @@ phases:
       - echo 'md5sum of python packages:'
       - md5sum $PACKAGE_FILE_36
       - md5sum $PACKAGE_FILE_37
-      - PACKAGE_FILE_38
+      - md5sum $PACKAGE_FILE_38
 
       # import private key and ensure passphrase is cached
       - echo "$GPG_PRIVATE_KEY" | gpg --batch --import
