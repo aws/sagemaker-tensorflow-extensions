@@ -14,6 +14,7 @@
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <fstream>
 #include <iostream>
 #include <ios>
@@ -70,4 +71,5 @@ Lock::Lock(const std::string& lock_file) {
 
 Lock::~Lock() {
     check(flock(fd_, LOCK_UN));
+    close(fd_);
 }
