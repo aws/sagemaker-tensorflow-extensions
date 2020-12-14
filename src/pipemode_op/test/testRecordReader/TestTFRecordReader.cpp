@@ -60,11 +60,14 @@ std::string ToTFRecord(const std::string& data) {
         result.push_back(header[i]);
     }
     result += data;
+    auto data_crc = tensorflow::crc32c::Mask(tensorflow::crc32c::Value(data.c_str(), length));
+    masked_crc_ptr = reinterpret_cast<char*>(&data_crc);
     for (int i = 0; i < 4; i++) {
-        result.push_back('f');
+        result.push_back(masked_crc_ptr[i]);
     }
     return result;
 }
+
 
 TEST_F(TFRecordReaderTest, ReadRecord) {
     std::string encoded = ToTFRecord("hello");
