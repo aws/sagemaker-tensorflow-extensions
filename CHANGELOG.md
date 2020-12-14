@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.6.1 (2020-12-14)
+
+### Bug Fixes and Other Changes
+
+ * add crc check on TFRecord data
+ * close lock file on Lock destructor execution
+
 ## v1.6.0 (2020-08-05)
 
 ### Features
