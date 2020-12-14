@@ -12,6 +12,7 @@
 // language governing permissions and limitations under the License.
 #include <iostream>
 #include <string>
+#include <cstdio>
 #include "tensorflow/core/lib/hash/crc32c.h"
 #include "tensorflow/core/platform/tstring.h"
 #include "TFRecordReader.hpp"
@@ -22,7 +23,16 @@ using sagemaker::tensorflow::TFRecordReader;
 inline void ValidateLength(const std::uint64_t& length, const std::uint32_t masked_crc32_of_length) {
     if (tensorflow::crc32c::Unmask(masked_crc32_of_length)
         != tensorflow::crc32c::Value(reinterpret_cast<const char*>(&(length)), sizeof(length))) {
-        throw std::runtime_error("Invalid header crc");
+        throw std::runtime_error("CRC check on header failed.");
+    }
+}
+
+inline void ValidateData(const ::tensorflow::tstring* storage, const std::uint64_t& length,
+                         const std::uint32_t masked_crc32_of_data) {
+    auto unmasked_crc = tensorflow::crc32c::Unmask(masked_crc32_of_data);
+    auto data_crc = tensorflow::crc32c::Value(storage->data(), length);
+    if (unmasked_crc != data_crc) {
+        throw std::runtime_error("CRC check on data failed.");
     }
 }
 
@@ -36,7 +46,9 @@ bool TFRecordReader::ReadRecord(::tensorflow::tstring* storage) {
     ValidateLength(length, masked_crc32_of_length);
     storage->resize_uninitialized(length);
     Read(&((*storage)[0]), length);
+
     std::uint32_t footer;
     Read(&footer, sizeof(footer));
+    ValidateData(storage, length, footer);
     return true;
 }
