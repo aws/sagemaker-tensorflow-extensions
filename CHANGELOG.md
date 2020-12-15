@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.2 (2020-12-15)
+
+### Bug Fixes and Other Changes
+
+ * upgrade package version
+
 ## v1.6.1 (2020-12-14)
 
 ### Bug Fixes and Other Changes
