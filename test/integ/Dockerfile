@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM public.ecr.aws/lts/ubuntu:18.04
 
 ARG device=cpu
 ARG tensorflow_version=1.15.0
@@ -12,10 +12,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         libcurl3-dev \
         libfreetype6-dev \
-        libpng12-dev \
+        libpng-dev \
         libzmq3-dev \
         pkg-config \
         python3 \
+        python3-distutils \
         rsync \
         software-properties-common \
         unzip \
