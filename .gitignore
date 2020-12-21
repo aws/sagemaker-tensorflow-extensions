@@ -1,4 +1,6 @@
+.cache/
 *pyc
 dist
 **/*.egg-info
 .idea/
+.tox/
