@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.3 (2020-12-22)
+
+### Bug Fixes and Other Changes
+
+ * use public aws ecr repo
+
 ## v1.6.2 (2020-12-15)
 
 ### Bug Fixes and Other Changes
