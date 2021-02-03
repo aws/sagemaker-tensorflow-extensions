@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.7.0 (2021-02-03)
+
+### Features
+
+ * support TF 2.4.1
+
 ## v1.6.3 (2020-12-22)
 
 ### Bug Fixes and Other Changes
