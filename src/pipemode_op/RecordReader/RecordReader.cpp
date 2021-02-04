@@ -66,6 +66,9 @@ std::size_t RecordReader::Read(void* dest, std::size_t nbytes) {
     std::size_t bytes_read = 0;
     while (nbytes) {
         ssize_t read_amount = read(fd_, dest + bytes_read, std::min(nbytes, read_size_));
+        if (-1 == read_amount) {
+            throw std::system_error(errno, std::system_category());
+        }
         if (!read_amount) {
             break;
         }
