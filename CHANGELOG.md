@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.4 (2021-02-08)
+
+### Bug Fixes and Other Changes
+
+ * throw an exception if call to read in RecordReader::Read returns an error
+
 ## v0.3.3 (2020-12-22)
 
 ### Bug Fixes and Other Changes
