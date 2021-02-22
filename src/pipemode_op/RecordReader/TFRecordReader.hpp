@@ -30,7 +30,37 @@ class TFRecordReader : public RecordReader {
     using RecordReader::RecordReader;
 
  public:
+     /**
+       Constructs a new RecordReader that reads records from a file.
+
+       param [in] file_path: The path and name of the file to open.
+       param [in] read_size: The preferred number of bytes to read from the open file
+                             during invocation of Read.
+       param [in] file_creation_timeout: The number of seconds to wait for the file
+                                         being read to exist.
+     */
+    TFRecordReader(const std::string& file_path, const std::size_t read_size,
+                 const std::chrono::seconds file_creation_timeout,
+                 const uint32_t max_corrupted_records_to_skip):
+                 RecordReader(file_path, read_size, file_creation_timeout),
+                 max_corrupted_records_to_skip_(max_corrupted_records_to_skip) {}
+
+     /**
+       Constructs a new TFRecordReader that reads records from a file.
+
+       param [in] file_path: The path and name of the file to open.
+       param [in] max_corrupted_records_to_skip: the number of corrupted records
+                             encountered in sequence that it's ok to skip.
+     */
+    TFRecordReader(const std::string& file_path,
+                   const uint32_t max_corrupted_records_to_skip = 0):
+                 RecordReader(file_path),
+                 max_corrupted_records_to_skip_(max_corrupted_records_to_skip) {}
+
     bool ReadRecord(std::string* storage) override;
+
+ private:
+    std::uint32_t max_corrupted_records_to_skip_;
 };
 
 }  // namespace tensorflow

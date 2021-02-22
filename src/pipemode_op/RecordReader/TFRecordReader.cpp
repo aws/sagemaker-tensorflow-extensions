@@ -12,6 +12,7 @@
 // language governing permissions and limitations under the License.
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <cstdio>
 #include "tensorflow/core/lib/hash/crc32c.h"
 #include "TFRecordReader.hpp"
@@ -35,17 +36,39 @@ inline void ValidateData(const std::string* storage, const std::uint64_t& length
 }
 
 bool TFRecordReader::ReadRecord(std::string* storage) {
-    std::uint64_t length;
-    std::uint32_t masked_crc32_of_length;
-    if (!Read(&length, sizeof(length))) {
-        return false;
+    int num_bad_recs = 0;
+    while (true) {
+        std::uint64_t length;
+        std::uint32_t masked_crc32_of_length;
+        try {
+            if (!Read(&length, sizeof(length))) {
+                return false;
+            }
+            Read(&masked_crc32_of_length, sizeof(masked_crc32_of_length));
+            ValidateLength(length, masked_crc32_of_length);
+            storage->resize(length);
+            Read(&(storage->at(0)), length);
+
+            std::uint32_t footer;
+            Read(&footer, sizeof(footer));
+            ValidateData(storage, length, footer);
+            if (num_bad_recs > 0) {
+                std::cout << "Data record parsed successfully, but previous "
+                     + std::to_string(num_bad_recs) + " recs failed CRC check";
+            }
+            return true;
+        } catch (std::runtime_error& e) {
+            if (strstr(e.what(), "CRC check on data failed.") == NULL) {
+                throw e;
+            } else {
+                num_bad_recs++;
+                if (num_bad_recs > max_corrupted_records_to_skip_) {
+                    throw e;
+                } else {
+                    std::cerr << "WARN: Skipping record (count: " << num_bad_recs << ") because: " << e.what();
+                    storage->clear();
+                }
+            }
+        }
     }
-    Read(&masked_crc32_of_length, sizeof(masked_crc32_of_length));
-    ValidateLength(length, masked_crc32_of_length);
-    storage->resize(length);
-    Read(&(storage->at(0)), length);
-    std::uint32_t footer;
-    Read(&footer, sizeof(footer));
-    ValidateData(storage, length, footer);
-    return true;
 }
