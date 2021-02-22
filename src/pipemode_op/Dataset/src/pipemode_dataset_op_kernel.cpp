@@ -90,6 +90,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         tensorflow::tstring channel;
         bool benchmark;
         std::uint64_t benchmark_records_interval;
+        std::uint32_t max_corrupted_records_to_skip;
         OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "record_format",
                                                         &record_format));
         OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<tensorflow::tstring>(ctx, "state_directory",
@@ -104,30 +105,34 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                                                         &benchmark));
         OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::uint64_t>(ctx, "benchmark_records_interval",
                                                         &benchmark_records_interval));
+        OP_REQUIRES_OK(ctx, tensorflow::data::ParseScalarArgument<std::uint32_t>(ctx, "max_corrupted_records_to_skip",
+                                                        &max_corrupted_records_to_skip));
+
         *output = new Dataset(ctx, record_format, state_directory, channel_directory, channel, benchmark,
-                              benchmark_records_interval);
+                              benchmark_records_interval, max_corrupted_records_to_skip);
     }
 
  private:
     class Dataset : public DatasetBase {
      public:
-        explicit Dataset(OpKernelContext* ctx, const std::string& record_format, const std::string& state_directory,
+    explicit Dataset(OpKernelContext* ctx, const std::string& record_format, const std::string& state_directory,
             const std::string& channel_directory, const std::string& channel, bool benchmark,
-            std::uint64_t benchmark_records_interval):
+            std::uint64_t benchmark_records_interval, const std::uint32_t max_corrupted_records_to_skip):
             DatasetBase(DatasetContext(ctx)),
             record_format_(record_format),
             channel_directory_(channel_directory),
             pipe_state_manager_(state_directory, channel),
             channel_(channel),
             benchmark_(benchmark),
-            benchmark_records_interval_(benchmark_records_interval) {}
+            benchmark_records_interval_(benchmark_records_interval),
+            max_corrupted_records_to_skip_(max_corrupted_records_to_skip) {}
 
         std::unique_ptr<IteratorBase> MakeIteratorInternal(const std::string& prefix) const override {
             auto new_prefix = prefix + "::PipeMode-" + channel_ + "-"
                 + std::to_string(pipe_state_manager_.GetPipeIndex());
             auto ptr = std::unique_ptr<IteratorBase>(
                 new Iterator({this, new_prefix}, record_format_, channel_directory_, channel_, benchmark_,
-                    pipe_state_manager_.GetPipeIndex(), benchmark_records_interval_));
+                    pipe_state_manager_.GetPipeIndex(), benchmark_records_interval_, max_corrupted_records_to_skip_));
             pipe_state_manager_.IncrementPipeIndex();
             return ptr;
         }
@@ -163,19 +168,22 @@ class PipeModeDatasetOp : public DatasetOpKernel {
         PipeStateManager pipe_state_manager_;
         bool benchmark_;
         std::uint64_t benchmark_records_interval_;
+        std::uint32_t max_corrupted_records_to_skip_;
 
         class Iterator : public DatasetIterator<Dataset> {
          public:
             explicit Iterator(const Params& params, const std::string& record_format,
                 const std::string& channel_directory, const std::string& channel, const bool benchmark,
-                const uint32_t pipe_index, const uint64_t benchmark_records_interval)
+                const uint32_t pipe_index, const uint64_t benchmark_records_interval,
+                const uint32_t max_corrupted_records_to_skip)
                 : DatasetIterator<Dataset>(params), read_time_(0), read_bytes_(0),
                     benchmark_(benchmark), benchmark_records_interval_(benchmark_records_interval) {
                     std::string pipe_path = BuildPipeName(channel_directory, channel, pipe_index);
                     if (record_format == "RecordIO") {
                         record_reader_ = std::unique_ptr<RecordReader>(new RecordIOReader(pipe_path));
                     } else if (record_format == "TFRecord") {
-                        record_reader_ = std::unique_ptr<RecordReader>(new TFRecordReader(pipe_path));
+                        record_reader_ = std::unique_ptr<RecordReader>(
+                            new TFRecordReader(pipe_path, max_corrupted_records_to_skip));
                     } else {  // required to be TextLine
                         record_reader_ = std::unique_ptr<RecordReader>(new TextLineRecordReader(pipe_path));
                     }
@@ -256,6 +264,7 @@ REGISTER_OP("PipeModeDataset")
     .Input("channel: string")
     .Input("channel_directory: string")
     .Input("benchmark_records_interval: uint64")
+    .Input("max_corrupted_records_to_skip: uint32")
     .Output("handle: variant")
     .SetIsStateful()
     .SetShapeFn(tensorflow::shape_inference::ScalarShape);
