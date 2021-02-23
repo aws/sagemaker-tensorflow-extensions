@@ -37,18 +37,39 @@ inline void ValidateData(const ::tensorflow::tstring* storage, const std::uint64
 }
 
 bool TFRecordReader::ReadRecord(::tensorflow::tstring* storage) {
-    std::uint64_t length;
-    std::uint32_t masked_crc32_of_length;
-    if (!Read(&length, sizeof(length))) {
-        return false;
-    }
-    Read(&masked_crc32_of_length, sizeof(masked_crc32_of_length));
-    ValidateLength(length, masked_crc32_of_length);
-    storage->resize_uninitialized(length);
-    Read(&((*storage)[0]), length);
+    int num_bad_recs = 0;
+    while (true) {
+        std::uint64_t length;
+        std::uint32_t masked_crc32_of_length;
+        try {
+            if (!Read(&length, sizeof(length))) {
+                return false;
+            }
+            Read(&masked_crc32_of_length, sizeof(masked_crc32_of_length));
+            ValidateLength(length, masked_crc32_of_length);
+            storage->resize_uninitialized(length);
+            Read(&((*storage)[0]), length);
 
-    std::uint32_t footer;
-    Read(&footer, sizeof(footer));
-    ValidateData(storage, length, footer);
-    return true;
+            std::uint32_t footer;
+            Read(&footer, sizeof(footer));
+            ValidateData(storage, length, footer);
+            if (num_bad_recs > 0) {
+                std::cout << "Data record parsed successfully, but previous "
+                    << num_bad_recs << " recs failed CRC check";
+            }
+            return true;
+        } catch (std::runtime_error& e) {
+            if (strstr(e.what(), "CRC check on data failed.") == NULL) {
+                throw e;
+            } else {
+                num_bad_recs++;
+                if (num_bad_recs > max_corrupted_records_to_skip_) {
+                    throw e;
+                } else {
+                    std::cerr << "WARN: Skipping record (count: " << num_bad_recs << ") because: " << e.what();
+                    storage->clear();
+                }
+            }
+        }
+    }
 }

@@ -42,7 +42,8 @@ class PipeModeDataset(dataset_ops.Dataset):
 
     def __init__(self, channel, record_format='RecordIO',
                  state_dir='/opt/ml/pipe_state', pipe_dir='/opt/ml/input/data',
-                 config_dir='/opt/ml/input/config', benchmark=False, benchmark_records_interval=0):
+                 config_dir='/opt/ml/input/config', benchmark=False, benchmark_records_interval=0,
+                 max_corrupted_records_to_skip=0):
         """Create a Dataset for reading from a SageMaker PipeMode channel.
 
         Supports records encoded using either RecordIO, TFRecord, or new line text encoding.
@@ -60,6 +61,8 @@ class PipeModeDataset(dataset_ops.Dataset):
                     read from this Dataset. Defines the number of records per interval to emit timing and throughput
                     metrics. If zero, no metrics will be emitted while records are being read from this Dataset.
                     Metrics are emitted to stdout.
+            max_corrupted_records_to_skip: the number of corrupted records encountered in sequence that it's ok to
+                    skip. Only applicable for record_format='TFRecord'.
         """
         try:
             os.makedirs(state_dir)
@@ -72,14 +75,20 @@ class PipeModeDataset(dataset_ops.Dataset):
         self.state_dir = state_dir
         self.benchmark = benchmark
         self.benchmark_records_interval = benchmark_records_interval
+        self.max_corrupted_records_to_skip = max_corrupted_records_to_skip
         with open(os.path.join(config_dir, 'inputdataconfig.json')) as f:
             self.input_data_config = json.load(f)
         self._validate_input_data_config()
+
+        if self.max_corrupted_records_to_skip > 0 and record_format != 'TFRecord':
+            raise PipeModeDatasetException("max_corrupted_records_to_skip can only be set for record_format='TFRecord'")
+
         super(PipeModeDataset, self).__init__(variant_tensor=self._as_variant_tensor())
 
     def _as_variant_tensor(self):
         return self._tf_plugin.pipe_mode_dataset(self.benchmark, self.record_format, self.state_dir, self.channel,
-                                                 self.pipe_dir, self.benchmark_records_interval)
+                                                 self.pipe_dir, self.benchmark_records_interval,
+                                                 self.max_corrupted_records_to_skip)
 
     def _inputs(self):
         return []
