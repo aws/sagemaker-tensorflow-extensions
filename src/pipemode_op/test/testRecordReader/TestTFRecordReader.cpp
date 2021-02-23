@@ -33,8 +33,9 @@ void TFRecordReaderTest::SetUp() {}
 void TFRecordReaderTest::TearDown() {}
 
 std::unique_ptr<TFRecordReader> MakeTFRecordReader(std::string path,
-    std::size_t read_size) {
-    return std::unique_ptr<TFRecordReader>(new TFRecordReader(path, read_size, std::chrono::seconds(1)));
+    std::size_t read_size, uint32_t max_corrupted_records_to_skip = 0) {
+    return std::unique_ptr<TFRecordReader>(
+        new TFRecordReader(path, read_size, std::chrono::seconds(1), max_corrupted_records_to_skip));
 }
 
 std::unique_ptr<TFRecordReader> MakeTFRecordReader(std::string path) {
@@ -81,6 +82,71 @@ TEST_F(TFRecordReaderTest, ReadRecordFails) {
     std::unique_ptr<TFRecordReader> reader = MakeTFRecordReader(
         CreateChannel(CreateTemporaryDirectory(), "elizabeth", "not a record", 0), 4);
     std::string record;
+    EXPECT_THROW({
+        reader->ReadRecord(&record);},
+        std::runtime_error);
+}
+
+TEST_F(TFRecordReaderTest, ReadMultipleRecords) {
+    std::string rec1 = ToTFRecord("hello");
+    std::string rec2 = ToTFRecord("world");
+    std::string encoded = rec1 + rec2;
+    std::unique_ptr<TFRecordReader> reader = MakeTFRecordReader(
+        CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoded, 0), 4);
+    std::string record;
+    reader->ReadRecord(&record);
+    EXPECT_EQ("hello", record);
+    reader->ReadRecord(&record);
+    EXPECT_EQ("world", record);
+    EXPECT_FALSE(reader->ReadRecord(&record));
+}
+
+TEST_F(TFRecordReaderTest, FailOnCorruptRecord) {
+    // this test fails as soon as a corrupt record is encountered in the record stream
+    std::string rec1 = ToTFRecord("hello");
+    std::string rec2 = ToTFRecord("world");
+    std::string corrupted = rec2;
+    corrupted[corrupted.length() - 1] = 'x';
+    std::string encoded = rec1 + corrupted;
+    std::unique_ptr<TFRecordReader> reader = MakeTFRecordReader(
+        CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoded, 0), 4);
+    std::string record;
+    reader->ReadRecord(&record);
+    EXPECT_EQ("hello", record);
+    EXPECT_THROW({
+        reader->ReadRecord(&record);},
+        std::runtime_error);
+}
+
+TEST_F(TFRecordReaderTest, SkipCorruptRecords) {
+    // in this test we confiigure the reader to tolerate upto 3 consecutive corrupt records
+    // and then insert 3 corrupt records into the record stream and see that we skip and
+    // parse the next kosher record, however, immediately following it we have 4 corrupt
+    // records which will fail parsing the rest of the stream
+    uint32_t max_corrupt_records_to_skip = 3;
+    std::string rec1 = ToTFRecord("hello");
+    std::string rec2 = ToTFRecord("world");
+    std::string corrupted = rec2;
+    corrupted[corrupted.length() - 1] = 'x';
+    std::string encoded = rec1;
+    for (int i = 0; i < max_corrupt_records_to_skip; i++) {
+        encoded.append(corrupted);
+    }
+    encoded.append(rec2);
+    for (int i = 0; i < max_corrupt_records_to_skip + 1; i++) {
+        encoded.append(corrupted);
+    }
+
+    std::unique_ptr<TFRecordReader> reader = MakeTFRecordReader(
+        CreateChannel(CreateTemporaryDirectory(), "elizabeth", encoded, 0), 4, max_corrupt_records_to_skip);
+    std::string record;
+    reader->ReadRecord(&record);
+    EXPECT_EQ("hello", record);
+     // swallow the upto max_corrupt_records_to_skip corrupted recs and successfully parse the next one:
+    reader->ReadRecord(&record);
+    EXPECT_EQ("world", record);
+
+    // but the next set of corrupted records exceed max_corrupt_records_to_skip, so we get an error:
     EXPECT_THROW({
         reader->ReadRecord(&record);},
         std::runtime_error);
