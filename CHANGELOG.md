@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.8.0 (2021-02-23)
+
+### Features
+
+ * allow skipping corrupt TFRecords
+
 ## v1.7.1 (2021-02-08)
 
 ### Bug Fixes and Other Changes
