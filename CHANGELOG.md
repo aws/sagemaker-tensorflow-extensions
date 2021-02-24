@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.1 (2021-02-24)
+
+### Bug Fixes and Other Changes
+
+ * update package minor version
+
 ## v0.4.0 (2021-02-23)
 
 ### Features
