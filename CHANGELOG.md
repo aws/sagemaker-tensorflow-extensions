@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.8.1 (2021-02-26)
+
+### Bug Fixes and Other Changes
+
+ * use TensorFlow 2.3 in 2.3 branch and allow skipping corrupt TFRecords
+
 ## v1.8.0 (2021-02-23)
 
 ### Features
