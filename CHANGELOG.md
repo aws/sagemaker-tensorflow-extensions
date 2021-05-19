@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.9.0 (2021-05-19)
+
+### Features
+
+ * upgrade to Tensorflow 2.5.0
+
 ## v1.8.1 (2021-02-24)
 
 ### Bug Fixes and Other Changes
