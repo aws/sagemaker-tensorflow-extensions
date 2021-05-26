@@ -53,6 +53,9 @@ RecordReader::RecordReader(const std::string& file_path, const std::size_t read_
         }
     }
 
+RecordReader::~RecordReader() {
+}
+
 std::size_t RecordReader::Read(void* dest, std::size_t nbytes) {
     if (fd_ == UNSET_FILE_DESCRIPTOR) {
         throw std::runtime_error("File does not exist: " + file_path_);
