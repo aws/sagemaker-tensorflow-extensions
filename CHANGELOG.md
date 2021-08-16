@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.10.0 (2021-08-16)
+
+### Features
+
+ * Upgrade TensorFlow ot 2.6.0
+
 ## v1.9.0 (2021-05-19)
 
 ### Features
