@@ -7,7 +7,7 @@ ARG python
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
-        g++-7 \
+        g++-9 \
         build-essential \
         curl \
         git \
