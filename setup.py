@@ -86,7 +86,6 @@ class CMakeBuild(build_ext):
 
         env['CXX'] = 'g++-9'
         env['CPP'] = 'g++-9'
-        
         env['PYTHON_EXECUTABLE'] = sys.executable
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
