@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lts/ubuntu:20.04
+FROM public.ecr.aws/lts/ubuntu:18.04
 
 ARG device=cpu
 ARG tensorflow_version=2.6.0
