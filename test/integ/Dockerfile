@@ -1,13 +1,13 @@
 FROM public.ecr.aws/lts/ubuntu:18.04
 
 ARG device=cpu
-ARG tensorflow_version=2.2.0
+ARG tensorflow_version=2.6.0
 ARG script
 ARG python
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
-        g++-7 \
+        g++-9 \
         build-essential \
         curl \
         git \

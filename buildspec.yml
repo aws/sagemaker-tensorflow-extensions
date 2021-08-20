@@ -4,13 +4,16 @@ phases:
   pre_build:
     commands:
       - apt-get update
-      - apt-get -y install libcurl4-openssl-dev g++-7
-      - python3.7 -m pip install cpplint
+      - apt install software-properties-common
+      - add-apt-repository ppa:ubuntu-toolchain-r/test
+      - apt-get -y install libcurl4-openssl-dev g++-9 gcc-9
+      - echo $(ls /usr/bin/)
+      - python3.8 -m pip install cpplint
       - start-dockerd
   build:
     commands:
       - tox -e flake8
 
-      - python3.7 -m cpplint --linelength=120 --filter=-build/c++11 --extensions=cpp,hpp --quiet --recursive src/
+      - python3.8 -m cpplint --linelength=120 --filter=-build/c++11 --extensions=cpp,hpp --quiet --recursive src/
 
-      - tox -e py36,py37 -- test/
+      - tox -e py38 -- test/

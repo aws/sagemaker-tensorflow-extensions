@@ -70,8 +70,8 @@ class CMakeBuild(build_ext):
         extdir = os.path.abspath(
             os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + os.path.join(extdir, 'sagemaker_tensorflow')]
-        cmake_args += ['-DCMAKE_CXX_COMPILER=/usr/bin/g++-7']
-        cmake_args += ['-DCMAKE_C_COMPILER=/usr/bin/gcc-7']
+        cmake_args += ['-DCMAKE_CXX_COMPILER=/usr/bin/g++-9']
+        cmake_args += ['-DCMAKE_C_COMPILER=/usr/bin/gcc-9']
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
@@ -84,7 +84,8 @@ class CMakeBuild(build_ext):
             env.get('CXXFLAGS', ''),
             self.distribution.get_version())
 
-        env['CXX'] = 'g++-7'
+        env['CXX'] = 'g++-9'
+        env['CPP'] = 'g++-9'
         env['PYTHON_EXECUTABLE'] = sys.executable
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
@@ -98,7 +99,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='sagemaker_tensorflow',
-    version='2.6.0.2.0.0',
+    version='2.6.0.1.11.0',
     description='Amazon Sagemaker specific TensorFlow extensions.',
     packages=find_packages(where='src', exclude=('test',)),
     package_dir={'': 'src'},
@@ -116,8 +117,9 @@ setup(
         "Natural Language :: English",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
+        # 'Programming Language :: Python :: 3.6',
+        # 'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     extras_require={
         'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock',
