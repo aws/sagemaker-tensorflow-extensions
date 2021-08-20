@@ -1,10 +1,10 @@
-FROM public.ecr.aws/lts/ubuntu:18.04
+FROM public.ecr.aws/lts/ubuntu:20.04
 
 ARG device=cpu
 ARG tensorflow_version=2.6.0
 ARG script
 ARG python
-
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
         g++-9 \
@@ -34,7 +34,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN pip3 install --upgrade pip
 RUN pip3 install cmake setuptools
-
 
 RUN if [ "$device"="cpu" ] ; then \
 		pip3 install tensorflow==$tensorflow_version; \
