@@ -4,8 +4,8 @@ phases:
   pre_build:
     commands:
       - apt-get update
-      - apt-get -y install libcurl4-openssl-dev g++-5
-      - python3.7 -m pip install cpplint
+      - apt-get -y install libcurl4-openssl-dev g++-9
+      - python3.8 -m pip install cpplint
       - start-dockerd
 
   build:
@@ -15,15 +15,15 @@ phases:
 
       - tox -e flake8
 
-      - python3.7 -m cpplint --linelength=120 --filter=-build/c++11,-build/header_guard --extensions=cpp,hpp --quiet --recursive src/
+      - python3.8 -m cpplint --linelength=120 --filter=-build/c++11,-build/header_guard --extensions=cpp,hpp --quiet --recursive src/
 
       # run tests
-      - tox -e py36,py37 -- test/
+      - tox -e py36,py37,py38 -- test/
 
       # generate the distribution package
       - python setup.py sdist
       - |
-        PYTHON_VERSIONS="python3.7 python3.6"
+        PYTHON_VERSIONS="python3.8 python3.7 python3.6"
         for PYTHON in ${PYTHON_VERSIONS}; do
           $PYTHON -m pip install -U pip
           $PYTHON -m pip install wheel tensorflow==2.6.0 twine==1.11 cmake
@@ -37,5 +37,6 @@ artifacts:
   files:
     - dist/sagemaker_tensorflow-*-cp36-*.whl
     - dist/sagemaker_tensorflow-*-cp37-*.whl
+    - dist/sagemaker_tensorflow-*-cp38-*.whl
   name: ARTIFACT_1
   discard-paths: yes
