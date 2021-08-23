@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.11.0 (2021-08-21)
+
+### Features
+
+ * update python 3.8
+
 ## v1.10.0 (2021-08-16)
 
 ### Features
