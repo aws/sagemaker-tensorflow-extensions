@@ -87,7 +87,9 @@ Requirements
 ------------
 SageMaker TensorFlow extensions builds on Python 3.4-3.8 in Linux with a TensorFlow version >= 1.7. Older versions of TensorFlow are not supported. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version.
 
-Please note that TensorFlow extensions 2.2.0 only builds on Python 3.7.
+Please note that: 
+TensorFlow extensions 2.2.0 only builds on Python 3.7.
+TensorFlow extensions 2.6.0 only builds on Python 3.8.
 
 SageMaker Pipe Mode
 -------------------
