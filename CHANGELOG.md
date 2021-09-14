@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.11.0.post0 (2021-09-14)
+
+### Documentation Changes
+
+ * Update README.rst
+
 ## v1.11.0 (2021-08-21)
 
 ### Features
