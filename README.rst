@@ -6,7 +6,7 @@ SageMaker TensorFlow
 
 This package contains SageMaker-specific extensions to TensorFlow, including the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow Datasets.
 
-This package supports Python 3.6-3.7 and TensorFlow versions 1.7-1.15.2, as well as TensorFlow 2.
+This package supports Python 3.6-3.8 and TensorFlow versions 1.7-1.15.2, as well as TensorFlow 2.
 For TensorFlow 2 support, see the `tf-2 branch <https://github.com/aws/sagemaker-tensorflow-extensions/tree/tf-2>`_.
 ``sagemaker-tensorflow`` releases for all supported versions are available on `PyPI <https://pypi.org/project/sagemaker-tensorflow/#history>`_.
 
