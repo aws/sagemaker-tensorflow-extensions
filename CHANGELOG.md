@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.11.0.post0 (2021-09-14)
+
+### Documentation Changes
+
+ * Update README.rst
+
+## v1.11.0 (2021-08-21)
+
+### Features
+
+ * update python 3.8
+
+## v1.10.0 (2021-08-16)
+
+### Features
+
+ * Upgrade TensorFlow ot 2.6.0
+
 ## v1.9.0 (2021-05-19)
 
 ### Features
