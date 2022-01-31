@@ -1,7 +1,11 @@
 FROM public.ecr.aws/lts/ubuntu:20.04
 
 ARG device=cpu
+<<<<<<< HEAD
 ARG tensorflow_version=2.6.0
+=======
+ARG tensorflow_version=2.7.0
+>>>>>>> 1276d78 (add other updates)
 ARG script
 ARG python
 
