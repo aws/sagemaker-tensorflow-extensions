@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.12.0 (2022-02-10)
+
+### Features
+
+ * Support TensorFlow 2.7.1, remove Py3.6
+
 ## v1.11.0.post0 (2021-09-14)
 
 ### Documentation Changes
