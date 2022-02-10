@@ -93,7 +93,7 @@ Please refer to below table for release support information:
    :widths: 25 25 25 25
    :header-rows: 1
 
-   * - Sagemaker TensorFlow Extensions Pypi Version
+   * - Sagemaker TensorFlow Extensions PyPI Version
      - Sagemaker TensorFlow Extensions Release Version
      - TensorFlow Release Version
      - Sagemaker TensorFlow Extentions Supported Python Versions
