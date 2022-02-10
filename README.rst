@@ -6,7 +6,7 @@ SageMaker TensorFlow
 
 This package contains SageMaker-specific extensions to TensorFlow, including the :python:`PipeModeDataset` class, that allows SageMaker Pipe Mode channels to be read using TensorFlow Datasets.
 
-This package supports Python 3.6-3.8 and TensorFlow versions 1.7 and higher, including 2.0-2.6.
+This package supports Python 3.7-3.8 and TensorFlow versions 1.7 and higher, including 2.0-2.7.1.
 For TensorFlow 1.x support, see the `master branch <https://github.com/aws/sagemaker-tensorflow-extensions>`_.
 ``sagemaker-tensorflow`` releases for all supported versions are available on `PyPI <https://pypi.org/project/sagemaker-tensorflow/#history>`_.
 
@@ -87,9 +87,56 @@ Requirements
 ------------
 SageMaker TensorFlow extensions builds on Python 3.4-3.8 in Linux with a TensorFlow version >= 1.7. Older versions of TensorFlow are not supported. Please make sure to checkout the branch of sagemaker-tensorflow-extensions that matches your TensorFlow version.
 
-Please note that: 
-TensorFlow extensions 2.2.0 only builds on Python 3.7.
-TensorFlow extensions 2.6.0 only builds on Python 3.8.
+Please refer to below table for release support information:
+
+.. list-table:: Sagemaker TensorFlow Extensions Release Information
+   :widths: 25 25 25 25
+   :header-rows: 1
+
+   * - Sagemaker TensorFlow Extensions PyPI Version
+     - Sagemaker TensorFlow Extensions Release Version
+     - TensorFlow Release Version
+     - Sagemaker TensorFlow Extentions Supported Python Versions
+   * - 2.7.1.1.12.x
+     - v1.12.x
+     - 2.7.1
+     - 3.7, 3.8
+   * - 2.6.0.1.11.0
+     - v1.11.x
+     - 2.6.0
+     - 3.6, 3.7, 3.8
+   * - 2.5.0.1.9.0
+     - v1.9.x
+     - 2.5.0
+     - 3.6, 3.7
+   * - 2.4.1.1.8.0
+     - v1.8.x
+     - 2.4.1
+     - 3.6, 3.7
+   * - 2.3.0.1.6.1
+     - v1.6.x
+     - 2.3.0
+     - 3.6, 3.7
+   * - 2.2.0.1.0.0
+     - v1.5.0
+     - 2.2
+     - 2.7, 3.6, 3.7
+   * - 2.1.0.1.0.0
+     - v1.4.0
+     - 2.1
+     - 2.7, 3.6
+   * - 2.0.0.1.0.0
+     - v1.2.1
+     - 2.0
+     - 2.7, 3.6
+   * - 1.15.0.1.0.0
+     - v0.2.0
+     - 1.15
+     - 2.7, 3.6
+   * - 1.14.0.1.0.0
+     - v0.1.0
+     - 1.14, 1.13
+     - 2.7, 3.6
 
 SageMaker Pipe Mode
 -------------------

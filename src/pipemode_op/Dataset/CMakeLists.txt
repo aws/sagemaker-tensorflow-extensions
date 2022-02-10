@@ -12,7 +12,8 @@
 # language governing permissions and limitations under the License.
 
 cmake_minimum_required(VERSION 3.10)
-set (CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_VERBOSE_MAKEFILE on )
 
 file(GLOB_RECURSE sources ./src/*.cpp ./src/*.hpp)
