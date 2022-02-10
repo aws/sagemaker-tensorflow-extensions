@@ -90,7 +90,7 @@ SageMaker TensorFlow extensions builds on Python 3.4-3.8 in Linux with a TensorF
 Please refer to below table for release support information:
 
 .. list-table:: Sagemaker TensorFlow Extensions Release Information
-   :widths: 25 25 50
+   :widths: 25 25 25 25
    :header-rows: 1
 
    * - Sagemaker TensorFlow Extensions Pypi Version
