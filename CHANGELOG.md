@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.13.0 (2022-02-15)
+
+### Features
+
+ * Support TensorFlow 2.8.0
+
 ## v1.12.0 (2022-02-10)
 
 ### Features
