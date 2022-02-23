@@ -5,12 +5,12 @@ phases:
     commands:
       - apt-get update
       - apt-get -y install libcurl4-openssl-dev g++-9
-      - python3.8 -m pip install cpplint
+      - python3.9 -m pip install cpplint
       - start-dockerd
   build:
     commands:
       - tox -e flake8
 
-      - python3.8 -m cpplint --linelength=120 --filter=-build/c++11 --extensions=cpp,hpp --quiet --recursive src/
+      - python3.9 -m cpplint --linelength=120 --filter=-build/c++11 --extensions=cpp,hpp --quiet --recursive src/
 
-      - tox -e py37,py38 -- test/
+      - tox -e py37,py38,py39 -- test/
