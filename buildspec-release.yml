@@ -5,7 +5,7 @@ phases:
     commands:
       - apt-get update
       - apt-get -y install libcurl4-openssl-dev g++-9
-      - python3.9 -m pip install cpplint
+      - python3.9 -m pip install cpplint==1.5.5
       - start-dockerd
 
   build:
