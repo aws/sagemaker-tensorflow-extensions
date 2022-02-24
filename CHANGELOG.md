@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.14.0 (2022-02-24)
+
+### Features
+
+ * Support Python 3.9
+
 ## v1.13.0 (2022-02-15)
 
 ### Features
