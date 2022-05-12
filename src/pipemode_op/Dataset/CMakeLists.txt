@@ -38,7 +38,7 @@ find_library(TF_LIB
 	PATHS "${TF_LIB_DIR}"
 	NO_DEFAULT_PATH)
 
-target_compile_options(PipeModeOp PRIVATE "-D_GLIBCXX_USE_CXX11_ABI=0")
+target_compile_options(PipeModeOp PRIVATE "-D_GLIBCXX_USE_CXX11_ABI=1")
 
 target_link_libraries(PipeModeOp ${TF_LIB})
 

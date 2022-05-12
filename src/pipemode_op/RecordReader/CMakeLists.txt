@@ -15,7 +15,7 @@ file(GLOB_RECURSE sources ./*.cpp ./*.hpp)
 
 add_library(RecordReader STATIC ${sources})
 
-target_compile_options(RecordReader PUBLIC "-D_GLIBCXX_USE_CXX11_ABI=0")
+target_compile_options(RecordReader PUBLIC "-D_GLIBCXX_USE_CXX11_ABI=1")
 target_compile_options(RecordReader PUBLIC "-fPIC")
 target_compile_options(RecordReader PUBLIC "-g")
 

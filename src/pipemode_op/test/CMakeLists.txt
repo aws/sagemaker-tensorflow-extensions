@@ -17,7 +17,7 @@ find_package(Threads REQUIRED)
 # Enable ExternalProject CMake module
 include(ExternalProject)
 
-set(XX -D_GLIBCXX_USE_CXX11_ABI=0)
+set(XX -D_GLIBCXX_USE_CXX11_ABI=1)
 
 # Download and install GoogleTest
 ExternalProject_Add(
@@ -26,7 +26,7 @@ ExternalProject_Add(
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
     # Disable install step
     INSTALL_COMMAND ""
-    CMAKE_ARGS "-DCMAKE_CXX_FLAGS:STRING=-D_GLIBCXX_USE_CXX11_ABI=0"
+    CMAKE_ARGS "-DCMAKE_CXX_FLAGS:STRING=-D_GLIBCXX_USE_CXX11_ABI=1"
 )
 
 # Get GTest source and binary directories from CMake project
@@ -42,7 +42,7 @@ set_target_properties(libgtest PROPERTIES
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 
-target_compile_options(libgtest INTERFACE -D_GLIBCXX_USE_CXX11_ABI=0)
+target_compile_options(libgtest INTERFACE -D_GLIBCXX_USE_CXX11_ABI=1)
 
 # Create a libgmock target to be used as a dependency by test programs
 add_library(libgmock IMPORTED STATIC GLOBAL)
