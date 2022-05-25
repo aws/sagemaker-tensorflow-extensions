@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.15.0 (2022-05-25)
+
+### Features
+
+ * Support TensorFlow 2.9.1
+
 ## v1.14.0 (2022-02-24)
 
 ### Features
