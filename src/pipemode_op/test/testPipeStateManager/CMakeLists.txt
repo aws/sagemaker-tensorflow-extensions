@@ -14,7 +14,7 @@
 file(GLOB_RECURSE sources ./*.cpp ./*.hpp)
 
 add_executable(testPipeStateManager ${sources})
-target_compile_options(testPipeStateManager PRIVATE "-D_GLIBCXX_USE_CXX11_ABI=0")
+target_compile_options(testPipeStateManager PRIVATE "-D_GLIBCXX_USE_CXX11_ABI=1")
 target_compile_options(testPipeStateManager PRIVATE "-g")
 
 target_link_libraries(testPipeStateManager PipeStateManager libgtest libgmock)

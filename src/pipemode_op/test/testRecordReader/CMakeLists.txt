@@ -23,7 +23,7 @@ find_library(TF_LIB
 	NO_DEFAULT_PATH)
 
 add_executable(testRecordReader ${sources})
-target_compile_options(testRecordReader PRIVATE "-D_GLIBCXX_USE_CXX11_ABI=0")
+target_compile_options(testRecordReader PRIVATE "-D_GLIBCXX_USE_CXX11_ABI=1")
 target_compile_options(testRecordReader PRIVATE "-g")
 target_include_directories(testRecordReader PRIVATE "../../include")
 
