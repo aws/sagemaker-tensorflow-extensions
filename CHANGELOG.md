@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.16.0 (2022-09-22)
+
+### Features
+
+ * Upgrade tensorflow-extensions to support TF 2.10.0
+
 ## v1.15.0 (2022-05-25)
 
 ### Features
