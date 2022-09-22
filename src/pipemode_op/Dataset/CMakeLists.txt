@@ -12,7 +12,7 @@
 # language governing permissions and limitations under the License.
 
 cmake_minimum_required(VERSION 3.10)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_VERBOSE_MAKEFILE on )
 
@@ -33,7 +33,7 @@ execute_process(COMMAND "$ENV{PYTHON_EXECUTABLE}" "-c"
 	"import tensorflow as tf; import sys; sys.stdout.write(tf.sysconfig.get_include() + '/')"
 	OUTPUT_VARIABLE TF_INCLUDE_DIR)
 
-find_library(TF_LIB 
+find_library(TF_LIB
 	NAMES libtensorflow_framework.so.2
 	PATHS "${TF_LIB_DIR}"
 	NO_DEFAULT_PATH)
