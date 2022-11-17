@@ -100,7 +100,7 @@ Please refer to below table for release support information:
    * - 2.11.0.1.17.x
      - v1.17.x
      - 2.11.0
-     - 3.7, 3.8, 3.9
+     - 3.7, 3.8, 3.9, 3.10
    * - 2.10.0.1.16.x
      - v1.16.x
      - 2.10.0
