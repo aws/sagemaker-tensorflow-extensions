@@ -62,7 +62,7 @@ def write_recordio_multipart(f, data):
 
 
 def string_feature(value):
-    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value.tostring()]))
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value.tobytes()]))
 
 
 def label_feature(value):
