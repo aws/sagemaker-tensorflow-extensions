@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.16.1 (2022-11-28)
+
+### Bug Fixes and Other Changes
+
+ * Support TensorFlow 2.11.0 and Python 3.10
+
 ## v1.16.0 (2022-09-22)
 
 ### Features
