@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.17.0 (2022-12-01)
+
+### Features
+
+ * small fixes and major release 1.17.0
+
 ## v1.16.1 (2022-11-28)
 
 ### Bug Fixes and Other Changes
