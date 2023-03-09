@@ -50,6 +50,7 @@ using tensorflow::data::IteratorContext;
 using tensorflow::data::IteratorStateReader;
 using tensorflow::data::IteratorStateWriter;
 using tensorflow::mutex;
+using tensorflow::OkStatus;
 using tensorflow::mutex_lock;
 using tensorflow::Node;
 using tensorflow::OpKernelContext;
@@ -218,7 +219,7 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                 } catch(std::runtime_error& err) {
                     return Status(tensorflow::error::INTERNAL, err.what());
                 }
-                return Status::OK();
+                return OkStatus();;
             }
             ~Iterator() {
                 if (benchmark_) {
