@@ -1,7 +1,7 @@
 FROM public.ecr.aws/lts/ubuntu:20.04
 
 ARG device=cpu
-ARG tensorflow_version=2.12.0rc0
+ARG tensorflow_version=2.12.0rc1
 ARG script
 ARG python
 

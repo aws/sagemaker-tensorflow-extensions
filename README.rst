@@ -97,10 +97,10 @@ Please refer to below table for release support information:
      - Sagemaker TensorFlow Extensions Release Version
      - TensorFlow Release Version
      - Sagemaker TensorFlow Extentions Supported Python Versions
-   * - 2.12.0.1.18.x
+   * - 2.12.0rc1.1.18.x
      - v1.18.x
-     - 2.12.0
-     - 3.8, 3.9, 3.10, 3.11   
+     - 2.12.0rc1
+     - 3.8, 3.9, 3.10
    * - 2.11.0.1.17.x
      - v1.17.x
      - 2.11.0
