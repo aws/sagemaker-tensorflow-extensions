@@ -29,7 +29,7 @@ phases:
         PYTHON_VERSIONS="python3.10 python3.9 python3.8"
         for PYTHON in ${PYTHON_VERSIONS}; do
           $PYTHON -m pip install -U pip
-          $PYTHON -m pip install wheel tensorflow==2.12.0rc1 twine==1.11 cmake
+          $PYTHON -m pip install wheel tensorflow==2.12.0 twine==1.11 cmake
           $PYTHON setup.py build bdist_wheel --plat-name manylinux1_x86_64
         done;
 
