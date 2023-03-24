@@ -6,6 +6,7 @@ phases:
       - apt-get update
       - apt-get -y install libcurl4-openssl-dev g++-9
       - python3.10 -m pip install cpplint==1.5.5
+      # - python3.11 -m pip install cpplint==1.5.5
       - start-dockerd
 
   build:
@@ -16,17 +17,19 @@ phases:
       - tox -e flake8
 
       - python3.10 -m cpplint --linelength=120 --filter=-build/c++11,-build/header_guard --extensions=cpp,hpp --quiet --recursive src/
+      # - python3.11 -m cpplint --linelength=120 --filter=-build/c++11,-build/header_guard --extensions=cpp,hpp --quiet --recursive src/
 
       # run tests
-      - tox -e py37,py38,py39,py310 -- test/
+      - tox -e py38,py39,py310 -- test/
+      # - tox -e py38,py39,py310,py311 -- test/
 
       # generate the distribution package
       - python setup.py sdist
       - |
-        PYTHON_VERSIONS="python3.10 python3.9 python3.8 python3.7"
+        PYTHON_VERSIONS="python3.10 python3.9 python3.8"
         for PYTHON in ${PYTHON_VERSIONS}; do
           $PYTHON -m pip install -U pip
-          $PYTHON -m pip install wheel tensorflow==2.11.0 twine==1.11 cmake
+          $PYTHON -m pip install wheel tensorflow==2.12.0 twine==1.11 cmake
           $PYTHON setup.py build bdist_wheel --plat-name manylinux1_x86_64
         done;
 
@@ -35,9 +38,9 @@ phases:
 
 artifacts:
   files:
-    - dist/sagemaker_tensorflow-*-cp37-*.whl
     - dist/sagemaker_tensorflow-*-cp38-*.whl
     - dist/sagemaker_tensorflow-*-cp39-*.whl
     - dist/sagemaker_tensorflow-*-cp310-*.whl
+    # - dist/sagemaker_tensorflow-*-cp311-*.whl
   name: ARTIFACT_1
   discard-paths: yes
