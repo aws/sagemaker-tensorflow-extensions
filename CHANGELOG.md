@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.18.0 (2023-03-25)
+
+### Features
+
+ * Add support for TF2.12.0 & deprecate Python 3.7
+
 ## v1.17.0 (2022-12-01)
 
 ### Features
