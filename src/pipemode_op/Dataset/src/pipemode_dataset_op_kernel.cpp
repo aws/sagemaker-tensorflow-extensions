@@ -217,7 +217,11 @@ class PipeModeDatasetOp : public DatasetOpKernel {
                             << std::endl;
                     }
                 } catch(std::runtime_error& err) {
-                    return Status(tensorflow::error::INTERNAL, err.what());
+                    // This convenience functions create an `absl::Status` object with an error
+                    // code as indicated by the associated function name, using the error message
+                    // passed in `message` i.e. err.what().
+                    // https://github.com/abseil/abseil-cpp/blob/master/absl/status/status.h#L730
+                    return absl::InternalError(err.what());
                 }
                 return OkStatus();;
             }
