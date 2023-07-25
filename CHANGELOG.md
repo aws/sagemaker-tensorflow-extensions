@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.19.0 (2023-07-25)
+
+### Features
+
+ * Support Tensorflow 2.13.0
+
 ## v1.18.0 (2023-03-25)
 
 ### Features
