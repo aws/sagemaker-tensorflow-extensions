@@ -119,5 +119,4 @@ class PipeModeDataset(dataset_ops.Dataset):
         return tensor_spec.TensorSpec(
             shape=self.output_shapes,
             dtype=self.output_types,
-            name=self.channel,
         )
