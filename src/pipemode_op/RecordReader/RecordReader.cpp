@@ -54,9 +54,6 @@ RecordReader::RecordReader(const std::string& file_path, const std::size_t read_
     }
 
 RecordReader::~RecordReader() {
-    if (fd_ >= 0) {
-        close(fd_);
-    }
 }
 
 std::size_t RecordReader::Read(void* dest, std::size_t nbytes) {
