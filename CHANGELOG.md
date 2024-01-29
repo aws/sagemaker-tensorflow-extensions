@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.18.1 (2024-01-29)
+
+### Bug Fixes and Other Changes
+
+ * Update setup.py to v2.12.0.1.18.1
+ * Switch to using GitHub API Token for AuthN
+ * Remove name from element spec of PipeMode
+
 ## v1.18.0 (2023-03-25)
 
 ### Features
