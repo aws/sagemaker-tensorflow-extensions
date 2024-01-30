@@ -3,7 +3,6 @@ version: 0.2
 phases:
   build:
     commands:
-      - PACKAGE_FILE_38="$CODEBUILD_SRC_DIR_ARTIFACT_1/sagemaker_tensorflow-*-cp38-*.whl"
       - PACKAGE_FILE_39="$CODEBUILD_SRC_DIR_ARTIFACT_1/sagemaker_tensorflow-*-cp39-*.whl"
       - PACKAGE_FILE_310="$CODEBUILD_SRC_DIR_ARTIFACT_1/sagemaker_tensorflow-*-cp310-*.whl"
       # - PACKAGE_FILE_311="$CODEBUILD_SRC_DIR_ARTIFACT_1/sagemaker_tensorflow-*-cp311-*.whl"
@@ -11,13 +10,11 @@ phases:
       - PYPI_PASSWORD=$(aws secretsmanager get-secret-value --secret-id /codebuild/pypi/sagemaker-python-sdk-token --query SecretString --output text)
       
       - echo 'md5sum of python packages:'
-      - md5sum $PACKAGE_FILE_38
       - md5sum $PACKAGE_FILE_39
       - md5sum $PACKAGE_FILE_310
       # - md5sum $PACKAGE_FILE_311
 
       # publish to pypi
-      - python3 -m twine upload --skip-existing $PACKAGE_FILE_38 -u $PYPI_USER -p $PYPI_PASSWORD
       - python3 -m twine upload --skip-existing $PACKAGE_FILE_39 -u $PYPI_USER -p $PYPI_PASSWORD
       - python3 -m twine upload --skip-existing $PACKAGE_FILE_310 -u $PYPI_USER -p $PYPI_PASSWORD
       # - python3 -m twine upload --skip-existing $PACKAGE_FILE_311 --sign -u $PYPI_USER -p $PYPI_PASSWORD

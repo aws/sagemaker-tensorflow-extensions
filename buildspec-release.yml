@@ -20,13 +20,13 @@ phases:
       # - python3.11 -m cpplint --linelength=120 --filter=-build/c++11,-build/header_guard --extensions=cpp,hpp --quiet --recursive src/
 
       # run tests
-      - tox -e py38,py39,py310 -- test/
+      - tox -e py39,py310 -- test/
       # - tox -e py38,py39,py310,py311 -- test/
 
       # generate the distribution package
       - python setup.py sdist
       - |
-        PYTHON_VERSIONS="python3.10 python3.9 python3.8"
+        PYTHON_VERSIONS="python3.10 python3.9"
         for PYTHON in ${PYTHON_VERSIONS}; do
           $PYTHON -m pip install -U pip
           $PYTHON -m pip install wheel tensorflow==2.14.0 twine==1.11 cmake
@@ -38,7 +38,6 @@ phases:
 
 artifacts:
   files:
-    - dist/sagemaker_tensorflow-*-cp38-*.whl
     - dist/sagemaker_tensorflow-*-cp39-*.whl
     - dist/sagemaker_tensorflow-*-cp310-*.whl
     # - dist/sagemaker_tensorflow-*-cp311-*.whl
