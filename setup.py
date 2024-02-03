@@ -99,7 +99,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='sagemaker_tensorflow',
-    version='2.13.0.1.19.1',
+    version='2.14.0.1.20.0',
     description='Amazon Sagemaker specific TensorFlow extensions.',
     packages=find_packages(where='src', exclude=('test',)),
     package_dir={'': 'src'},
@@ -111,14 +111,13 @@ setup(
     license='Apache License 2.0',
     author='Amazon Web Services',
     maintainer='Amazon Web Services',
-    python_requires=">= 3.8",
+    python_requires=">= 3.9",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Natural Language :: English",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10'
         # 'Programming Language :: Python :: 3.11'
