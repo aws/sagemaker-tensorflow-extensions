@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.20.0 (2024-02-05)
+
+### Features
+
+ * Support TensorFlow v2.14.0 and remove Py38
+
 ## v1.19.1 (2024-01-29)
 
 ### Bug Fixes and Other Changes
