@@ -42,7 +42,7 @@ set_target_properties(libgtest PROPERTIES
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 
-target_compile_options(libgtest INTERFACE -D_GLIBCXX_USE_CXX11_ABI=1)
+set_property(TARGET libgtest PROPERTY INTERFACE_COMPILE_OPTIONS -D_GLIBCXX_USE_CXX11_ABI=1)
 
 # Create a libgmock target to be used as a dependency by test programs
 add_library(libgmock IMPORTED STATIC GLOBAL)
